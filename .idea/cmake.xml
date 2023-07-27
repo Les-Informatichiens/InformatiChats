@@ -2,7 +2,7 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=C:\Users\Jean\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake" />
+      <configuration PROFILE_NAME="Debug-Visual Studio" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DCMAKE_TOOLCHAIN_FILE=C:\Users\Jean\.vcpkg-clion\vcpkg\scripts\buildsystems\vcpkg.cmake" />
     </configurations>
   </component>
 </project>
