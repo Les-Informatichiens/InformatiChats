@@ -10,3 +10,6 @@ add_executable(
 #        src/parse_cl.cpp
 #        src/imgui_example.cpp
 )
+
+# All libraries which cannot be installed with vcpkg should be a submodule in the "extern" subdirectory
+add_subdirectory(extern)
