@@ -1,9 +1,9 @@
 {
-  "name" : "informatichat",
+  "name" : "informatichats",
   "version-string" : "1.0.0",
   "builtin-baseline" : "16eeb024de901eb84cde966f656027beaad8b450",
-  "homepage": "https://github.com/Les-Informatichiens/InformatiChat",
-  "description": "P2P communication (text and video) application. Uses the asio library for networking.",
+  "homepage": "https://github.com/Les-Informatichiens/InformatiChats",
+  "description": "P2P communication (text and video) application. Uses the libdatachannel library for networking.",
   "dependencies" : [ {
     "name" : "imgui",
     "version>=" : "1.89.7",
