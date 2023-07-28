@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
          src/main.cpp
+        src/console.h
+        src/Chat.cpp
+        src/Chat.h
 )
 
 if(MSVC)
@@ -27,9 +30,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 # glew ================================================================================================
 find_package(GLEW REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
-# SDL ================================================================================================
+# GLFW ================================================================================================
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+# json ================================================================================================
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 # All libraries which cannot be installed with vcpkg should be a submodule in the "extern" subdirectory
 #add_subdirectory(extern)

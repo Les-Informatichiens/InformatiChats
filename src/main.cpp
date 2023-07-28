@@ -5,7 +5,13 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include <stdio.h>
+#include "console.h"
+
+#include "Chat.h"
+
+#include <cstdio>
+#include <unordered_map>
+#include <memory>
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -27,6 +33,11 @@
 #include "../libs/emscripten/emscripten_mainloop_stub.h"
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
+
+const std::string stunServer = "stun.l.google.com";
+const std::string stunServerPort = "19302";
+const std::string signalingServer = "51.79.86.30";
+const std::string signalingServerPort = "51337";
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -79,33 +90,30 @@ int main(int, char**)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-    // - Read 'docs/FONTS.md' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != nullptr);
-
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
+    constexpr const int maxNameLength = 32;
+
+    ConnectionConfig config = { stunServer, stunServerPort, signalingServer, signalingServerPort };
+
+    Chat chatClient(config);
+
+    bool showDemoWindow = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    bool loggedIn = false;
+    std::string localId;
+    std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
+    std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
+
+    std::shared_ptr<rtc::WebSocket> webSocket;
+
+    ExampleAppConsole console;
+    bool consoleOpen;
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -143,14 +151,51 @@ int main(int, char**)
         ImGui::Begin("main_shit", (bool*)0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
         ImGui::BeginMainMenuBar();
-        ImGui::Checkbox("Demo", &show_demo_window);
+        ImGui::Checkbox("Demo", &showDemoWindow);
         ImGui::EndMainMenuBar();
+
+        if (chatClient.IsConnected())
+        {
+            ImGui::BeginGroup();
+            ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+            ImGui::EndChild();
+
+            ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+            ImGui::Text("%s", chatClient.GetUsername().c_str());
+            ImGui::EndChild();
+            ImGui::EndGroup();
+
+            ImGui::SameLine();
+            ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
+            console.Draw("Demo chat", &consoleOpen);
+            ImGui::EndChild();
+        }
+        else
+        {
+            ImGui::OpenPopup("Login");
+            if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::Text("Enter your username");
+                ImGui::Separator();
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+                char buf[maxNameLength];
+                memset(buf, 0, maxNameLength*sizeof(char));
+                if (ImGui::InputTextWithHint("##username", "otisma...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
+                {
+                    chatClient.AttemptConnectionWithUsername(buf);
+                }
+                ImGui::PopStyleVar();
+
+                ImGui::EndPopup();
+            }
+        }
 
         ImGui::End();
         ImGui::PopStyleVar();
 
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        if (showDemoWindow)
+            ImGui::ShowDemoWindow(&showDemoWindow);
 
         // Rendering
         ImGui::Render();
