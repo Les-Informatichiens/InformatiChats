@@ -1,0 +1,3 @@
+[submodule "extern/tr-and-slate-or"]
+	path = extern/tr-and-slate-or
+	url = https://github.com/ThierryCantin-Demers/tr-and-slate-or
