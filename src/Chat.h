@@ -25,6 +25,7 @@ public:
 
     void AttemptConnectionWithUsername(const char* newUsername);
 
+    void AttemptToConnectToPeer(const std::string& peerId);
     void SendMessageToPeer(const std::string& peerId, const char* message);
 
     const std::string& GetUsername() const { return username; };
@@ -33,7 +34,7 @@ public:
 private:
 
     // Create and setup a PeerConnection
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(std::string userId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& userId);
 
 private:
     rtc::Configuration rtcConfig;

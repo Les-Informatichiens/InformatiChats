@@ -105,7 +105,7 @@ int main(int, char**)
     bool showDemoWindow = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    bool loggedIn = false;
+    bool addNewChatPrompt = false;
     std::string localId;
     std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
     std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
@@ -158,6 +158,32 @@ int main(int, char**)
         {
             ImGui::BeginGroup();
             ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+            ImGui::BeginMenuBar();
+            if (ImGui::Button("Add new user"))
+            {
+                addNewChatPrompt = true;
+            }
+            if (addNewChatPrompt)
+            {
+                ImGui::OpenPopup("New chat");
+                if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                {
+                    ImGui::Text("Enter a username");
+                    ImGui::Separator();
+                    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+                    char buf[maxNameLength];
+                    memset(buf, 0, maxNameLength*sizeof(char));
+                    if (ImGui::InputTextWithHint("##username", "otismusia...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
+                    {
+                        chatClient.AttemptConnectionWithUsername(buf);
+                    }
+                    ImGui::PopStyleVar();
+
+                    ImGui::EndPopup();
+                }
+            }
+            ImGui::EndMenuBar();
             ImGui::EndChild();
 
             ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
