@@ -19,6 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: ilammy/msvc-dev-cmd@v1
     
     - name: Configure CMake
       shell: cmd
