@@ -108,45 +108,45 @@ void Chat::AttemptConnectionWithUsername(const char *newUsername) {
 
 void Chat::AttemptToConnectToPeer(const std::string& peerId)
 {
-    std::cout << "Offering to " + id << std::endl;
-    auto pc = createPeerConnection(config, ws, id);
-
-    // We are the offerer, so create a data channel to initiate the process
-    const std::string label = "test";
-    std::cout << "Creating DataChannel with label \"" << label << "\"" << std::endl;
-    auto dc = pc->createDataChannel(label);
-
-    dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
-        std::cout << "DataChannel from " << id << " open" << std::endl;
-        if (auto dc = wdc.lock())
-            dc->send("Hello from " + localId);
-    });
-
-    dc->onClosed([id]() {
-        if (auto it = dataChannelMap.find(id) != dataChannelMap.end())
-        {
-            dataChannelMap.erase(id);
-        }
-        std::cout << "DataChannel from " << id << " closed" << std::endl;
-    });
-
-    dc->onMessage([id](auto data) {
-        // data holds either std::string or rtc::binary
-        if (std::holds_alternative<std::string>(data))
-            std::cout << "Message from " << id << " received: " << std::get<std::string>(data)
-                      << std::endl;
-        else
-            std::cout << "Binary message from " << id
-                      << " received, size=" << std::get<rtc::binary>(data).size() << std::endl;
-
-        int i = 0;
-        for (const auto& entry : dataChannelMap)
-        {
-            entry.second->send("hello peer[" + std::to_string(i++) + "], your name is " + entry.first);
-        }
-    });
-
-    dataChannelMap.emplace(id, dc);
+//    std::cout << "Offering to " + id << std::endl;
+//    auto pc = createPeerConnection(config, ws, id);
+//
+//    // We are the offerer, so create a data channel to initiate the process
+//    const std::string label = "test";
+//    std::cout << "Creating DataChannel with label \"" << label << "\"" << std::endl;
+//    auto dc = pc->createDataChannel(label);
+//
+//    dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
+//        std::cout << "DataChannel from " << id << " open" << std::endl;
+//        if (auto dc = wdc.lock())
+//            dc->send("Hello from " + localId);
+//    });
+//
+//    dc->onClosed([id]() {
+//        if (auto it = dataChannelMap.find(id) != dataChannelMap.end())
+//        {
+//            dataChannelMap.erase(id);
+//        }
+//        std::cout << "DataChannel from " << id << " closed" << std::endl;
+//    });
+//
+//    dc->onMessage([id](auto data) {
+//        // data holds either std::string or rtc::binary
+//        if (std::holds_alternative<std::string>(data))
+//            std::cout << "Message from " << id << " received: " << std::get<std::string>(data)
+//                      << std::endl;
+//        else
+//            std::cout << "Binary message from " << id
+//                      << " received, size=" << std::get<rtc::binary>(data).size() << std::endl;
+//
+//        int i = 0;
+//        for (const auto& entry : dataChannelMap)
+//        {
+//            entry.second->send("hello peer[" + std::to_string(i++) + "], your name is " + entry.first);
+//        }
+//    });
+//
+//    dataChannelMap.emplace(id, dc);
 
 }
 
