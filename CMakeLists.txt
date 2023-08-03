@@ -23,7 +23,7 @@ endif()
 include(cmake/CPM.cmake)
 
 # LibDataChannel ======================================================================================
-if(NOT TARGET LibDataChannel::LibDataChannel)
+if(NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
         NAME "LibDataChannel"
         VERSION "0.18.5"
@@ -31,7 +31,7 @@ if(NOT TARGET LibDataChannel::LibDataChannel)
     )
 endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannel)
+target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStatic)
 # =====================================================================================================
 
 # nlohmann-json =======================================================================================

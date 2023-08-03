@@ -62,11 +62,30 @@ void Chat::AttemptConnectionWithUsername(const char *newUsername) {
 
         nlohmann::json message = nlohmann::json::parse(std::get<std::string>(data));
 
+        std::cout << "The message sent by the server is: " << message << std::endl;
+
+
         auto it = message.find("id");
         if (it == message.end())
             return;
 
         auto id = it->get<std::string>();
+
+        // If the id in the message returned from the server is the same as the user,
+        // it means that the server couldn't find the wanted user.
+        if (id == username)
+        {
+            auto destIt = message.find("destination_id");
+
+            if (destIt == message.end())
+            {
+                std::cout << "Could not find user, destination ID is invalid" << std::endl;
+                return;
+            }
+
+            std::cout << "Could not find user: " << destIt->get<std::string>() << ". Operation cancelled." << std::endl;
+            return;
+        }
 
         it = message.find("type");
         if (it == message.end())
