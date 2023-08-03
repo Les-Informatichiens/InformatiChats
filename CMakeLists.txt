@@ -34,9 +34,21 @@ endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannel)
 # =====================================================================================================
 
+# nlohmann-json =======================================================================================
+if(NOT TARGET nlohmann_json::nlohmann_json)
+    CPMFindPackage(
+            NAME          "nlohmann_json"
+            VERSION       "3.11.2"
+            GITHUB_REPOSITORY "nlohmann/json"
+    )
+endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+# =====================================================================================================
+
 # glew ================================================================================================
 if(NOT TARGET libglew_static)
-    CPMFindPackage(
+    CPMAddPackage(
         NAME "GLEW"
         GITHUB_REPOSITORY "Perlmint/glew-cmake"
         GIT_TAG "glew-cmake-2.2.0"

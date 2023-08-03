@@ -6,7 +6,6 @@
 #define INFORMATICHATS_CHAT_H
 
 #include "console.h"
-#include "nlohmann/json_fwd.hpp"
 #include "nlohmann/json.hpp"
 #include <rtc/rtc.hpp>
 
@@ -27,6 +26,7 @@ public:
 
     void AttemptToConnectToPeer(const std::string& peerId);
     void SendMessageToPeer(const std::string& peerId, const char* message);
+    void SetOnMessageFromPeer(const std::string& peerId, std::function<void(std::string)>); // maybe? im not sure yet
 
     const std::string& GetUsername() const { return username; };
     bool IsConnected() const { return connected; };

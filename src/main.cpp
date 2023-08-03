@@ -106,11 +106,8 @@ int main(int, char**)
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     bool addNewChatPrompt = false;
-    std::string localId;
-    std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
-    std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
 
-    std::shared_ptr<rtc::WebSocket> webSocket;
+    std::string selectedChat;
 
     ExampleAppConsole console;
     bool consoleOpen;
@@ -176,6 +173,16 @@ int main(int, char**)
                     if (ImGui::InputTextWithHint("##username", "otismusia...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
                     {
                         chatClient.AttemptToConnectToPeer(buf);
+//                        bool isConnected = chatClient.AttemptToConnectToPeer(buf);
+//                        if (isConnected)
+//                        {
+//                            chatClient.SetOnMessageFromPeer(buf, [&console](auto message) {
+//                                if (selectedChat == buf)
+//                                {
+//                                    console.AddLog("%s", message.c_str());
+//                                }
+//                            });
+//                        }
                     }
                     ImGui::PopStyleVar();
 
