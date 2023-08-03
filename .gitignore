@@ -1,6 +1,7 @@
 # Project exclude paths
 /cmake-build-debug/
-.idea/cmake.xml
-build
-build2
-discord.xml
+.idea/
+
+# Build files
+build-debug
+build-release
