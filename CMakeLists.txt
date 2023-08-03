@@ -68,4 +68,9 @@ if(NOT TARGET trandslateor)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE trandslateor)
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
+    message(STATUS "Copying translations to build directory")
+    file(COPY translations DESTINATION "${CMAKE_BINARY_DIR}")
+endif()
 # =====================================================================================================
