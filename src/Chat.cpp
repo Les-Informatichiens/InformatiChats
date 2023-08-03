@@ -82,8 +82,13 @@ void Chat::AttemptConnectionWithUsername(const char *newUsername) {
                 std::cout << "Could not find user, destination ID is invalid" << std::endl;
                 return;
             }
-
             std::cout << "Could not find user: " << destIt->get<std::string>() << ". Operation cancelled." << std::endl;
+
+            auto badPcIt = peerConnectionMap.find(destIt->get<std::string>());
+            if (badPcIt != peerConnectionMap.end())
+            {
+                badPcIt->second->close();
+            }
             return;
         }
 
@@ -182,8 +187,18 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
 {
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
-    pc->onStateChange([](rtc::PeerConnection::State state) {
+    pc->onStateChange([this, userId](rtc::PeerConnection::State state) {
         std::cout << "State: " << state << std::endl;
+        if (state == rtc::PeerConnection::State::Closed ||
+        state == rtc::PeerConnection::State::Disconnected ||
+        state == rtc::PeerConnection::State::Failed)
+        {
+            if (peerConnectionMap.find(userId) != peerConnectionMap.end())
+            {
+                peerConnectionMap.erase(userId);
+                // should maybe close the open datachannels too? needs testing
+            }
+        }
     });
 
     pc->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) {
