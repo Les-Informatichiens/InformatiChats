@@ -158,7 +158,6 @@ int main(int, char**)
         {
             ImGui::BeginGroup();
             ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
-            ImGui::BeginMenuBar();
             if (ImGui::Button("Add new user"))
             {
                 addNewChatPrompt = true;
@@ -176,14 +175,13 @@ int main(int, char**)
                     memset(buf, 0, maxNameLength*sizeof(char));
                     if (ImGui::InputTextWithHint("##username", "otismusia...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
                     {
-                        chatClient.AttemptConnectionWithUsername(buf);
+                        chatClient.AttemptToConnectToPeer(buf);
                     }
                     ImGui::PopStyleVar();
 
                     ImGui::EndPopup();
                 }
             }
-            ImGui::EndMenuBar();
             ImGui::EndChild();
 
             ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);

@@ -108,13 +108,14 @@ void Chat::AttemptConnectionWithUsername(const char *newUsername) {
 
 void Chat::AttemptToConnectToPeer(const std::string& peerId)
 {
-//    std::cout << "Offering to " + id << std::endl;
-//    auto pc = createPeerConnection(config, ws, id);
-//
-//    // We are the offerer, so create a data channel to initiate the process
-//    const std::string label = "test";
-//    std::cout << "Creating DataChannel with label \"" << label << "\"" << std::endl;
-//    auto dc = pc->createDataChannel(label);
+    std::cout << "Offering to " + peerId << std::endl;
+    auto pc = CreatePeerConnection(peerId);
+
+    // We are the offerer, so create a data channel to initiate the process
+    const std::string label = "test";
+    std::cout << "Creating DataChannel with label \"" << label << "\"" << std::endl;
+    auto dc = pc->createDataChannel(label);
+
 //
 //    dc->onOpen([id, wdc = make_weak_ptr(dc)]() {
 //        std::cout << "DataChannel from " << id << " open" << std::endl;
@@ -159,8 +160,9 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
 {
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
-    pc->onStateChange(
-            [](rtc::PeerConnection::State state) { std::cout << "State: " << state << std::endl; });
+    pc->onStateChange([](rtc::PeerConnection::State state) {
+        std::cout << "State : " << state << std::endl;
+    });
 
     pc->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) {
         std::cout << "Gathering State: " << state << std::endl;
