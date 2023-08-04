@@ -109,8 +109,20 @@ int main(int, char**)
 
     std::string selectedChat;
 
+    char InputBuf[256];
+    memset(InputBuf, 0, sizeof(InputBuf));
+
+    // chat history
     ExampleAppConsole console;
     bool consoleOpen;
+
+    // message callback
+    chatClient.SetOnMessageRecieved([&console, &selectedChat](const MessageReceivedEvent& e) {
+        if (e.senderId == selectedChat)
+        {
+            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
+        }
+    });
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -173,6 +185,7 @@ int main(int, char**)
                     if (ImGui::InputTextWithHint("##username", "otismusia...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
                     {
                         chatClient.AttemptToConnectToPeer(buf);
+                        addNewChatPrompt = false;
 //                        bool isConnected = chatClient.AttemptToConnectToPeer(buf);
 //                        if (isConnected)
 //                        {
@@ -189,6 +202,62 @@ int main(int, char**)
                     ImGui::EndPopup();
                 }
             }
+            ImGui::Separator();
+
+            // draw chat names
+            for (const auto& peerConnection : chatClient.GetPeerConnections())
+            {
+                const std::string& name = peerConnection.first;
+                bool isSelected = selectedChat == name;
+
+                rtc::PeerConnection::State state = peerConnection.second->state();
+
+                std::string displayText = name;
+                ImVec4 color;
+                bool hasColor = false;
+                switch (state) {
+                    case rtc::PeerConnection::State::New:
+                        break;
+                    case rtc::PeerConnection::State::Connecting: {
+                        hasColor = true;
+                        color = ImVec4(1.0f, 0.9f, 0.2f, 1.0f);
+                        displayText += " [Connecting...]";
+                        break;
+                    }
+                    case rtc::PeerConnection::State::Connected:
+                        break;
+                    case rtc::PeerConnection::State::Disconnected:
+                    {
+                        hasColor = true;
+                        color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                        displayText += " [Disconnected]";
+                        break;
+                    }
+                    case rtc::PeerConnection::State::Failed: {
+                        hasColor = true;
+                        color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                        displayText += " [Connection failed]";
+                        break;
+                    }
+                    case rtc::PeerConnection::State::Closed: {
+                        hasColor = true;
+                        color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                        displayText += " [Connection closed]";
+                        break;
+                    }
+                    default: {
+                        hasColor = false;
+                        break;
+                    }
+                }
+                if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
+
+                if (ImGui::Selectable(displayText.c_str(), isSelected))
+                {
+                    selectedChat = name;
+                }
+                if (hasColor) ImGui::PopStyleColor();
+            }
             ImGui::EndChild();
 
             ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
@@ -199,6 +268,28 @@ int main(int, char**)
             ImGui::SameLine();
             ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
             console.Draw("Demo chat", &consoleOpen);
+
+            // Command-line
+            bool reclaim_focus = false;
+            ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+            if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void*)&console))
+            {
+                char* s = InputBuf;
+                Strtrim(s);
+                if (s[0])
+                {
+                    console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
+                    chatClient.SendMessageToPeer(selectedChat, s);
+                }
+                strcpy(s, "");
+                reclaim_focus = true;
+            }
+
+            // Auto-focus on window apparition
+            ImGui::SetItemDefaultFocus();
+            if (reclaim_focus)
+                ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+
             ImGui::EndChild();
         }
         else

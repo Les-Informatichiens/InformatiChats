@@ -7,9 +7,15 @@
 #include <stdio.h>
 #include <ctype.h>
 
+// Portable helpers
+static int   Stricmp(const char* s1, const char* s2)         { int d; while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; } return d; }
+static int   Strnicmp(const char* s1, const char* s2, int n) { int d = 0; while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; n--; } return d; }
+static char* Strdup(const char* s)                           { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = malloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
+static void  Strtrim(char* s)                                { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
+
 struct ExampleAppConsole
 {
-    char                  InputBuf[256];
+//    char                  InputBuf[256];
     ImVector<char*>       Items;
     ImVector<const char*> Commands;
     ImVector<char*>       History;
@@ -21,7 +27,7 @@ struct ExampleAppConsole
     ExampleAppConsole()
     {
         ClearLog();
-        memset(InputBuf, 0, sizeof(InputBuf));
+//        memset(InputBuf, 0, sizeof(InputBuf));
         HistoryPos = -1;
 
         // "CLASSIFY" is here to provide the test case where "C"+[tab] completes to "CL" and display multiple matches.
@@ -39,12 +45,6 @@ struct ExampleAppConsole
         for (int i = 0; i < History.Size; i++)
             free(History[i]);
     }
-
-    // Portable helpers
-    static int   Stricmp(const char* s1, const char* s2)         { int d; while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; } return d; }
-    static int   Strnicmp(const char* s1, const char* s2, int n) { int d = 0; while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) { s1++; s2++; n--; } return d; }
-    static char* Strdup(const char* s)                           { IM_ASSERT(s); size_t len = strlen(s) + 1; void* buf = malloc(len); IM_ASSERT(buf); return (char*)memcpy(buf, (const void*)s, len); }
-    static void  Strtrim(char* s)                                { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
     void    ClearLog()
     {
@@ -185,23 +185,23 @@ struct ExampleAppConsole
         ImGui::EndChild();
         ImGui::Separator();
 
-        // Command-line
-        bool reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
-        {
-            char* s = InputBuf;
-            Strtrim(s);
-            if (s[0])
-                AddLog(s);
-            strcpy(s, "");
-            reclaim_focus = true;
-        }
-
-        // Auto-focus on window apparition
-        ImGui::SetItemDefaultFocus();
-        if (reclaim_focus)
-            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+//        // Command-line
+//        bool reclaim_focus = false;
+//        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+//        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &TextEditCallbackStub, (void*)this))
+//        {
+//            char* s = InputBuf;
+//            Strtrim(s);
+//            if (s[0])
+//                AddLog(s);
+//            strcpy(s, "");
+//            reclaim_focus = true;
+//        }
+//
+//        // Auto-focus on window apparition
+//        ImGui::SetItemDefaultFocus();
+//        if (reclaim_focus)
+//            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
 
 //        ImGui::End();
     }

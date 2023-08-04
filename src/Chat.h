@@ -8,6 +8,13 @@
 #include "console.h"
 #include "nlohmann/json.hpp"
 #include <rtc/rtc.hpp>
+#include <utility>
+
+struct MessageReceivedEvent
+{
+    std::string senderId;
+    std::string content;
+};
 
 struct ConnectionConfig
 {
@@ -26,15 +33,21 @@ public:
 
     void AttemptToConnectToPeer(const std::string& peerId);
     void SendMessageToPeer(const std::string& peerId, const char* message);
-    void SetOnMessageFromPeer(const std::string& peerId, std::function<void(std::string)>); // maybe? im not sure yet
 
-    const std::string& GetUsername() const { return username; };
-    bool IsConnected() const { return connected; };
+    void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) { onMessageReceivedCallback = std::move(callback); };
+
+    [[nodiscard]] const std::string& GetUsername() const { return username; };
+    [[nodiscard]] bool IsConnected() const { return connected; };
+
+    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>>& GetPeerConnections() { return peerConnectionMap; };
 
 private:
 
+    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId);
+    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId);
+
     // Create and setup a PeerConnection
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& userId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
 
 private:
     rtc::Configuration rtcConfig;
@@ -51,6 +64,8 @@ private:
     std::string username;
 
     bool connected;
+
+    std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
 };
 
 
