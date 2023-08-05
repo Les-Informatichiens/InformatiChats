@@ -5,7 +5,7 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "Chat.h"
 
@@ -112,15 +112,31 @@ int main(int, char**)
     char InputBuf[256];
     memset(InputBuf, 0, sizeof(InputBuf));
 
-    // chat history
+    // chat message space
     ExampleAppConsole console;
     bool consoleOpen;
 
+    struct PeerData
+    {
+        ImVector<char*> history;
+        size_t unreadMessageCount;
+    };
+
+    // chat histories
+    std::unordered_map<std::string, PeerData> historyMap;
+
     // message callback
-    chatClient.SetOnMessageRecieved([&console, &selectedChat](const MessageReceivedEvent& e) {
+    chatClient.SetOnMessageRecieved([&console, &selectedChat, &historyMap](const MessageReceivedEvent& e) {
+        auto result = historyMap.insert({ e.senderId, {} });
+        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
+
         if (e.senderId == selectedChat)
         {
             console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
+        }
+        else
+        {
+            ++result.first->second.unreadMessageCount;
         }
     });
 
@@ -186,16 +202,6 @@ int main(int, char**)
                     {
                         chatClient.AttemptToConnectToPeer(buf);
                         addNewChatPrompt = false;
-//                        bool isConnected = chatClient.AttemptToConnectToPeer(buf);
-//                        if (isConnected)
-//                        {
-//                            chatClient.SetOnMessageFromPeer(buf, [&console](auto message) {
-//                                if (selectedChat == buf)
-//                                {
-//                                    console.AddLog("%s", message.c_str());
-//                                }
-//                            });
-//                        }
                     }
                     ImGui::PopStyleVar();
 
@@ -207,12 +213,12 @@ int main(int, char**)
             // draw chat names
             for (const auto& peerConnection : chatClient.GetPeerConnections())
             {
-                const std::string& name = peerConnection.first;
-                bool isSelected = selectedChat == name;
+                const std::string& peerId = peerConnection.first;
+                bool isSelected = selectedChat == peerId;
 
                 rtc::PeerConnection::State state = peerConnection.second->state();
 
-                std::string displayText = name;
+                std::string displayText = peerId;
                 ImVec4 color;
                 bool hasColor = false;
                 switch (state) {
@@ -250,13 +256,35 @@ int main(int, char**)
                         break;
                     }
                 }
-                if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
 
+                auto peerDataIt = historyMap.find(peerId);
+                PeerData* pPeerData = nullptr;
+                if (peerDataIt != historyMap.end())
+                {
+                    pPeerData = &peerDataIt->second;
+                }
+
+                if (pPeerData != nullptr)
+                {
+                    if (isSelected)
+                    {
+                        pPeerData->unreadMessageCount = 0;
+                    }
+                    if (pPeerData->unreadMessageCount > 0)
+                    {
+                        displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount, pPeerData->unreadMessageCount == 1 ? "" : "s");
+                    }
+                }
+
+                if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
                 if (ImGui::Selectable(displayText.c_str(), isSelected))
                 {
-                    selectedChat = name;
+                    if (pPeerData != nullptr)
+                        console.SetLogHistory(pPeerData->history);
+                    selectedChat = peerId;
                 }
                 if (hasColor) ImGui::PopStyleColor();
+
             }
             ImGui::EndChild();
 

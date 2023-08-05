@@ -46,6 +46,11 @@ struct ExampleAppConsole
             free(History[i]);
     }
 
+    void SetLogHistory(ImVector<char*>& history)
+    {
+        Items = history;
+    }
+
     void    ClearLog()
     {
         for (int i = 0; i < Items.Size; i++)
