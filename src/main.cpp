@@ -306,6 +306,10 @@ int main(int, char**)
                 Strtrim(s);
                 if (s[0])
                 {
+                    // duplicate code, pls clean up
+                    auto result = historyMap.insert({ selectedChat, {} });
+                    result.first->second.history.push_back(Strdup(std::format("[{}] {}", selectedChat, s).c_str()));
+
                     console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
                     chatClient.SendMessageToPeer(selectedChat, s);
                 }
