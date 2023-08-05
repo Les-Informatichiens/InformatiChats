@@ -190,6 +190,11 @@ void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, cons
 
 void Chat::AttemptToConnectToPeer(const std::string& peerId)
 {
+    if (peerId == username)
+    {
+        std::cout << "Cannot connect to own id" << std::endl;
+        return;
+    }
     if (peerConnectionMap.find(peerId) != peerConnectionMap.end())
     {
         std::cout << "Already connected with user: " + peerId << std::endl;
