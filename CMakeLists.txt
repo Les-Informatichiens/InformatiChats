@@ -9,6 +9,19 @@ add_executable(
         src/console.h
         src/Chat.cpp
         src/Chat.h
+        src/imgui_impl_opengl3_loader.h
+        src/imgui_impl_opengl3_pixel.cpp
+        src/imgui_impl_opengl3_pixel.h
+        src/BatchRenderer.cpp
+        src/BatchRenderer.h
+        src/pxlui/BatchRenderer.cpp
+        src/pxlui/BatchRenderer.h
+        src/pxlui/GLShaderUtil.cpp
+        src/pxlui/GLShaderUtil.h
+        src/pxlui/ShaderProgram.cpp
+        src/pxlui/ShaderProgram.h
+        src/imgui_impl_glfw_pixel.cpp
+        src/imgui_impl_glfw_pixel.h
 )
 
 if(MSVC)
@@ -44,6 +57,16 @@ if(NOT TARGET nlohmann_json::nlohmann_json)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+# =====================================================================================================
+
+# glm =================================================================================================
+CPMAddPackage(
+    NAME "glm"
+    GITHUB_REPOSITORY "g-truc/glm"
+    GIT_TAG "0.9.9.8"
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 # =====================================================================================================
 
 # glew ================================================================================================
@@ -89,3 +112,8 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
     file(COPY translations DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
 # =====================================================================================================
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
+    message(STATUS "Copying res to build directory")
+    file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
+endif()
