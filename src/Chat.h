@@ -28,6 +28,7 @@ class Chat {
 public:
 
     explicit Chat(const ConnectionConfig& config);
+    explicit Chat() = default;
 
     void AttemptConnectionWithUsername(const char* newUsername);
 
@@ -63,7 +64,7 @@ private:
 
     std::string username;
 
-    bool connected;
+    bool connected{};
 
     std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
 };
