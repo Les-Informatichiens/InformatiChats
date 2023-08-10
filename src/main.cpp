@@ -76,8 +76,8 @@ int main(int, char**)
 #else
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 //    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
 //    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 #endif
@@ -267,6 +267,7 @@ int main(int, char**)
     ShaderProg->setFloat("uScanlineIntensity", mCrtShaderData.mScanlineIntensity);
     ShaderProg->setFloat("uVignette", mCrtShaderData.mVignette);
     ShaderProg->setInt("uCrtEnabled", false);
+    ShaderProg->setFloat("iResFactor", resFactor);
 
     glCreateTextures(GL_TEXTURE_2D, 1, &FramebufferTexture);
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
@@ -298,7 +299,7 @@ int main(int, char**)
     while (!glfwWindowShouldClose(window))
 #endif
     {
-        // Poll and handle events (inputs, window resize, etc.)
+        // Poll and handle events (inp      uts, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
         // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
@@ -314,7 +315,7 @@ int main(int, char**)
 
         // rendering new frame
         ShaderProg->setInt("uCrtEnabled", false);
-        ShaderProg->setFloat2("iResolution", { scaled_display_w, scaled_display_h });
+        ShaderProg->setFloat2("iResolution", { display_w, display_h });
 //        ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
 
         glUseProgram(ShaderProg->getProgramId());

@@ -5,6 +5,9 @@
 #ifndef INFORMATICHATS_SHADERS_H
 #define INFORMATICHATS_SHADERS_H
 
+#include "pxlui/ShaderProgram.h"
+#include <GL/glew.h>
+
 static const char* VERT_SHADER =
         R"(#version 300 es
 
@@ -43,6 +46,7 @@ uniform float uVignette;
 uniform bool uCrtEnabled;
 uniform float iTime;
 uniform vec2 iResolution;
+uniform float iResFactor;
 
 layout(location = 0) out vec4 oColor;
 
@@ -229,7 +233,7 @@ void main() {
 //        vec2 iResolution = vec2(float(size.x)/2., float(size.y)/2.);//vec2(640.0, 360.0);
         vec2 q = vTexCoord;
         vec2 fragCoord = vTexCoord;
-        vec2 uv = q;
+        vec2 uv = gl_FragCoord.xy/iResolution.xy;
         uv = curve(uv);
 
         // Outside of range is black
@@ -255,10 +259,10 @@ void main() {
         // Vignette
         col *= pow(16.0 * uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y), uVignette);
 
-        float scanline = floor(sin(gl_FragCoord.y * PI));
+//        float scanline = floor(sin(gl_FragCoord.y * PI * iResFactor * 2.0));
         // Scanlines
-        col *= 1.0 - scanline*0.2;
-//        col *= clamp(1.0 + uScanlineWidth * sin(uv.y * iResolution.y * 2.0 * PI), 1.0 - uScanlineIntensity, 1.0);
+//        col *= 1.0 - scanline*0.2;
+        col *= clamp(1.0 + uScanlineWidth * sin(uv.y * iResolution.y * PI), 1.0 - uScanlineIntensity, 1.0);
         oColor = col;
         return;
     }

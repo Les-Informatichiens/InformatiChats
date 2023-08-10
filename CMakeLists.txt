@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(
         ${PROJECT_NAME}
-         src/main.cpp
+        src/main.cpp
         src/console.h
         src/Chat.cpp
         src/Chat.h
@@ -23,6 +23,8 @@ add_executable(
         src/imgui_impl_glfw_pixel.cpp
         src/imgui_impl_glfw_pixel.h
         src/Shaders.h
+        src/Application.cpp
+        src/Application.h
 )
 
 if(MSVC)
