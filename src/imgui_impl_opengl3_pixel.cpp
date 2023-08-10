@@ -160,7 +160,6 @@
 #define IMGL3W_IMPL
 //#include "imgui_impl_opengl3_loader.h"
 #include <GL/glew.h>
-#include "BatchRenderer.h"
 #endif
 
 // Vertex arrays are not supported on ES2/WebGL1 unless Emscripten which uses an extension

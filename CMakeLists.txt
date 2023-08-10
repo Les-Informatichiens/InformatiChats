@@ -12,8 +12,6 @@ add_executable(
         src/imgui_impl_opengl3_loader.h
         src/imgui_impl_opengl3_pixel.cpp
         src/imgui_impl_opengl3_pixel.h
-        src/BatchRenderer.cpp
-        src/BatchRenderer.h
         src/pxlui/BatchRenderer.cpp
         src/pxlui/BatchRenderer.h
         src/pxlui/GLShaderUtil.cpp
