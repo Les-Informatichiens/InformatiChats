@@ -52,17 +52,10 @@
 class Application
 {
 public:
-    // TODO: add a constructor
-    explicit Application(){
+    explicit Application(Chat& chat);
+    void Run();
 
-        const std::string stunServer = "stun.l.google.com";
-        const std::string stunServerPort = "19302";
-        const std::string signalingServer = "51.79.86.30";
-        const std::string signalingServerPort = "51337";
-        ConnectionConfig config = { stunServer, stunServerPort, signalingServer, signalingServerPort };
-        chatClient = Chat(config);
-        Init();
-    };
+private:
     bool Init();
     void Update();
     void Uninit();
@@ -70,7 +63,7 @@ public:
 private:
     GLFWwindow* window{};
 
-    Chat chatClient;
+    Chat& chatClient;
     std::string selectedChat;
     bool addNewChatPrompt{};
 
@@ -89,7 +82,7 @@ private:
     bool showDemoWindow{};
     const float resFactor = 0.5f;
     static constexpr int maxNameLength{32};
-    PxlUI::ShaderProgram* ShaderProg;
+    PxlUI::ShaderProgram* ShaderProg{};
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
     char InputBuf[256]{};
