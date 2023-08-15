@@ -75,7 +75,7 @@ if(NOT TARGET trandslateor)
     CPMFindPackage(
         NAME "trandslateor"
         GITHUB_REPOSITORY "ThierryCantin-Demers/tr-and-slate-or"
-        GIT_TAG "v0.1"
+        GIT_TAG "v0.1.1"
     )
 endif()
 
@@ -83,6 +83,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE trandslateor)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
     message(STATUS "Copying translations to build directory")
+
+    # The translations directory is copied to the build directory so that the application can find them since it needs
+    # to be at the same level as the executable (with the base path).
+    # That means that to add translations, you need to modify the translations directory that is directly in the repo
+    # and not the one in the build directory. Otherwise, the changes will be overwritten and lost on cmake build.
     file(COPY translations DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
 # =====================================================================================================
