@@ -5,7 +5,24 @@ set(CMAKE_CXX_STANDARD 23)
 
 add_executable(
         ${PROJECT_NAME}
-         src/main.cpp
+        src/main.cpp
+        src/console.h
+        src/Chat.cpp
+        src/Chat.h
+        src/imgui_impl_opengl3_loader.h
+        src/imgui_impl_opengl3_pixel.cpp
+        src/imgui_impl_opengl3_pixel.h
+        src/pxlui/BatchRenderer.cpp
+        src/pxlui/BatchRenderer.h
+        src/pxlui/GLShaderUtil.cpp
+        src/pxlui/GLShaderUtil.h
+        src/pxlui/ShaderProgram.cpp
+        src/pxlui/ShaderProgram.h
+        src/imgui_impl_glfw_pixel.cpp
+        src/imgui_impl_glfw_pixel.h
+        src/Shaders.h
+        src/Application.cpp
+        src/Application.h
 )
 
 if(MSVC)
@@ -31,7 +48,7 @@ endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStatic)
 # =====================================================================================================
 
-# nlohmann-json ======================================================================================
+# nlohmann-json =======================================================================================
 if(NOT TARGET nlohmann_json::nlohmann_json)
     CPMFindPackage(
             NAME          "nlohmann_json"
@@ -41,11 +58,21 @@ if(NOT TARGET nlohmann_json::nlohmann_json)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
-# ====================================================================================================
+# =====================================================================================================
+
+# glm =================================================================================================
+CPMAddPackage(
+    NAME "glm"
+    GITHUB_REPOSITORY "g-truc/glm"
+    GIT_TAG "0.9.9.8"
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
+# =====================================================================================================
 
 # glew ================================================================================================
 if(NOT TARGET libglew_static)
-    CPMFindPackage(
+    CPMAddPackage(
         NAME "GLEW"
         GITHUB_REPOSITORY "Perlmint/glew-cmake"
         GIT_TAG "glew-cmake-2.2.0"
@@ -91,3 +118,8 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
     file(COPY translations DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
 # =====================================================================================================
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
+    message(STATUS "Copying res to build directory")
+    file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
+endif()
