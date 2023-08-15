@@ -60,6 +60,11 @@ private:
     void Update();
     void Uninit();
 
+    bool WindowInit(std::string& outGlslVersion);
+    void CreateUIContext();
+    void SetupRendererBackend(const std::string& glslVersion);
+    void SetupPostProcessing();
+
 private:
     GLFWwindow* window{};
 
@@ -79,14 +84,27 @@ private:
     // chat histories
     std::unordered_map<std::string, PeerData> historyMap;
 
+    char InputBuf[256]{};
+    ImVec4 clear_color;
+
     bool showDemoWindow{};
     const float resFactor = 0.5f;
     static constexpr int maxNameLength{32};
     PxlUI::ShaderProgram* ShaderProg{};
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
-    char InputBuf[256]{};
-    ImVec4 clear_color;
+
+    // rendering
+    struct CRTShaderData
+    {
+        float mBlur = 1.f;
+        float mCurvature = 0.f;
+        float mChroma = 0.15f;
+        float mScanlineWidth = 2.0f;
+        float mScanlineIntensity = 0.25f;
+        float mVignette = 0.15f;
+        float uCrtEnabled = true;
+    } mCrtShaderData;
 };
 
 

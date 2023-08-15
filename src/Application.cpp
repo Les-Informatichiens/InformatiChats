@@ -4,8 +4,9 @@ static void glfw_error_callback(int error, const char* description);
 void SetImGuiStyles();
 
 Application::Application(Chat &chat)
-        : chatClient(chat)
+    : chatClient(chat)
 {
+    memset(InputBuf, 0, sizeof(InputBuf));
 }
 
 void Application::Run()
@@ -33,59 +34,19 @@ void Application::Run()
 
 bool Application::Init()
 {
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
+    // create glfw window and get glsl shader version determined by opengl version
+    std::string glslVersion;
+    if (!WindowInit(glslVersion))
         return false;
 
-    // Decide GL+GLSL versions
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    const char* glsl_version = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-#elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
-    const char* glsl_version = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
-#else
-    // GL 3.0 + GLSL 130
-    const char* glsl_version = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-#endif
-
-    // Create window with graphics context
-    window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
-    if (window == nullptr)
-        return false;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable vsync
-
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_Portfolio_6x8.ttf", 8.0f);
-    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_IBM_CGA.ttf", 8.0f);
-
-    // Setup Dear ImGui style
-    SetImGuiStyles();
+    // create ImGui context and setup styles
+    CreateUIContext();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Pixel_Init(glsl_version);
-    PxlUI::BatchRenderer::init();
+    SetupRendererBackend(glslVersion);
 
-    memset(InputBuf, 0, sizeof(InputBuf));
+    // setup post processing resources
+    SetupPostProcessing();
 
     // message callback
     chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent& e) {
@@ -101,60 +62,6 @@ bool Application::Init()
             ++result.first->second.unreadMessageCount;
         }
     });
-
-    // rendering
-    struct CRTShaderData
-    {
-        float mBlur = 1.f;
-        float mCurvature = 0.f;
-        float mChroma = 0.15f;
-        float mScanlineWidth = 2.0f;
-        float mScanlineIntensity = 0.25f;
-        float mVignette = 0.15f;
-        float uCrtEnabled = true;
-    } mCrtShaderData;
-
-    ImGui_ImplGlfw_SetResFactor(resFactor);
-
-    ShaderProg = new PxlUI::ShaderProgram(VERT_SHADER, FRAG_SHADER);
-    glUseProgram(ShaderProg->getProgramId());
-    ShaderProg->bind();
-    auto wLocation = glGetUniformLocation(ShaderProg->getProgramId(), "uTextures");
-    int32_t wSamplers[32];
-    for (int32_t i = 0; i < 32; i++)
-    {
-        wSamplers[i] = i;
-    }
-    glUniform1iv(wLocation, 32, wSamplers);
-
-    ShaderProg->setFloat("uBlur", mCrtShaderData.mBlur);
-    ShaderProg->setFloat("uCurvature", mCrtShaderData.mCurvature);
-    ShaderProg->setFloat("uChroma", mCrtShaderData.mChroma);
-    ShaderProg->setFloat("uScanlineWidth", mCrtShaderData.mScanlineWidth);
-    ShaderProg->setFloat("uScanlineIntensity", mCrtShaderData.mScanlineIntensity);
-    ShaderProg->setFloat("uVignette", mCrtShaderData.mVignette);
-    ShaderProg->setInt("uCrtEnabled", false);
-    ShaderProg->setFloat("iResFactor", resFactor);
-
-    glCreateTextures(GL_TEXTURE_2D, 1, &FramebufferTexture);
-    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 100, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glGenFramebuffers(1, &Framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FramebufferTexture, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    // =========
 
     return true;
 }
@@ -436,6 +343,107 @@ void Application::Uninit()
 
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+bool Application::WindowInit(std::string& outGlslVersion)
+{
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+        return false;
+
+    // Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+    // GL ES 2.0 + GLSL 100
+    glslVersion = "#version 100";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+#elif defined(__APPLE__)
+    // GL 3.2 + GLSL 150
+    glslVersion = "#version 150";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+#else
+    // GL 3.0 + GLSL 130
+    outGlslVersion = "#version 130";
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
+//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
+#endif
+
+    // Create window with graphics context
+    window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    if (window == nullptr)
+        return false;
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1); // Enable vsync
+
+    return true;
+}
+
+void Application::CreateUIContext()
+{
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_Portfolio_6x8.ttf", 8.0f);
+    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_IBM_CGA.ttf", 8.0f);
+
+    // Setup Dear ImGui style
+    SetImGuiStyles();
+}
+
+void Application::SetupRendererBackend(const std::string& glslVersion)
+{
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
+    PxlUI::BatchRenderer::init();
+}
+
+void Application::SetupPostProcessing()
+{
+    ImGui_ImplGlfw_SetResFactor(resFactor);
+
+    ShaderProg = new PxlUI::ShaderProgram(VERT_SHADER, FRAG_SHADER);
+    glUseProgram(ShaderProg->getProgramId());
+    ShaderProg->bind();
+    auto wLocation = glGetUniformLocation(ShaderProg->getProgramId(), "uTextures");
+    int32_t wSamplers[32];
+    for (int32_t i = 0; i < 32; i++)
+    {
+        wSamplers[i] = i;
+    }
+    glUniform1iv(wLocation, 32, wSamplers);
+
+    ShaderProg->setFloat("uBlur", mCrtShaderData.mBlur);
+    ShaderProg->setFloat("uCurvature", mCrtShaderData.mCurvature);
+    ShaderProg->setFloat("uChroma", mCrtShaderData.mChroma);
+    ShaderProg->setFloat("uScanlineWidth", mCrtShaderData.mScanlineWidth);
+    ShaderProg->setFloat("uScanlineIntensity", mCrtShaderData.mScanlineIntensity);
+    ShaderProg->setFloat("uVignette", mCrtShaderData.mVignette);
+    ShaderProg->setInt("uCrtEnabled", false);
+    ShaderProg->setFloat("iResFactor", resFactor);
+
+    glCreateTextures(GL_TEXTURE_2D, 1, &FramebufferTexture);
+    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 100, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glGenFramebuffers(1, &Framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FramebufferTexture, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 static void glfw_error_callback(int error, const char* description)
