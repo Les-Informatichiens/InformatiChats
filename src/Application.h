@@ -48,12 +48,28 @@
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 
+struct DisplaySize
+{
+    int width;
+    int height;
+};
 
 class Application
 {
 public:
     explicit Application(Chat& chat);
     void Run();
+
+private:
+    void UpdateMainPanel();
+    void UpdateChannelsPanel();
+    void UpdateChatPanel();
+    void UpdateLoginPopup();
+    void UpdateUserInfoPanel();
+
+    void PrepareNextFrame();
+    void RenderFrame();
+    void ApplyPostProcessing();
 
 private:
     bool Init();
@@ -94,6 +110,8 @@ private:
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
 
+    char UsernameToConnectBuf[maxNameLength];
+
     // rendering
     struct CRTShaderData
     {
@@ -105,6 +123,8 @@ private:
         float mVignette = 0.15f;
         float uCrtEnabled = true;
     } mCrtShaderData;
+
+    DisplaySize frameDisplaySize;
 };
 
 

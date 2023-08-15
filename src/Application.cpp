@@ -1,12 +1,15 @@
 #include "Application.h"
+#include "TranslationManager.h"
 
 static void glfw_error_callback(int error, const char* description);
 void SetImGuiStyles();
 
 Application::Application(Chat &chat)
-    : chatClient(chat)
+        : chatClient(chat)
+        , frameDisplaySize()
 {
     memset(InputBuf, 0, sizeof(InputBuf));
+    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
 }
 
 void Application::Run()
@@ -75,263 +78,19 @@ void Application::Update()
     // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
     glfwPollEvents();
 
-    int display_w, display_h;
-    int scaled_display_w, scaled_display_h;
-    glfwGetFramebufferSize(window, &display_w, &display_h);
+    // Prepare the next opengl frame
+    PrepareNextFrame();
 
-    scaled_display_w = display_w * resFactor;
-    scaled_display_h = display_h * resFactor;
+    // Prepares the main pannel with all child panels for rendering
+    UpdateMainPanel();
 
-    // rendering new frame
-    ShaderProg->setInt("uCrtEnabled", false);
-    ShaderProg->setFloat2("iResolution", { display_w, display_h });
-//        ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
-
-    glUseProgram(ShaderProg->getProgramId());
-
-    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scaled_display_w, scaled_display_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
-    glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
-
-    glViewport(0, 0, scaled_display_w, scaled_display_h);
-
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_Pixel_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-
-    ImGui::NewFrame();
-
-#ifdef IMGUI_HAS_VIEWPORT
-    ImGuiViewport* viewport = nullptr;
-    viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-#else
-    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
-    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
-#endif
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::Begin("main_shit", (bool*)0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
-
-    ImGui::BeginMainMenuBar();
-    ImGui::Checkbox("Demo", &showDemoWindow);
-    ImGui::EndMainMenuBar();
-
-    if (chatClient.IsConnected())
-    {
-        ImGui::BeginGroup();
-        ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
-        if (ImGui::Button("Add new user"))
-        {
-            addNewChatPrompt = true;
-        }
-        if (addNewChatPrompt)
-        {
-            ImGui::OpenPopup("New chat");
-            if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-            {
-                ImGui::Text("Enter a username");
-                ImGui::Separator();
-                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-                char buf[maxNameLength];
-                memset(buf, 0, maxNameLength*sizeof(char));
-                if (ImGui::InputTextWithHint("##username", "otismusia...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
-                {
-                    chatClient.AttemptToConnectToPeer(buf);
-                    addNewChatPrompt = false;
-                }
-                ImGui::PopStyleVar();
-
-                ImGui::EndPopup();
-            }
-        }
-        ImGui::Separator();
-
-        // draw chat names
-        for (const auto& peerConnection : chatClient.GetPeerConnections())
-        {
-            const std::string& peerId = peerConnection.first;
-            bool isSelected = selectedChat == peerId;
-
-            rtc::PeerConnection::State state = peerConnection.second->state();
-
-            std::string displayText = peerId;
-            ImVec4 color;
-            bool hasColor = false;
-            switch (state) {
-                case rtc::PeerConnection::State::New:
-                    break;
-                case rtc::PeerConnection::State::Connecting: {
-                    hasColor = true;
-                    color = ImVec4(1.0f, 0.9f, 0.2f, 1.0f);
-                    displayText += " [Connecting...]";
-                    break;
-                }
-                case rtc::PeerConnection::State::Connected:
-                    break;
-                case rtc::PeerConnection::State::Disconnected:
-                {
-                    hasColor = true;
-                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
-                    displayText += " [Disconnected]";
-                    break;
-                }
-                case rtc::PeerConnection::State::Failed: {
-                    hasColor = true;
-                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
-                    displayText += " [Connection failed]";
-                    break;
-                }
-                case rtc::PeerConnection::State::Closed: {
-                    hasColor = true;
-                    color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
-                    displayText += " [Connection closed]";
-                    break;
-                }
-                default: {
-                    hasColor = false;
-                    break;
-                }
-            }
-
-            auto peerDataIt = historyMap.find(peerId);
-            PeerData* pPeerData = nullptr;
-            if (peerDataIt != historyMap.end())
-            {
-                pPeerData = &peerDataIt->second;
-            }
-
-            if (pPeerData != nullptr)
-            {
-                if (isSelected)
-                {
-                    pPeerData->unreadMessageCount = 0;
-                }
-                if (pPeerData->unreadMessageCount > 0)
-                {
-                    displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount, pPeerData->unreadMessageCount == 1 ? "" : "s");
-                }
-            }
-
-            if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
-            if (ImGui::Selectable(displayText.c_str(), isSelected))
-            {
-                if (pPeerData != nullptr)
-                    console.SetLogHistory(pPeerData->history);
-                selectedChat = peerId;
-            }
-            if (hasColor) ImGui::PopStyleColor();
-
-        }
-        ImGui::EndChild();
-
-        ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
-        ImGui::Text("%s", chatClient.GetUsername().c_str());
-
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-        auto time = glfwGetTime();
-        for (double i = 0; i < 20; ++i) {
-            ImVec2 p1;
-            p1.x = ImGui::GetCursorScreenPos().x + i*2,
-                    p1.y = ImGui::GetCursorScreenPos().y + 5;
-            ImVec2 p2;
-            p2.x = ImGui::GetCursorScreenPos().x + i*2,
-                    p2.y = ImGui::GetCursorScreenPos().y + 5*glm::sin(time+i/3.0) + 5;
-            draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
-
-        }
-
-        ImGui::EndChild();
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-        ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
-        console.Draw("Demo chat", &consoleOpen);
-
-        // Command-line
-        bool reclaim_focus = false;
-        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void*)&console))
-        {
-            char* s = InputBuf;
-            Strtrim(s);
-            if (s[0])
-            {
-                // duplicate code, pls clean up
-                auto result = historyMap.insert({ selectedChat, {} });
-                result.first->second.history.push_back(Strdup(std::format("[{}] {}", chatClient.GetUsername(), s).c_str()));
-
-                console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
-                chatClient.SendMessageToPeer(selectedChat, s);
-            }
-            strcpy(s, "");
-            reclaim_focus = true;
-        }
-
-        // Auto-focus on window apparition
-        ImGui::SetItemDefaultFocus();
-        if (reclaim_focus)
-            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
-
-        ImGui::EndChild();
-    }
-    else
-    {
-        ImGui::OpenPopup("Login");
-        if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-        {
-            ImGui::Text("Enter your username");
-            ImGui::Separator();
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-            char buf[maxNameLength];
-            memset(buf, 0, maxNameLength*sizeof(char));
-            if (ImGui::InputTextWithHint("##username", "otisma...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
-            {
-                chatClient.AttemptConnectionWithUsername(buf);
-            }
-            ImGui::PopStyleVar();
-
-            ImGui::EndPopup();
-        }
-    }
-
-    ImGui::End();
-    ImGui::PopStyleVar();
-
-    if (showDemoWindow)
-        ImGui::ShowDemoWindow(&showDemoWindow);
-
-    // Rendering
-    ImGui::Render();
-
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
-
-    // draw the framebuffer texture onto the screen
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, display_w, display_h);
-    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+    // Render the frame
+    RenderFrame();
 
     // draw the framebuffer texture onto the screen with the post processing shader
-    ShaderProg->setInt("uCrtEnabled", true);
-
-    PxlUI::BatchRenderer::beginBatch();
-
-    PxlUI::BatchRenderer::drawScreenTex(FramebufferTexture);
-    PxlUI::BatchRenderer::endBatch();
-    PxlUI::BatchRenderer::flush();
+    ApplyPostProcessing();
 
     glfwSwapBuffers(window);
-
 }
 
 void Application::Uninit()
@@ -343,6 +102,285 @@ void Application::Uninit()
 
     glfwDestroyWindow(window);
     glfwTerminate();
+}
+
+void Application::UpdateMainPanel() {
+#ifdef IMGUI_HAS_VIEWPORT
+    ImGuiViewport* viewport = nullptr;
+    viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+#else
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+    ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
+#endif
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::Begin("Root panel", (bool*)0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
+
+    // ImGui demo button and panel
+    ImGui::BeginMainMenuBar();
+    ImGui::Checkbox("Demo", &showDemoWindow);
+    ImGui::EndMainMenuBar();
+
+
+    // If the client is not connected to the server yet, ask the user to login.
+    // Show the main application if connected.
+    if (chatClient.IsConnected())
+    {
+        if (showDemoWindow)
+            ImGui::ShowDemoWindow(&showDemoWindow);
+
+        // Current layout:
+        //  Channels    Chat
+        //  UserInfo    Chat
+
+        // Left Column
+        ImGui::BeginGroup();
+        UpdateChannelsPanel();
+        UpdateUserInfoPanel();
+        ImGui::EndGroup();
+
+        // Right Column
+        ImGui::SameLine();
+        UpdateChatPanel();
+    }
+    else
+    {
+        UpdateLoginPopup();
+    }
+
+    ImGui::End();
+    ImGui::PopStyleVar();
+}
+
+void Application::UpdateChannelsPanel() {
+    ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+
+    if (ImGui::Button("Add new user"))
+    {
+        addNewChatPrompt = true;
+    }
+    if (addNewChatPrompt)
+    {
+        ImGui::OpenPopup("New chat");
+        if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
+            ImGui::Text("Enter a username");
+            ImGui::Separator();
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
+            ImGui::PopStyleVar();
+
+            bool addNewChatPressed = ImGui::Button("Add new chat");
+
+            if ( enterPressed || addNewChatPressed )
+            {
+                if(UsernameToConnectBuf[0] != '\0')
+                {
+                    chatClient.AttemptToConnectToPeer(UsernameToConnectBuf);
+                    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
+                    addNewChatPrompt = false;
+                }
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cancel")) {
+                addNewChatPrompt = false;
+            }
+
+
+            ImGui::EndPopup();
+        }
+    }
+    ImGui::Separator();
+
+    // draw chat names
+    for (const auto& peerConnection : chatClient.GetPeerConnections())
+    {
+        const std::string& peerId = peerConnection.first;
+        bool isSelected = selectedChat == peerId;
+
+        rtc::PeerConnection::State state = peerConnection.second->state();
+
+        std::string displayText = peerId;
+        ImVec4 color;
+        bool hasColor = false;
+        switch (state) {
+            case rtc::PeerConnection::State::New:
+                break;
+            case rtc::PeerConnection::State::Connecting: {
+                hasColor = true;
+                color = ImVec4(1.0f, 0.9f, 0.2f, 1.0f);
+                displayText += " [Connecting...]";
+                break;
+            }
+            case rtc::PeerConnection::State::Connected:
+                break;
+            case rtc::PeerConnection::State::Disconnected:
+            {
+                hasColor = true;
+                color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                displayText += " [Disconnected]";
+                break;
+            }
+            case rtc::PeerConnection::State::Failed: {
+                hasColor = true;
+                color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                displayText += " [Connection failed]";
+                break;
+            }
+            case rtc::PeerConnection::State::Closed: {
+                hasColor = true;
+                color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
+                displayText += " [Connection closed]";
+                break;
+            }
+            default: {
+                hasColor = false;
+                break;
+            }
+        }
+
+        auto peerDataIt = historyMap.find(peerId);
+        PeerData* pPeerData = nullptr;
+        if (peerDataIt != historyMap.end())
+        {
+            pPeerData = &peerDataIt->second;
+        }
+
+        if (pPeerData != nullptr)
+        {
+            if (isSelected)
+            {
+                pPeerData->unreadMessageCount = 0;
+            }
+            if (pPeerData->unreadMessageCount > 0)
+            {
+                displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount, pPeerData->unreadMessageCount == 1 ? "" : "s");
+            }
+        }
+
+        if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
+        if (ImGui::Selectable(displayText.c_str(), isSelected))
+        {
+            if (pPeerData != nullptr)
+                console.SetLogHistory(pPeerData->history);
+            selectedChat = peerId;
+        }
+        if (hasColor) ImGui::PopStyleColor();
+
+    }
+
+    ImGui::EndChild();
+}
+
+void Application::UpdateChatPanel() {
+    ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
+
+    console.Draw("Demo chat", &consoleOpen);
+
+    // Command-line
+    bool reclaim_focus = false;
+    ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void*)&console))
+    {
+        char* s = InputBuf;
+        Strtrim(s);
+        if (s[0])
+        {
+            // duplicate code, pls clean up
+            auto result = historyMap.insert({ selectedChat, {} });
+            result.first->second.history.push_back(Strdup(std::format("[{}] {}", chatClient.GetUsername(), s).c_str()));
+
+            console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
+            chatClient.SendMessageToPeer(selectedChat, s);
+        }
+        strcpy(s, "");
+        reclaim_focus = true;
+    }
+
+    // Auto-focus on window apparition
+    ImGui::SetItemDefaultFocus();
+    if (reclaim_focus)
+        ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+
+    ImGui::EndChild();
+}
+
+void Application::UpdateLoginPopup() {
+    ImGui::OpenPopup("Login");
+    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::Text("Enter your username");
+        ImGui::Separator();
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+        char buf[maxNameLength];
+        memset(buf, 0, maxNameLength*sizeof(char));
+        if (ImGui::InputTextWithHint("##username", "otisma...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
+        {
+            chatClient.AttemptConnectionWithUsername(buf);
+        }
+        ImGui::PopStyleVar();
+
+        ImGui::EndPopup();
+    }
+}
+
+void Application::UpdateUserInfoPanel() {
+    ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+
+    ImGui::Text("%s", chatClient.GetUsername().c_str());
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    auto time = glfwGetTime();
+    for (double i = 0; i < 20; ++i) {
+        ImVec2 p1;
+        p1.x = ImGui::GetCursorScreenPos().x + i*2,
+                p1.y = ImGui::GetCursorScreenPos().y + 5;
+        ImVec2 p2;
+        p2.x = ImGui::GetCursorScreenPos().x + i*2,
+                p2.y = ImGui::GetCursorScreenPos().y + 5*glm::sin(time+i/3.0) + 5;
+        draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
+
+    }
+
+    ImGui::EndChild();
+}
+
+void Application::PrepareNextFrame() {
+    int scaledDisplayWidth, scaledDisplayHeight;
+    glfwGetFramebufferSize(window, &(this->frameDisplaySize.width), &(this->frameDisplaySize.height));
+
+    scaledDisplayWidth = this->frameDisplaySize.width * resFactor;
+    scaledDisplayHeight = this->frameDisplaySize.height * resFactor;
+
+    // rendering new frame
+    ShaderProg->setInt("uCrtEnabled", false);
+    ShaderProg->setFloat2("iResolution", { this->frameDisplaySize.width, this->frameDisplaySize.height });
+//        ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
+
+    glUseProgram(ShaderProg->getProgramId());
+
+    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scaledDisplayWidth, scaledDisplayHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+    glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
+
+    glViewport(0, 0, scaledDisplayWidth, scaledDisplayHeight);
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_Pixel_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+
+    ImGui::NewFrame();
 }
 
 bool Application::WindowInit(std::string& outGlslVersion)
@@ -444,6 +482,30 @@ void Application::SetupPostProcessing()
     glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FramebufferTexture, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Application::RenderFrame() {
+    ImGui::Render();
+
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
+
+    // draw the framebuffer texture onto the screen
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, this->frameDisplaySize.width, this->frameDisplaySize.height);
+    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+}
+
+void Application::ApplyPostProcessing() {
+    ShaderProg->setInt("uCrtEnabled", true);
+
+    PxlUI::BatchRenderer::beginBatch();
+
+    PxlUI::BatchRenderer::drawScreenTex(FramebufferTexture);
+    PxlUI::BatchRenderer::endBatch();
+    PxlUI::BatchRenderer::flush();
 }
 
 static void glfw_error_callback(int error, const char* description)
