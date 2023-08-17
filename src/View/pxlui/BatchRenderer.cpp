@@ -1,6 +1,6 @@
 #include "BatchRenderer.h"
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 #include "ShaderProgram.h"
 

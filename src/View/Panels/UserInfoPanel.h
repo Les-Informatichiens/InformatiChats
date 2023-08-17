@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "IPanel.h"
-#include "../../Chat.h"
+#include "../../Model/Chat.h"
 
 class UserInfoPanel : public IPanel {
 public:

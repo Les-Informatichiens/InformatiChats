@@ -4,7 +4,7 @@
 #include <memory>
 #include "IView.h"
 #include "Panels/IPanel.h"
-#include "../Chat.h"
+#include "../Model/Chat.h"
 
 class View: public IView {
 public:

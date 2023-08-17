@@ -4,7 +4,7 @@
 
 #include "Chat.h"
 
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 
 Chat::Chat(const ConnectionConfig& config)
     : rtcConfig()

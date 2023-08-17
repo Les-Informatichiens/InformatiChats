@@ -6,21 +6,21 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
-        src/console.h
-        src/Chat.cpp
-        src/Chat.h
-        src/imgui_impl_opengl3_loader.h
-        src/imgui_impl_opengl3_pixel.cpp
-        src/imgui_impl_opengl3_pixel.h
-        src/pxlui/BatchRenderer.cpp
-        src/pxlui/BatchRenderer.h
-        src/pxlui/GLShaderUtil.cpp
-        src/pxlui/GLShaderUtil.h
-        src/pxlui/ShaderProgram.cpp
-        src/pxlui/ShaderProgram.h
-        src/imgui_impl_glfw_pixel.cpp
-        src/imgui_impl_glfw_pixel.h
-        src/Shaders.h
+        src/View/console.h
+        src/Model/Chat.cpp
+        src/Model/Chat.h
+        src/View/imgui_impl_opengl3_loader.h
+        src/View/imgui_impl_opengl3_pixel.cpp
+        src/View/imgui_impl_opengl3_pixel.h
+        src/View/pxlui/BatchRenderer.cpp
+        src/View/pxlui/BatchRenderer.h
+        src/View/pxlui/GLShaderUtil.cpp
+        src/View/pxlui/GLShaderUtil.h
+        src/View/pxlui/ShaderProgram.cpp
+        src/View/pxlui/ShaderProgram.h
+        src/View/imgui_impl_glfw_pixel.cpp
+        src/View/imgui_impl_glfw_pixel.h
+        src/View/Shaders.h
         src/Application.cpp
         src/Application.h
         src/View/IView.h

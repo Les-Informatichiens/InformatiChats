@@ -6,7 +6,7 @@
 #define INFORMATICHATS_SHADERS_H
 
 #include "pxlui/ShaderProgram.h"
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 static const char* VERT_SHADER =
         R"(#version 300 es

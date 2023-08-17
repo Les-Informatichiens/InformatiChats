@@ -1,9 +1,9 @@
 #include "ShaderProgram.h"
 #include "GLShaderUtil.h"
 
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/gtc/type_ptr.hpp"
 
-#include <GL/glew.h>
+#include "GL/glew.h"
 
 PxlUI::ShaderProgram::ShaderProgram(const std::string& iFilePath)
     : mFilePath(iFilePath), mProgramId(0)

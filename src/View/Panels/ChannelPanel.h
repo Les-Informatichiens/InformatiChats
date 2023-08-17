@@ -2,7 +2,7 @@
 
 #include "IPanel.h"
 #include "imgui.h"
-#include "../../Chat.h"
+#include "../../Model/Chat.h"
 #include <unordered_map>
 
 class ChannelPanel: public IPanel {
@@ -24,6 +24,7 @@ public:
     std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
     Chat& chatClient;
+    static constexpr int maxNameLength{32};
 
 
 };

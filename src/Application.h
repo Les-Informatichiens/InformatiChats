@@ -10,27 +10,27 @@
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 #include <imgui.h>
 //#include <backends/imgui_impl_glfw.h>
-#include "imgui_impl_glfw_pixel.h"
+#include "View/imgui_impl_glfw_pixel.h"
 //#include <backends/imgui_impl_opengl3.h>
-#include "imgui_impl_opengl3_pixel.h"
+#include "View/imgui_impl_opengl3_pixel.h"
 #include <cstdio>
 
-#include "Chat.h"
+#include "Model/Chat.h"
 
 #include <cstdio>
 #include <unordered_map>
 #include <memory>
 
-#include "Shaders.h"
+#include "View/Shaders.h"
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #else
 #include <GL/glew.h>
-#include "pxlui/ShaderProgram.h"
-#include "pxlui/BatchRenderer.h"
-#include "pxlui/GLShaderUtil.h"
+#include "View/pxlui/ShaderProgram.h"
+#include "View/pxlui/BatchRenderer.h"
+#include "View/pxlui/GLShaderUtil.h"
 #include "View/IView.h"
 
 #endif

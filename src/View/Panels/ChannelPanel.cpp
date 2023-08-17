@@ -25,7 +25,6 @@ void ChannelPanel::Update() {
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-            static constexpr int maxNameLength{32};
             char UsernameToConnectBuf[maxNameLength]{0};
             bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
