@@ -23,6 +23,16 @@ add_executable(
         src/Shaders.h
         src/Application.cpp
         src/Application.h
+        src/View/IView.h
+        src/View/View.cpp
+        src/View/View.h
+        src/View/Panels/IPanel.h
+        src/View/Panels/ChatPanel.cpp
+        src/View/Panels/ChatPanel.h
+        src/View/Panels/ChannelPanel.cpp
+        src/View/Panels/ChannelPanel.h
+        src/View/Panels/VideoPanel.cpp
+        src/View/Panels/VideoPanel.h
 )
 
 if(MSVC)
