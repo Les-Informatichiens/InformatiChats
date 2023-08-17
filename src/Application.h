@@ -31,6 +31,7 @@
 #include "pxlui/ShaderProgram.h"
 #include "pxlui/BatchRenderer.h"
 #include "pxlui/GLShaderUtil.h"
+#include "View/IView.h"
 
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
@@ -57,15 +58,13 @@ struct DisplaySize
 class Application
 {
 public:
-    explicit Application(Chat& chat);
+    Application(Chat &chat,const IView& view);
     void Run();
 
 private:
     void UpdateMainPanel();
-    void UpdateChannelsPanel();
     void UpdateChatPanel();
     void UpdateLoginPopup();
-    void UpdateUserInfoPanel();
 
     void PrepareNextFrame();
     void RenderFrame();
@@ -125,6 +124,7 @@ private:
     } mCrtShaderData;
 
     DisplaySize frameDisplaySize;
+    const IView& mainView;
 };
 
 

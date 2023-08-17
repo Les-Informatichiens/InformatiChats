@@ -33,6 +33,10 @@ add_executable(
         src/View/Panels/ChannelPanel.h
         src/View/Panels/VideoPanel.cpp
         src/View/Panels/VideoPanel.h
+        src/Model/Model.cpp
+        src/Model/Model.h
+        src/View/Panels/UserInfoPanel.cpp
+        src/View/Panels/UserInfoPanel.h
 )
 
 if(MSVC)

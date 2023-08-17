@@ -18,20 +18,20 @@ View::View(std::vector<IPanel>& panels_)
         this->panels.emplace_back(panel);
     }
 }
-
 /**
  * @brief Draws all the panels in the view
  */
-void View::Draw() {
+void View::Draw() const{
     for (IPanel& panel : this->panels) {
         panel.Draw();
     }
 }
-
 /**
  * @brief Adds a panel to the view
  * @param panel_ panel to be added
  */
-void View::AddPanel(IPanel& panel_) {
-    this->panels.emplace_back(panel_);
+
+void View::AddPanel(IPanel& panel) {
+    this->panels.emplace_back(panel);
 }
+

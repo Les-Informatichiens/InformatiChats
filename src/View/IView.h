@@ -2,8 +2,9 @@
 
 #include "Panels/IPanel.h"
 
-class IView{
+ class IView{
 public:
-    virtual void Draw() = 0;
+    virtual void Draw() const = 0;
+    virtual ~IView() = default;
     virtual void AddPanel(IPanel& panel) = 0;
 };
