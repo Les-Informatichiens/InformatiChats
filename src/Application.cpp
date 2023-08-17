@@ -134,18 +134,7 @@ void Application::UpdateMainPanel() {
         if (showDemoWindow)
             ImGui::ShowDemoWindow(&showDemoWindow);
 
-        // Current layout:
-        //  Channels    Chat
-        //  UserInfo    Chat
-
-        // Left Column
-        ImGui::BeginGroup();
         mainView.Draw();
-        ImGui::EndGroup();
-
-        // Right Column
-        ImGui::SameLine();
-        UpdateChatPanel();
     }
     else
     {
@@ -154,39 +143,6 @@ void Application::UpdateMainPanel() {
 
     ImGui::End();
     ImGui::PopStyleVar();
-}
-
-void Application::UpdateChatPanel() {
-    ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
-
-    console.Draw("Demo chat", &consoleOpen);
-
-    // Command-line
-    bool reclaim_focus = false;
-    ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void*)&console))
-    {
-        char* s = InputBuf;
-        Strtrim(s);
-        if (s[0])
-        {
-            // duplicate code, pls clean up
-            auto result = historyMap.insert({ selectedChat, {} });
-            result.first->second.history.push_back(Strdup(std::format("[{}] {}", chatClient.GetUsername(), s).c_str()));
-
-            console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
-            chatClient.SendMessageToPeer(selectedChat, s);
-        }
-        strcpy(s, "");
-        reclaim_focus = true;
-    }
-
-    // Auto-focus on window apparition
-    ImGui::SetItemDefaultFocus();
-    if (reclaim_focus)
-        ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
-
-    ImGui::EndChild();
 }
 
 void Application::UpdateLoginPopup() {

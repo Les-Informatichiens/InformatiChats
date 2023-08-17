@@ -6,6 +6,8 @@
 ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {}
 
 void ChannelPanel::Update() {
+    ImGui::BeginGroup();
+
     ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
     if (ImGui::Button("Add new user"))

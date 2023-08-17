@@ -63,7 +63,6 @@ public:
 
 private:
     void UpdateMainPanel();
-    void UpdateChatPanel();
     void UpdateLoginPopup();
 
     void PrepareNextFrame();

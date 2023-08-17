@@ -10,6 +10,7 @@
 UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient) {  }
 
     void UserInfoPanel::Update() {
+
         ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
         ImGui::Text("%s", chatClient.GetUsername().c_str());
@@ -29,6 +30,8 @@ UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient) {  }
         }
 
         ImGui::EndChild();
+
+        ImGui::EndGroup();
     }
 
     bool UserInfoPanel::IsVisible() {
