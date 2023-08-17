@@ -9,8 +9,6 @@ Application::Application(Chat &chat,const IView& view)
         , frameDisplaySize()
         , mainView(view)
 {
-    memset(InputBuf, 0, sizeof(InputBuf));
-    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
 
 }
 

@@ -24,4 +24,6 @@ public:
     std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
     Chat& chatClient;
+
+
 };

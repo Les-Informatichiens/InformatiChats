@@ -3,7 +3,9 @@
 #include "imgui.h"
 #include "rtc/peerconnection.hpp"
 
-ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {}
+ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {
+//    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
+}
 
 void ChannelPanel::Update() {
     ImGui::BeginGroup();
@@ -23,8 +25,8 @@ void ChannelPanel::Update() {
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-            char* UsernameToConnectBuf{};
-            const auto maxNameLength{32};
+            static constexpr int maxNameLength{32};
+            char UsernameToConnectBuf[maxNameLength]{0};
             bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
 
@@ -35,7 +37,7 @@ void ChannelPanel::Update() {
                 if(UsernameToConnectBuf[0] != '\0')
                 {
                     chatClient.AttemptToConnectToPeer(UsernameToConnectBuf);
-                    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
+                    memset(UsernameToConnectBuf, 0, sizeof(UsernameToConnectBuf));
                     addNewChatPrompt = false;
                 }
             }
