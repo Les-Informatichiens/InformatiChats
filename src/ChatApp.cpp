@@ -5,10 +5,8 @@ static void glfw_error_callback(int error, const char* description);
 void SetImGuiStyles();
 
 ChatApp::ChatApp(Chat &chat)
-        : chatClient(chat)
-        , frameDisplaySize()
+    : chatClient(chat), frameDisplaySize()
 {
-
 }
 
 void ChatApp::Run()
@@ -103,7 +101,8 @@ void ChatApp::Uninit()
     glfwTerminate();
 }
 
-void ChatApp::UpdateMainPanel() {
+void ChatApp::UpdateMainPanel()
+{
 #ifdef IMGUI_HAS_VIEWPORT
     ImGuiViewport* viewport = nullptr;
     viewport = ImGui::GetMainViewport();
@@ -131,7 +130,8 @@ void ChatApp::UpdateMainPanel() {
         if (showDemoWindow)
             ImGui::ShowDemoWindow(&showDemoWindow);
 
-        for (const auto& view: views) {
+        for (const auto& view: views)
+        {
             view.get().Draw();
         }
     }
@@ -144,7 +144,8 @@ void ChatApp::UpdateMainPanel() {
     ImGui::PopStyleVar();
 }
 
-void ChatApp::UpdateLoginPopup() {
+void ChatApp::UpdateLoginPopup()
+{
     ImGui::OpenPopup("Login");
     if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
@@ -164,7 +165,8 @@ void ChatApp::UpdateLoginPopup() {
     }
 }
 
-void ChatApp::PrepareNextFrame() {
+void ChatApp::PrepareNextFrame()
+{
     int scaledDisplayWidth, scaledDisplayHeight;
     glfwGetFramebufferSize(window, &(this->frameDisplaySize.width), &(this->frameDisplaySize.height));
 
@@ -295,7 +297,8 @@ void ChatApp::SetupPostProcessing()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ChatApp::RenderFrame() {
+void ChatApp::RenderFrame()
+{
     ImGui::Render();
 
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
@@ -309,7 +312,8 @@ void ChatApp::RenderFrame() {
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
 }
 
-void ChatApp::ApplyPostProcessing() {
+void ChatApp::ApplyPostProcessing()
+{
     ShaderProg->setInt("uCrtEnabled", true);
 
     PxlUI::BatchRenderer::beginBatch();
@@ -319,7 +323,8 @@ void ChatApp::ApplyPostProcessing() {
     PxlUI::BatchRenderer::flush();
 }
 
-void ChatApp::addView(IView &view) {
+void ChatApp::addView(IView &view)
+{
     views.emplace_back(view);
 }
 

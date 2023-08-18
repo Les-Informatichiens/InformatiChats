@@ -1,8 +1,9 @@
 #pragma once
 
-#include "../Panels/IPanel.h"
+#include <View/Panels/IPanel.h>
 
- class IView{
+class IView
+{
 public:
     virtual void Draw() const = 0;
     virtual void AddPanel(IPanel& panel) = 0;

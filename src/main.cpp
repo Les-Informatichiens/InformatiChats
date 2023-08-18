@@ -1,11 +1,11 @@
 #include "ChatApp.h"
-#include "View/Panels/ChannelPanel.h"
-#include "View/Panels/UserInfoPanel.h"
-#include "View/Panels/ChatPanel.h"
-#include "Controller/ChannelController.h"
-#include "Controller/ChatController.h"
-#include "View/Views/ChatView.h"
-#include "View/Views/ChannelView.h"
+#include <View/Panels/ChannelPanel.h>
+#include <View/Panels/UserInfoPanel.h>
+#include <View/Panels/ChatPanel.h>
+#include <Controller/ChannelController.h>
+#include <Controller/ChatController.h>
+#include <View/Views/ChatView.h>
+#include <View/Views/ChannelView.h>
 
 // Main code
 int main(int, char**)

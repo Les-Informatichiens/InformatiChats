@@ -2,7 +2,8 @@
 
 #include "IPanel.h"
 
-class VideoPanel: IPanel {
+class VideoPanel: IPanel
+{
 public:
     void Draw() override;
     void Update() override;

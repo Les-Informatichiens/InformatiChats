@@ -6,7 +6,8 @@
 #define INFORMATICHATS_MODEL_H
 
 
-class Model {
+class Model
+{
 public:
     Model();
 };
