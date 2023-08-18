@@ -24,6 +24,7 @@ public:
     std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
     Chat& chatClient;
+    ExampleAppConsole console;
     static constexpr int maxNameLength{32};
 
 

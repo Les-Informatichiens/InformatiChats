@@ -1,0 +1,14 @@
+//
+// Created by Jean on 8/18/2023.
+//
+
+#ifndef INFORMATICHATS_CHATCONTROLLER_H
+#define INFORMATICHATS_CHATCONTROLLER_H
+
+
+class ChatController {
+
+};
+
+
+#endif //INFORMATICHATS_CHATCONTROLLER_H

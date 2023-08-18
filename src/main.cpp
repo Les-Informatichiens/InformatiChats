@@ -1,8 +1,11 @@
-#include "Application.h"
-#include "View/View.h"
+#include "ChatApp.h"
 #include "View/Panels/ChannelPanel.h"
 #include "View/Panels/UserInfoPanel.h"
 #include "View/Panels/ChatPanel.h"
+#include "Controller/ChannelController.h"
+#include "Controller/ChatController.h"
+#include "View/Views/ChatView.h"
+#include "View/Views/ChannelView.h"
 
 // Main code
 int main(int, char**)
@@ -15,18 +18,26 @@ int main(int, char**)
     ConnectionConfig config = { stunServer, stunServerPort, signalingServer, signalingServerPort };
     Chat chatClient(config);
 
+    //init controller
+    ChatController chatController = ChatController();
+    ChannelController channelController = ChannelController();
+
     //init view
-    View view = View();
+    ChatView chatView = ChatView(chatController);
+    ChannelView channelView = ChannelView(channelController);
+
     auto channelPanel = ChannelPanel(chatClient);
     auto userInfoPanel = UserInfoPanel(chatClient);
     auto chatPanel = ChatPanel(chatClient);
 
-    view.AddPanel(channelPanel);
-    view.AddPanel(userInfoPanel);
-    view.AddPanel(chatPanel);
+    chatView.AddPanel(chatPanel);
+    channelView.AddPanel(channelPanel);
+    channelView.AddPanel(userInfoPanel);
 
-    //injection des dependances dans l'app
-    Application app(chatClient, view);
+    //init app
+    ChatApp app(chatClient);
+    app.addView(channelView);
+    app.addView(chatView);
 
     app.Run();
 

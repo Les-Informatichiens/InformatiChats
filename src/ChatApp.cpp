@@ -1,18 +1,17 @@
-#include "Application.h"
+#include "ChatApp.h"
 #include "TranslationManager.h"
 
 static void glfw_error_callback(int error, const char* description);
 void SetImGuiStyles();
 
-Application::Application(Chat &chat,const IView& view)
+ChatApp::ChatApp(Chat &chat)
         : chatClient(chat)
         , frameDisplaySize()
-        , mainView(view)
 {
 
 }
 
-void Application::Run()
+void ChatApp::Run()
 {
     this->Init();
 
@@ -35,7 +34,7 @@ void Application::Run()
     this->Uninit();
 }
 
-bool Application::Init()
+bool ChatApp::Init()
 {
     // create glfw window and get glsl shader version determined by opengl version
     std::string glslVersion;
@@ -69,7 +68,7 @@ bool Application::Init()
     return true;
 }
 
-void Application::Update()
+void ChatApp::Update()
 {
     // Poll and handle events (inp      uts, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -93,7 +92,7 @@ void Application::Update()
     glfwSwapBuffers(window);
 }
 
-void Application::Uninit()
+void ChatApp::Uninit()
 {
     // Cleanup
     ImGui_ImplOpenGL3_Pixel_Shutdown();
@@ -104,7 +103,7 @@ void Application::Uninit()
     glfwTerminate();
 }
 
-void Application::UpdateMainPanel() {
+void ChatApp::UpdateMainPanel() {
 #ifdef IMGUI_HAS_VIEWPORT
     ImGuiViewport* viewport = nullptr;
     viewport = ImGui::GetMainViewport();
@@ -132,7 +131,9 @@ void Application::UpdateMainPanel() {
         if (showDemoWindow)
             ImGui::ShowDemoWindow(&showDemoWindow);
 
-        mainView.Draw();
+        for (const auto& view: views) {
+            view.get().Draw();
+        }
     }
     else
     {
@@ -143,7 +144,7 @@ void Application::UpdateMainPanel() {
     ImGui::PopStyleVar();
 }
 
-void Application::UpdateLoginPopup() {
+void ChatApp::UpdateLoginPopup() {
     ImGui::OpenPopup("Login");
     if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {
@@ -163,7 +164,7 @@ void Application::UpdateLoginPopup() {
     }
 }
 
-void Application::PrepareNextFrame() {
+void ChatApp::PrepareNextFrame() {
     int scaledDisplayWidth, scaledDisplayHeight;
     glfwGetFramebufferSize(window, &(this->frameDisplaySize.width), &(this->frameDisplaySize.height));
 
@@ -193,7 +194,7 @@ void Application::PrepareNextFrame() {
     ImGui::NewFrame();
 }
 
-bool Application::WindowInit(std::string& outGlslVersion)
+bool ChatApp::WindowInit(std::string& outGlslVersion)
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -232,7 +233,7 @@ bool Application::WindowInit(std::string& outGlslVersion)
     return true;
 }
 
-void Application::CreateUIContext()
+void ChatApp::CreateUIContext()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -248,14 +249,14 @@ void Application::CreateUIContext()
     SetImGuiStyles();
 }
 
-void Application::SetupRendererBackend(const std::string& glslVersion)
+void ChatApp::SetupRendererBackend(const std::string& glslVersion)
 {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
     PxlUI::BatchRenderer::init();
 }
 
-void Application::SetupPostProcessing()
+void ChatApp::SetupPostProcessing()
 {
     ImGui_ImplGlfw_SetResFactor(resFactor);
 
@@ -294,7 +295,7 @@ void Application::SetupPostProcessing()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Application::RenderFrame() {
+void ChatApp::RenderFrame() {
     ImGui::Render();
 
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
@@ -308,7 +309,7 @@ void Application::RenderFrame() {
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
 }
 
-void Application::ApplyPostProcessing() {
+void ChatApp::ApplyPostProcessing() {
     ShaderProg->setInt("uCrtEnabled", true);
 
     PxlUI::BatchRenderer::beginBatch();
@@ -316,6 +317,10 @@ void Application::ApplyPostProcessing() {
     PxlUI::BatchRenderer::drawScreenTex(FramebufferTexture);
     PxlUI::BatchRenderer::endBatch();
     PxlUI::BatchRenderer::flush();
+}
+
+void ChatApp::addView(IView &view) {
+    views.emplace_back(view);
 }
 
 static void glfw_error_callback(int error, const char* description)

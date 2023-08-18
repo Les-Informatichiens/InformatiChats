@@ -2,8 +2,8 @@
 // Created by Jonathan Richard on 2023-08-09.
 //
 
-#ifndef INFORMATICHATS_APPLICATION_H
-#define INFORMATICHATS_APPLICATION_H
+#ifndef INFORMATICHATS_CHATAPP_H
+#define INFORMATICHATS_CHATAPP_H
 // Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
@@ -31,7 +31,7 @@
 #include "View/pxlui/ShaderProgram.h"
 #include "View/pxlui/BatchRenderer.h"
 #include "View/pxlui/GLShaderUtil.h"
-#include "View/IView.h"
+#include "View/Views/IView.h"
 
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers
@@ -55,12 +55,12 @@ struct DisplaySize
     int height;
 };
 
-class Application
+class ChatApp
 {
 public:
-    Application(Chat &chat,const IView& view);
+    ChatApp(Chat &chat);
     void Run();
-
+    void addView(IView& view);
 private:
     void UpdateMainPanel();
     void UpdateLoginPopup();
@@ -123,8 +123,8 @@ private:
     } mCrtShaderData;
 
     DisplaySize frameDisplaySize;
-    const IView& mainView;
+    std::vector<std::reference_wrapper<IView>> views;
 };
 
 
-#endif //INFORMATICHATS_APPLICATION_H
+#endif //INFORMATICHATS_CHATAPP_H

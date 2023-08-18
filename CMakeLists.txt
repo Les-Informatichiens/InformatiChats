@@ -21,11 +21,9 @@ add_executable(
         src/View/imgui_impl_glfw_pixel.cpp
         src/View/imgui_impl_glfw_pixel.h
         src/View/Shaders.h
-        src/Application.cpp
-        src/Application.h
-        src/View/IView.h
-        src/View/View.cpp
-        src/View/View.h
+        src/ChatApp.cpp
+        src/ChatApp.h
+        src/View/Views/IView.h
         src/View/Panels/IPanel.h
         src/View/Panels/ChatPanel.cpp
         src/View/Panels/ChatPanel.h
@@ -37,6 +35,14 @@ add_executable(
         src/Model/Model.h
         src/View/Panels/UserInfoPanel.cpp
         src/View/Panels/UserInfoPanel.h
+        src/Controller/ChatController.cpp
+        src/Controller/ChatController.h
+        src/View/Views/ChannelView.cpp
+        src/View/Views/ChannelView.h
+        src/View/Views/ChatView.cpp
+        src/View/Views/ChatView.h
+        src/Controller/ChannelController.cpp
+        src/Controller/ChannelController.h
 )
 
 if(MSVC)

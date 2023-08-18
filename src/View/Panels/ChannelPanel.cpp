@@ -4,7 +4,6 @@
 #include "rtc/peerconnection.hpp"
 
 ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {
-//    memset(UsernameToConnectBuf, 0, maxNameLength*sizeof(char));
 }
 
 void ChannelPanel::Update() {
@@ -35,6 +34,7 @@ void ChannelPanel::Update() {
             {
                 if(UsernameToConnectBuf[0] != '\0')
                 {
+                    //Controller code
                     chatClient.AttemptToConnectToPeer(UsernameToConnectBuf);
                     memset(UsernameToConnectBuf, 0, sizeof(UsernameToConnectBuf));
                     addNewChatPrompt = false;
@@ -54,6 +54,8 @@ void ChannelPanel::Update() {
     ImGui::Separator();
 
     // draw chat names
+
+    //Controller code (controller needs to return list of connections from the model)
     for (const auto& peerConnection : chatClient.GetPeerConnections())
     {
         const std::string& peerId = peerConnection.first;
@@ -123,7 +125,7 @@ void ChannelPanel::Update() {
         if (ImGui::Selectable(displayText.c_str(), isSelected))
         {
             if (pPeerData != nullptr)
-            //    console.SetLogHistory(pPeerData->history);
+                console.SetLogHistory(pPeerData->history);
             selectedChat = peerId;
         }
         if (hasColor) ImGui::PopStyleColor();
