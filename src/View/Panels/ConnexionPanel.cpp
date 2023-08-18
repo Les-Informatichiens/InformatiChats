@@ -6,22 +6,23 @@
 #include "imgui.h"
 
 
-ConnexionPanel::ConnexionPanel(IConnexionController &controller) : controller(controller){
-
+ConnexionPanel::ConnexionPanel(IConnexionController &controller) : controller(controller)
+{
 }
 
 
-void ConnexionPanel::Draw() {
+void ConnexionPanel::Draw()
+{
 
-    if (!controller.IsConnected()) {
+    if (!controller.IsConnected())
+    {
         Update();
         // Draw the chat panel
     }
-
-
 }
 
-void ConnexionPanel::Update() {
+void ConnexionPanel::Update()
+{
 
     ConnexionViewModel vm = controller.getViewModel();
 
@@ -44,6 +45,7 @@ void ConnexionPanel::Update() {
     }
 }
 
-bool ConnexionPanel::IsVisible() {
+bool ConnexionPanel::IsVisible()
+{
     return false;
 }

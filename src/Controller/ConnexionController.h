@@ -5,19 +5,20 @@
 #pragma once
 
 #include "IConnexionController.h"
-#include "rtc/rtc.hpp"
 #include "nlohmann/json.hpp"
-#include "Controller/ViewModels/ConnexionViewModel.h"
+#include "rtc/rtc.hpp"
+#include <Controller/ViewModels/ConnexionViewModel.h>
 
-class ConnexionController : public IConnexionController {
+class ConnexionController : public IConnexionController
+{
 public:
     ConnexionViewModel getViewModel() override;
 
-    bool IsConnected() override {return connected;};
+    bool IsConnected() override { return connected; };
 
-    void AttemptConnectionWithUsername(const std::string& newUsername) override;
+    void AttemptConnectionWithUsername(const std::string &newUsername) override;
+
 private:
-
     struct MessageReceivedEvent
     {
         std::string senderId;
@@ -37,5 +38,4 @@ private:
     static constexpr int maxNameLength{32};
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
     std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
-
 };

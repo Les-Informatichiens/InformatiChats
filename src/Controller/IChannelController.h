@@ -7,8 +7,9 @@
 #include "ViewModels/ChannelViewModel.h"
 #include <string>
 
-class IChannelController {
+class IChannelController
+{
 public:
     virtual ChannelViewModel getViewModel() = 0;
-    virtual void AttemptToConnectToPeer(std::string& peerId) = 0;
+    virtual void AttemptToConnectToPeer(std::string &peerId) = 0;
 };

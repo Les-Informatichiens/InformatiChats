@@ -1,15 +1,15 @@
 #pragma once
 
+#include "../../Controller/IChannelController.h"
+#include "../../Model/Chat.h"
 #include "IPanel.h"
 #include "imgui.h"
-#include "../../Model/Chat.h"
-#include "../../Controller/IChannelController.h"
 #include <unordered_map>
 
-class ChannelPanel: public IPanel {
+class ChannelPanel : public IPanel
+{
 public:
-
-    explicit ChannelPanel(IChannelController& channelController);
+    explicit ChannelPanel(IChannelController &channelController);
 
     void Draw() override;
     void Update() override;
@@ -19,13 +19,12 @@ public:
 
     struct PeerData
     {
-        ImVector<char*> history;
+        ImVector<char *> history;
         size_t unreadMessageCount;
     };
     std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
     ExampleAppConsole console;
     static constexpr int maxNameLength{32};
-    IChannelController& controller;
-
+    IChannelController &controller;
 };

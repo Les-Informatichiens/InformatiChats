@@ -1,9 +1,10 @@
 #include "ChatPanel.h"
 #include "imgui.h"
 
-ChatPanel::ChatPanel(IChatController& controller) : controller(controller){}
+ChatPanel::ChatPanel(IChatController &controller) : controller(controller) {}
 
-void ChatPanel::Update() {
+void ChatPanel::Update()
+{
 
     ChatViewModel vm = controller.getViewModel();
 
@@ -17,14 +18,14 @@ void ChatPanel::Update() {
     bool reclaim_focus = false;
     ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
     char InputBuf[256]{};
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void*)&console))
+    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void *) &console))
     {
-        char* s = InputBuf;
+        char *s = InputBuf;
         Strtrim(s);
         if (s[0])
         {
             // duplicate code, pls clean up
-            auto result = historyMap.insert({ selectedChat, {} });
+            auto result = historyMap.insert({selectedChat, {}});
             result.first->second.history.push_back(Strdup(std::format("[{}] {}", vm.userName, s).c_str()));
 
             console.AddLog("[%s] %s", vm.userName.c_str(), s);
@@ -37,20 +38,22 @@ void ChatPanel::Update() {
     // Auto-focus on window apparition
     ImGui::SetItemDefaultFocus();
     if (reclaim_focus)
-        ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+        ImGui::SetKeyboardFocusHere(-1);// Auto focus previous widget
 
     ImGui::EndChild();
 }
 
-void ChatPanel::Draw() {
+void ChatPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the chat panel
     }
 }
 
-bool ChatPanel::IsVisible() {
+bool ChatPanel::IsVisible()
+{
     return false;
 }
-

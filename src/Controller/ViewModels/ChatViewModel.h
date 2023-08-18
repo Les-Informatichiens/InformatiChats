@@ -5,6 +5,7 @@
 #pragma once
 #include <string>
 
-struct ChatViewModel {
+struct ChatViewModel
+{
     std::string userName;
 };

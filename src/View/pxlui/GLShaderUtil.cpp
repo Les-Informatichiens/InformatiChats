@@ -3,20 +3,22 @@
 #include "GL/glew.h"
 
 #include <fstream>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
-PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const std::string& filepath)
+PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const std::string &filepath)
 {
 
     std::stringstream ss[2];
-    for (const auto& shaderType : { "vert", "frag" })
+    for (const auto &shaderType: {"vert", "frag"})
     {
         std::ifstream stream(std::string(filepath) + "/shader." + shaderType);
 
         enum class ShaderType
         {
-            NONE = -1, VERTEX = 0, FRAGMENT = 1
+            NONE = -1,
+            VERTEX = 0,
+            FRAGMENT = 1
         };
 
         std::string line;
@@ -24,16 +26,16 @@ PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const 
 
         while (std::getline(stream, line))
         {
-            ss[(int)type] << line << '\n';
+            ss[(int) type] << line << '\n';
         }
     }
-    return { ss[0].str(), ss[1].str() };
+    return {ss[0].str(), ss[1].str()};
 }
 
-int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string& source)
+int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string &source)
 {
     unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
+    const char *src = source.c_str();
     glShaderSource(id, 1, &src, nullptr);
     glCompileShader(id);
 
@@ -43,7 +45,7 @@ int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string& sou
     {
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*)_malloca(length * sizeof(char));
+        char *message = (char *) _malloca(length * sizeof(char));
         glGetShaderInfoLog(id, length, &length, message);
         std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
         std::cout << message << std::endl;
@@ -54,7 +56,7 @@ int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string& sou
     return id;
 }
 
-int PxlUI::GLShaderUtil::createShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
+int PxlUI::GLShaderUtil::createShaderProgram(const std::string &vertexShader, const std::string &fragmentShader)
 {
     unsigned int program = glCreateProgram();
     unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);

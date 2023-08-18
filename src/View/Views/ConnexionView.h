@@ -6,23 +6,25 @@
 #define INFORMATICHATS_CONNEXION_H
 
 
-#include "IView.h"
 #include "Controller/IConnexionController.h"
+#include "IView.h"
 #include <vector>
 
-class ConnexionView : public IView {
+class ConnexionView : public IView
+{
 public:
     explicit ConnexionView(IConnexionController &controller);
-    ConnexionView(std::vector<IPanel>& panels, IConnexionController& controller);
+    ConnexionView(std::vector<IPanel> &panels, IConnexionController &controller);
     void Draw() const override;
 
     void AddPanel(IPanel &panel) override;
+
 private:
     static constexpr int maxNameLength{32};
     std::vector<std::reference_wrapper<IPanel>> panels;
 
-    IConnexionController& controller;
+    IConnexionController &controller;
 };
 
 
-#endif //INFORMATICHATS_CONNEXION_H
+#endif//INFORMATICHATS_CONNEXION_H

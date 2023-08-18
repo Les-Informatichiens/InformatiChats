@@ -6,11 +6,11 @@
 #include "IChatController.h"
 #include <string>
 
-class ChatController : public IChatController{
+class ChatController : public IChatController
+{
 public:
     ChatViewModel getViewModel() override;
 
 private:
-
     std::string userName;
 };

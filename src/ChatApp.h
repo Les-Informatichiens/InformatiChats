@@ -18,8 +18,8 @@
 #include "Model/Chat.h"
 
 #include <cstdio>
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 #include "View/Shaders.h"
 
@@ -28,13 +28,13 @@
 #include <GLES2/gl2.h>
 #else
 #include <GL/glew.h>
-#include <View/pxlui/ShaderProgram.h>
+#include <View/Views/IView.h>
 #include <View/pxlui/BatchRenderer.h>
 #include <View/pxlui/GLShaderUtil.h>
-#include <View/Views/IView.h>
+#include <View/pxlui/ShaderProgram.h>
 
 #endif
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <GLFW/glfw3.h>// Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -60,7 +60,8 @@ class ChatApp
 public:
     ChatApp(Chat &chat);
     void Run();
-    void addView(IView& view);
+    void addView(IView &view);
+
 private:
     void UpdateMainPanel();
 
@@ -73,15 +74,15 @@ private:
     void Update();
     void Uninit();
 
-    bool WindowInit(std::string& outGlslVersion);
+    bool WindowInit(std::string &outGlslVersion);
     void CreateUIContext();
-    void SetupRendererBackend(const std::string& glslVersion);
+    void SetupRendererBackend(const std::string &glslVersion);
     void SetupPostProcessing();
 
 private:
-    GLFWwindow* window{};
+    GLFWwindow *window{};
 
-    Chat& chatClient;
+    Chat &chatClient;
     std::string selectedChat;
     bool addNewChatPrompt{};
 
@@ -91,7 +92,7 @@ private:
 
     struct PeerData
     {
-        ImVector<char*> history;
+        ImVector<char *> history;
         size_t unreadMessageCount;
     };
     // chat histories
@@ -103,7 +104,7 @@ private:
     bool showDemoWindow{};
     const float resFactor = 0.5f;
     static constexpr int maxNameLength{32};
-    PxlUI::ShaderProgram* ShaderProg{};
+    PxlUI::ShaderProgram *ShaderProg{};
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
 
@@ -126,4 +127,4 @@ private:
 };
 
 
-#endif //INFORMATICHATS_CHATAPP_H
+#endif//INFORMATICHATS_CHATAPP_H

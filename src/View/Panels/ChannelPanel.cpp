@@ -1,13 +1,15 @@
-#include <string>
 #include "ChannelPanel.h"
 #include "imgui.h"
 #include "rtc/peerconnection.hpp"
+#include <string>
 
 
-ChannelPanel::ChannelPanel(IChannelController& controller) : controller(controller){
+ChannelPanel::ChannelPanel(IChannelController &controller) : controller(controller)
+{
 }
 
-void ChannelPanel::Update() {
+void ChannelPanel::Update()
+{
 
     ChannelViewModel vm = controller.getViewModel();
 
@@ -34,9 +36,9 @@ void ChannelPanel::Update() {
 
             bool addNewChatPressed = ImGui::Button("Add new chat");
 
-            if ( enterPressed || addNewChatPressed )
+            if (enterPressed || addNewChatPressed)
             {
-                if(UsernameToConnectBuf[0] != '\0')
+                if (UsernameToConnectBuf[0] != '\0')
                 {
                     controller.AttemptToConnectToPeer(UsernameToConnectBuf);
                     UsernameToConnectBuf = "";
@@ -46,7 +48,8 @@ void ChannelPanel::Update() {
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Cancel")) {
+            if (ImGui::Button("Cancel"))
+            {
                 addNewChatPrompt = false;
             }
 
@@ -59,9 +62,9 @@ void ChannelPanel::Update() {
     // draw chat names
 
     //Controller code (controller needs to return list of connections from the model)
-    for (const auto& peerConnection : vm.peerConnectionMap)
+    for (const auto &peerConnection: vm.peerConnectionMap)
     {
-        const std::string& peerId = peerConnection.first;
+        const std::string &peerId = peerConnection.first;
         bool isSelected = selectedChat == peerId;
 
         rtc::PeerConnection::State state = peerConnection.second->state();
@@ -69,7 +72,8 @@ void ChannelPanel::Update() {
         std::string displayText = peerId;
         ImVec4 color;
         bool hasColor = false;
-        switch (state) {
+        switch (state)
+        {
             case rtc::PeerConnection::State::New:
                 break;
             case rtc::PeerConnection::State::Connecting: {
@@ -80,8 +84,7 @@ void ChannelPanel::Update() {
             }
             case rtc::PeerConnection::State::Connected:
                 break;
-            case rtc::PeerConnection::State::Disconnected:
-            {
+            case rtc::PeerConnection::State::Disconnected: {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Disconnected]";
@@ -106,7 +109,7 @@ void ChannelPanel::Update() {
         }
 
         auto peerDataIt = historyMap.find(peerId);
-        PeerData* pPeerData = nullptr;
+        PeerData *pPeerData = nullptr;
         if (peerDataIt != historyMap.end())
         {
             pPeerData = &peerDataIt->second;
@@ -132,20 +135,22 @@ void ChannelPanel::Update() {
             selectedChat = peerId;
         }
         if (hasColor) ImGui::PopStyleColor();
-
     }
 
     ImGui::EndChild();
 }
 
-void ChannelPanel::Draw() {
+void ChannelPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the channels panel
     }
 }
 
-bool ChannelPanel::IsVisible() {
+bool ChannelPanel::IsVisible()
+{
     return false;
 }

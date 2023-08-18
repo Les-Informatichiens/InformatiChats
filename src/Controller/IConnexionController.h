@@ -6,9 +6,10 @@
 
 #include "Controller/ViewModels/ConnexionViewModel.h"
 
-class IConnexionController {
+class IConnexionController
+{
 public:
-    virtual void AttemptConnectionWithUsername(const std::string& newUsername) = 0;
+    virtual void AttemptConnectionWithUsername(const std::string &newUsername) = 0;
     virtual ConnexionViewModel getViewModel() = 0;
     virtual bool IsConnected() = 0;
 };

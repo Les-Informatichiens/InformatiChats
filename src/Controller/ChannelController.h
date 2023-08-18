@@ -3,13 +3,14 @@
 //
 
 #pragma once
+#include "IChannelController.h"
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
-#include <utility>
-#include "IChannelController.h"
 #include <cstdio>
+#include <utility>
 
-class ChannelController : public IChannelController{
+class ChannelController : public IChannelController
+{
 public:
     ChannelViewModel getViewModel() override;
     void AttemptToConnectToPeer(std::string &peerName) override;
@@ -31,5 +32,4 @@ private:
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
     void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
-
 };

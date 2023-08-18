@@ -1,24 +1,24 @@
 #include "ChatApp.h"
-#include "View/Views/ConnexionView.h"
 #include "Controller/ConnexionController.h"
 #include "View/Panels/ConnexionPanel.h"
-#include <View/Panels/ChannelPanel.h>
-#include <View/Panels/UserInfoPanel.h>
-#include <View/Panels/ChatPanel.h>
+#include "View/Views/ConnexionView.h"
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
-#include <View/Views/ChatView.h>
+#include <View/Panels/ChannelPanel.h>
+#include <View/Panels/ChatPanel.h>
+#include <View/Panels/UserInfoPanel.h>
 #include <View/Views/ChannelView.h>
+#include <View/Views/ChatView.h>
 
 // Main code
-int main(int, char**)
+int main(int, char **)
 {
     //init model
     const std::string stunServer = "stun.l.google.com";
     const std::string stunServerPort = "19302";
     const std::string signalingServer = "51.79.86.30";
     const std::string signalingServerPort = "51337";
-    ConnectionConfig config = { stunServer, stunServerPort, signalingServer, signalingServerPort };
+    ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
     Chat chatClient(config);
 
     //init controller

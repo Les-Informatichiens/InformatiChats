@@ -4,7 +4,8 @@
 #pragma once
 #include <string>
 
-struct ConnexionViewModel {
+struct ConnexionViewModel
+{
     int maxNameLength;
     std::string signalingServer;
     std::string signalingServerPort;

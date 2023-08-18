@@ -28,28 +28,26 @@ struct ConnectionConfig
 class Chat
 {
 public:
-
-    explicit Chat(const ConnectionConfig& config);
+    explicit Chat(const ConnectionConfig &config);
     explicit Chat() = default;
 
-    void AttemptConnectionWithUsername(const char* newUsername);
+    void AttemptConnectionWithUsername(const char *newUsername);
 
-    void SendMessageToPeer(const std::string& peerId, const char* message);
+    void SendMessageToPeer(const std::string &peerId, const char *message);
 
     void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) { onMessageReceivedCallback = std::move(callback); };
 
-    [[nodiscard]] const std::string& GetUsername() const { return username; };
+    [[nodiscard]] const std::string &GetUsername() const { return username; };
     [[nodiscard]] bool IsConnected() const { return connected; };
 
-    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>>& GetPeerConnections() { return peerConnectionMap; };
+    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> &GetPeerConnections() { return peerConnectionMap; };
 
 private:
-
-    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId);
-    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId);
+    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
+    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
 
     // Create and setup a PeerConnection
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
 
 private:
     rtc::Configuration rtcConfig;
@@ -71,4 +69,4 @@ private:
 };
 
 
-#endif //INFORMATICHATS_CHAT_H
+#endif//INFORMATICHATS_CHAT_H

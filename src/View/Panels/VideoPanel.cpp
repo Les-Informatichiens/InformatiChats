@@ -2,7 +2,6 @@
 
 void VideoPanel::Update()
 {
-
 }
 
 void VideoPanel::Draw()

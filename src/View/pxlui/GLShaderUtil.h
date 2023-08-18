@@ -2,8 +2,7 @@
 
 #include <string>
 
-namespace PxlUI 
-{
+namespace PxlUI {
     struct GLShaderUtil
     {
         struct ShaderProgramSource
@@ -12,11 +11,10 @@ namespace PxlUI
             std::string fragmentSource;
         };
 
-        static ShaderProgramSource parseShader(const std::string& filepath);
+        static ShaderProgramSource parseShader(const std::string &filepath);
 
-        static int compileShader(unsigned int type, const std::string& source);
+        static int compileShader(unsigned int type, const std::string &source);
 
-        static int createShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
+        static int createShaderProgram(const std::string &vertexShader, const std::string &fragmentShader);
     };
-}
-
+}// namespace PxlUI

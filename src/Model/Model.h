@@ -13,4 +13,4 @@ public:
 };
 
 
-#endif //INFORMATICHATS_MODEL_H
+#endif//INFORMATICHATS_MODEL_H

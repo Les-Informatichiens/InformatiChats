@@ -4,6 +4,7 @@
 
 #include "ChatController.h"
 
-ChatViewModel ChatController::getViewModel() {
+ChatViewModel ChatController::getViewModel()
+{
     return {userName};
 }
