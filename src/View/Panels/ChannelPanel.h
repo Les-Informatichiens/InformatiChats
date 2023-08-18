@@ -14,9 +14,7 @@ public:
     explicit ChannelPanel(IChannelController &channelController);
 
     void Draw() override;
-
     void Update() override;
-
     bool IsVisible() override;
 
     bool addNewChatPrompt{false};

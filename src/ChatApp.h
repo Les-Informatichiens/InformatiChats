@@ -60,34 +60,27 @@ struct DisplaySize
 class ChatApp
 {
 public:
-    ChatApp(Chat &chat);
+    explicit ChatApp(Chat &chat);
 
     void Run();
 
-    void addView(IView &view);
+    void AddView(IView &view);
 
 private:
     void UpdateMainPanel();
-
     void PrepareNextFrame();
-
     void RenderFrame();
-
     void ApplyPostProcessing();
 
 private:
     bool Init();
-
     void Update();
-
     void Uninit();
 
     bool WindowInit(std::string &outGlslVersion);
-
     void CreateUIContext();
 
     void SetupRendererBackend(const std::string &glslVersion);
-
     void SetupPostProcessing();
 
 private:

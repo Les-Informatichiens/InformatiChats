@@ -14,9 +14,7 @@ public:
     explicit LoginPanel(ILoginController &controller);
 
     void Draw() override;
-
     void Update() override;
-
     bool IsVisible() override;
 
 private:

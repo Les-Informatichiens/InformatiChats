@@ -45,9 +45,9 @@ int main(int, char **)
 
     //init app
     ChatApp app(chatClient);
-    app.addView(channelView);
-    app.addView(chatView);
-    app.addView(loginView);
+    app.AddView(channelView);
+    app.AddView(chatView);
+    app.AddView(loginView);
 
     app.Run();
 

@@ -15,9 +15,7 @@ public:
     explicit UserInfoPanel(IChannelController &controller);
 
     void Draw() override;
-
     void Update() override;
-
     bool IsVisible() override;
 
 private:

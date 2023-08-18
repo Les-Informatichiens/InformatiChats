@@ -300,7 +300,7 @@ void ChatApp::ApplyPostProcessing()
     PxlUI::BatchRenderer::flush();
 }
 
-void ChatApp::addView(IView &view)
+void ChatApp::AddView(IView &view)
 {
     views.emplace_back(view);
 }

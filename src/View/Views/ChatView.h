@@ -15,15 +15,12 @@ class ChatView : public IView
 {
 public:
     explicit ChatView(IChatController &controller);
-
     ChatView(std::vector<IPanel> &panels, IChatController &controller);
 
     void SetController(IChatController &controller);
 
     void Draw() const override;
-
     bool IsVisible() override;
-
     void AddPanel(IPanel &panel) override;
 
 private:
