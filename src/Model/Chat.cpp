@@ -14,12 +14,16 @@ Chat::Chat(const ConnectionConfig& config)
     , connected(false)
 {
     std::string stunServer;
-    if (config.stunServer.empty()) {
+    if (config.stunServer.empty())
+    {
         std::cout
                 << "No STUN server is configured. Only local hosts and public IP addresses supported."
                 << std::endl;
-    } else {
-        if (config.stunServer.substr(0, 5) != "stun:") {
+    }
+    else
+    {
+        if (config.stunServer.substr(0, 5) != "stun:")
+        {
             stunServer = "stun:";
         }
         stunServer += config.stunServer + ":" + config.stunServerPort;
@@ -33,7 +37,8 @@ Chat::Chat(const ConnectionConfig& config)
 //    }
 }
 
-void Chat::AttemptConnectionWithUsername(const char *newUsername) {
+void Chat::AttemptConnectionWithUsername(const char *newUsername)
+{
     auto wsFuture = wsPromise.get_future();
 
     webSocket->onOpen([this, newUsername]() {
@@ -99,20 +104,28 @@ void Chat::AttemptConnectionWithUsername(const char *newUsername) {
         auto type = it->get<std::string>();
 
         std::shared_ptr<rtc::PeerConnection> pc;
-        if (auto jt = peerConnectionMap.find(id); jt != peerConnectionMap.end()) {
+        if (auto jt = peerConnectionMap.find(id); jt != peerConnectionMap.end())
+        {
             pc = jt->second;
-        } else if (type == "offer") {
+        }
+        else if (type == "offer")
+        {
             std::cout << "Answering to " + id << std::endl;
             pc = CreatePeerConnection(id);
-        } else {
+        }
+        else
+        {
             std::cout << "Could not establish connection to " << id << std::endl;
             return;
         }
 
-        if (type == "offer" || type == "answer") {
+        if (type == "offer" || type == "answer")
+        {
             auto sdp = message["description"].get<std::string>();
             pc->setRemoteDescription(rtc::Description(sdp, type));
-        } else if (type == "candidate") {
+        }
+        else if (type == "candidate")
+        {
             auto sdp = message["candidate"].get<std::string>();
             auto mid = message["mid"].get<std::string>();
             pc->addRemoteCandidate(rtc::Candidate(sdp, mid));
@@ -141,7 +154,8 @@ void Chat::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std
     RegisterDataChannel(dc, peerId);
 }
 
-void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId) {
+void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId)
+{
     dc->onOpen([this, peerId, wdc = std::weak_ptr(dc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
         if (auto dc = wdc.lock())

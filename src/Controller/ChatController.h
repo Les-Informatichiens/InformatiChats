@@ -6,7 +6,8 @@
 #define INFORMATICHATS_CHATCONTROLLER_H
 
 
-class ChatController {
+class ChatController
+{
 
 };
 

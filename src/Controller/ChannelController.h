@@ -6,7 +6,8 @@
 #define INFORMATICHATS_CHANNELCONTROLLER_H
 
 
-class ChannelController {
+class ChannelController
+{
 
 };
 

@@ -5,10 +5,12 @@
 
 #include <string>
 
-ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {
+ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient)
+{
 }
 
-void ChannelPanel::Update() {
+void ChannelPanel::Update()
+{
     ImGui::BeginGroup();
 
     ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
@@ -45,7 +47,8 @@ void ChannelPanel::Update() {
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Cancel")) {
+            if (ImGui::Button("Cancel"))
+            {
                 addNewChatPrompt = false;
             }
 
@@ -68,10 +71,12 @@ void ChannelPanel::Update() {
         std::string displayText = peerId;
         ImVec4 color;
         bool hasColor = false;
-        switch (state) {
+        switch (state)
+        {
             case rtc::PeerConnection::State::New:
                 break;
-            case rtc::PeerConnection::State::Connecting: {
+            case rtc::PeerConnection::State::Connecting:
+            {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.9f, 0.2f, 1.0f);
                 displayText += " [Connecting...]";
@@ -86,19 +91,22 @@ void ChannelPanel::Update() {
                 displayText += " [Disconnected]";
                 break;
             }
-            case rtc::PeerConnection::State::Failed: {
+            case rtc::PeerConnection::State::Failed:
+            {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Connection failed]";
                 break;
             }
-            case rtc::PeerConnection::State::Closed: {
+            case rtc::PeerConnection::State::Closed:
+            {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Connection closed]";
                 break;
             }
-            default: {
+            default:
+            {
                 hasColor = false;
                 break;
             }
@@ -137,14 +145,17 @@ void ChannelPanel::Update() {
     ImGui::EndChild();
 }
 
-void ChannelPanel::Draw() {
+void ChannelPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the channels panel
     }
 }
 
-bool ChannelPanel::IsVisible() {
+bool ChannelPanel::IsVisible()
+{
     return false;
 }

@@ -10,7 +10,8 @@
 #include <vector>
 #include <memory>
 
-class ChannelView : public IView{
+class ChannelView : public IView
+{
 public:
     explicit ChannelView(ChannelController &controller);
     ChannelView(std::vector<IPanel>& panels, ChannelController& controller);
@@ -18,6 +19,7 @@ public:
 
     void SetController(ChannelController &controller);
     void AddPanel(IPanel &panel) override;
+    
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
     ChannelController& controller;

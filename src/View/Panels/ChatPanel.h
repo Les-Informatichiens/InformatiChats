@@ -5,7 +5,8 @@
 
 #include <View/console.h>
 
-class ChatPanel: public IPanel {
+class ChatPanel: public IPanel
+{
 public:
     explicit ChatPanel(Chat &chatClient);
 

@@ -5,7 +5,8 @@
 #include "IPanel.h"
 #include <Model/Chat.h>
 
-class UserInfoPanel : public IPanel {
+class UserInfoPanel : public IPanel
+{
 public:
     explicit UserInfoPanel(Chat &chatClient);
 

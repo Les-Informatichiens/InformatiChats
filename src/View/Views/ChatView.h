@@ -9,17 +9,17 @@
 #include <vector>
 #include <memory>
 
-class ChatView : public IView {
+class ChatView : public IView
+{
 public:
-
     explicit ChatView(ChatController &controller);
     ChatView(std::vector<IPanel>& panels, ChatController& controller);
     void Draw() const override;
 
     void SetController(ChatController &controller);
     void AddPanel(IPanel &panel) override;
+
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
     ChatController& controller;
-
 };

@@ -2,7 +2,8 @@
 
 #include <View/Panels/IPanel.h>
 
- class IView{
+class IView
+{
 public:
     virtual void Draw() const = 0;
     virtual ~IView() = default;

@@ -1,9 +1,12 @@
 #include "ChatPanel.h"
 #include "imgui.h"
 
-ChatPanel::ChatPanel(Chat &chatClient) : chatClient(chatClient){}
+ChatPanel::ChatPanel(Chat &chatClient) : chatClient(chatClient)
+{
+}
 
-void ChatPanel::Update() {
+void ChatPanel::Update()
+{
     ImGui::SameLine();
 
     ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
@@ -39,15 +42,18 @@ void ChatPanel::Update() {
     ImGui::EndChild();
 }
 
-void ChatPanel::Draw() {
+void ChatPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the chat panel
     }
 }
 
-bool ChatPanel::IsVisible() {
+bool ChatPanel::IsVisible()
+{
     return false;
 }
 

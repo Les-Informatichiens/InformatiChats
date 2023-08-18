@@ -7,7 +7,8 @@
 
 #include <unordered_map>
 
-class ChannelPanel: public IPanel {
+class ChannelPanel: public IPanel
+{
 public:
 
     explicit ChannelPanel(Chat &chatClient);

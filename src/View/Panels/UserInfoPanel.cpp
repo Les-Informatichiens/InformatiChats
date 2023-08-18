@@ -7,42 +7,49 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient) {  }
+UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient)
+{
 
-    void UserInfoPanel::Update() {
+}
 
-        ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
+void UserInfoPanel::Update()
+{
 
-        ImGui::Text("%s", chatClient.GetUsername().c_str());
+    ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImGui::Text("%s", chatClient.GetUsername().c_str());
 
-        auto time = glfwGetTime();
-        for (double i = 0; i < 20; ++i) {
-            ImVec2 p1;
-            p1.x = ImGui::GetCursorScreenPos().x + i*2,
-                    p1.y = ImGui::GetCursorScreenPos().y + 5;
-            ImVec2 p2;
-            p2.x = ImGui::GetCursorScreenPos().x + i*2,
-                    p2.y = ImGui::GetCursorScreenPos().y + 5*glm::sin(time+i/3.0) + 5;
-            draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-        }
-
-        ImGui::EndChild();
-
-        ImGui::EndGroup();
+    auto time = glfwGetTime();
+    for (double i = 0; i < 20; ++i)
+    {
+        ImVec2 p1;
+        p1.x = ImGui::GetCursorScreenPos().x + i*2,
+                p1.y = ImGui::GetCursorScreenPos().y + 5;
+        ImVec2 p2;
+        p2.x = ImGui::GetCursorScreenPos().x + i*2,
+                p2.y = ImGui::GetCursorScreenPos().y + 5*glm::sin(time+i/3.0) + 5;
+        draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
     }
 
-    bool UserInfoPanel::IsVisible() {
-        return false;
-    }
+    ImGui::EndChild();
 
-    void UserInfoPanel::Draw() {
-        Update();
+    ImGui::EndGroup();
+}
 
-        if (IsVisible()) {
-            // Draw the channels panel
-        }
+bool UserInfoPanel::IsVisible()
+{
+    return false;
+}
+
+void UserInfoPanel::Draw()
+{
+    Update();
+
+    if (IsVisible())
+    {
+        // Draw the channels panel
     }
+}
 

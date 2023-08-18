@@ -25,7 +25,8 @@ struct ConnectionConfig
     std::string signalingServerPort;
 };
 
-class Chat {
+class Chat
+{
 public:
 
     explicit Chat(const ConnectionConfig& config);
