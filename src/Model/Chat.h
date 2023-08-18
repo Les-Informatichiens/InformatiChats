@@ -2,8 +2,7 @@
 // Created by Jonathan Richard on 2023-07-27.
 //
 
-#ifndef INFORMATICHATS_CHAT_H
-#define INFORMATICHATS_CHAT_H
+#pragma once
 
 #include <View/console.h>
 
@@ -11,39 +10,43 @@
 #include "rtc/rtc.hpp"
 #include <utility>
 
-struct MessageReceivedEvent
-{
+
+struct MessageReceivedEvent {
     std::string senderId;
     std::string content;
 };
 
-struct ConnectionConfig
-{
+struct ConnectionConfig {
     std::string stunServer;
     std::string stunServerPort;
     std::string signalingServer;
     std::string signalingServerPort;
 };
 
-class Chat
-{
+class Chat {
 public:
     explicit Chat(const ConnectionConfig &config);
+
     explicit Chat() = default;
 
     void AttemptConnectionWithUsername(const char *newUsername);
 
     void SendMessageToPeer(const std::string &peerId, const char *message);
 
-    void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) { onMessageReceivedCallback = std::move(callback); };
+    void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) {
+        onMessageReceivedCallback = std::move(callback);
+    };
 
     [[nodiscard]] const std::string &GetUsername() const { return username; };
+
     [[nodiscard]] bool IsConnected() const { return connected; };
 
-    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> &GetPeerConnections() { return peerConnectionMap; };
+    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> &
+    GetPeerConnections() { return peerConnectionMap; };
 
 private:
     void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
+
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
 
     // Create and setup a PeerConnection
@@ -67,6 +70,3 @@ private:
 
     std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
 };
-
-
-#endif//INFORMATICHATS_CHAT_H

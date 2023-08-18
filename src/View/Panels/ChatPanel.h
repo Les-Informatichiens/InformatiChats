@@ -1,17 +1,20 @@
 #pragma once
 
-#include "../../Controller/IChatController.h"
-#include "../../Model/Chat.h"
-#include "../console.h"
+#include <Controller/IChatController.h>
+#include <Model/Chat.h>
 #include "IPanel.h"
 
-class ChatPanel : public IPanel
-{
+#include "../console.h"
+
+
+class ChatPanel : public IPanel {
 public:
     explicit ChatPanel(IChatController &channelController);
 
     void Draw() override;
+
     void Update() override;
+
     bool IsVisible() override;
 
     ExampleAppConsole console{};
@@ -19,8 +22,7 @@ public:
     bool consoleOpen{true};
     std::string selectedChat;
 
-    struct PeerData
-    {
+    struct PeerData {
         ImVector<char *> history;
         size_t unreadMessageCount;
     };

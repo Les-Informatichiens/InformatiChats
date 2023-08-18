@@ -3,21 +3,23 @@
 //
 
 #pragma once
+
 #include "IChannelController.h"
+
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
 #include <cstdio>
 #include <utility>
 
-class ChannelController : public IChannelController
-{
+
+class ChannelController : public IChannelController {
 public:
-    ChannelViewModel getViewModel() override;
+    ChannelViewModel GetViewModel() override;
+
     void AttemptToConnectToPeer(std::string &peerName) override;
 
 private:
-    struct MessageReceivedEvent
-    {
+    struct MessageReceivedEvent {
         std::string senderId;
         std::string content;
     };
@@ -29,7 +31,10 @@ private:
     std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
 
     std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
+
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
+
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
+
     void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
 };

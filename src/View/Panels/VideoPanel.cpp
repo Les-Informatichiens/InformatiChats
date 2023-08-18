@@ -1,20 +1,17 @@
 #include "VideoPanel.h"
 
-void VideoPanel::Update()
-{
+
+void VideoPanel::Update() {
 }
 
-void VideoPanel::Draw()
-{
+void VideoPanel::Draw() {
     Update();
 
-    if (IsVisible())
-    {
+    if (IsVisible()) {
         // Draw the video panel
     }
 }
 
-bool VideoPanel::IsVisible()
-{
+bool VideoPanel::IsVisible() {
     return false;
 }

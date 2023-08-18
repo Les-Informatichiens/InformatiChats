@@ -6,16 +6,13 @@
 #include <iostream>
 #include <sstream>
 
-PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const std::string &filepath)
-{
+PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const std::string &filepath) {
 
     std::stringstream ss[2];
-    for (const auto &shaderType: {"vert", "frag"})
-    {
+    for (const auto &shaderType: {"vert", "frag"}) {
         std::ifstream stream(std::string(filepath) + "/shader." + shaderType);
 
-        enum class ShaderType
-        {
+        enum class ShaderType {
             NONE = -1,
             VERTEX = 0,
             FRAGMENT = 1
@@ -24,16 +21,14 @@ PxlUI::GLShaderUtil::ShaderProgramSource PxlUI::GLShaderUtil::parseShader(const 
         std::string line;
         ShaderType type = shaderType == "vert" ? ShaderType::VERTEX : ShaderType::FRAGMENT;
 
-        while (std::getline(stream, line))
-        {
+        while (std::getline(stream, line)) {
             ss[(int) type] << line << '\n';
         }
     }
     return {ss[0].str(), ss[1].str()};
 }
 
-int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string &source)
-{
+int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string &source) {
     unsigned int id = glCreateShader(type);
     const char *src = source.c_str();
     glShaderSource(id, 1, &src, nullptr);
@@ -41,13 +36,13 @@ int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string &sou
 
     int result;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == false)
-    {
+    if (result == false) {
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
         char *message = (char *) _malloca(length * sizeof(char));
         glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!" << std::endl;
+        std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!"
+                  << std::endl;
         std::cout << message << std::endl;
         glDeleteShader(id);
         return 0;
@@ -56,8 +51,7 @@ int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string &sou
     return id;
 }
 
-int PxlUI::GLShaderUtil::createShaderProgram(const std::string &vertexShader, const std::string &fragmentShader)
-{
+int PxlUI::GLShaderUtil::createShaderProgram(const std::string &vertexShader, const std::string &fragmentShader) {
     unsigned int program = glCreateProgram();
     unsigned int vs = compileShader(GL_VERTEX_SHADER, vertexShader);
     unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fragmentShader);

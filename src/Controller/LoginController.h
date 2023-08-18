@@ -4,23 +4,23 @@
 
 #pragma once
 
+#include <Controller/ViewModels/LoginViewModel.h>
 #include "ILoginController.h"
+
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
-#include <Controller/ViewModels/LoginViewModel.h>
 
-class LoginController : public ILoginController
-{
+
+class LoginController : public ILoginController {
 public:
-    LoginViewModel getViewModel() override;
+    LoginViewModel GetViewModel() override;
 
     bool IsConnected() override { return connected; };
 
     void AttemptConnectionWithUsername(const std::string &newUsername) override;
 
 private:
-    struct MessageReceivedEvent
-    {
+    struct MessageReceivedEvent {
         std::string senderId;
         std::string content;
     };
@@ -34,8 +34,12 @@ private:
     std::string username;
     std::promise<void> wsPromise;
     bool connected{false};
+
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
+
     static constexpr int maxNameLength{32};
+
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
+
     std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
 };

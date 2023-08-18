@@ -5,28 +5,32 @@
 
 namespace PxlUI {
 
-    class BatchRenderer
-    {
+    class BatchRenderer {
     public:
         static void init();
+
         static void shutdown();
 
         static void beginBatch();
+
         static void endBatch();
+
         static void flush();
 
         /* shape drawings functions */
-        static void drawTriangle(const glm::vec3 &iP1, const glm::vec3 &iP2, const glm::vec3 &iP3, const glm::vec4 &iColor);
+        static void
+        drawTriangle(const glm::vec3 &iP1, const glm::vec3 &iP2, const glm::vec3 &iP3, const glm::vec4 &iColor);
+
         static void drawScreenTex(uint32_t iTextureId);
 
         static void drawScreenTexSmaller(uint32_t iTextureId);
 
-        struct Stats
-        {
+        struct Stats {
             size_t mDrawCount = 0;
         };
 
         static const Stats &getStats();
+
         static void resetStats();
 
         //    Renderer();

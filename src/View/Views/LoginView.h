@@ -4,20 +4,28 @@
 
 #pragma once
 
-#include "Controller/ILoginController.h"
+#include <Controller/ILoginController.h>
 #include "IView.h"
+
 #include <vector>
 
-class LoginView : public IView
-{
+
+class LoginView : public IView {
 public:
     explicit LoginView(ILoginController &controller);
+
     LoginView(std::vector<IPanel> &panels, ILoginController &controller);
+
+    void SetController(ILoginController &controller);
+
     void Draw() const override;
+
+    bool IsVisible() override;
 
     void AddPanel(IPanel &panel) override;
 
 private:
+    static constexpr int maxNameLength{32};
     std::vector<std::reference_wrapper<IPanel>> panels;
 
     ILoginController &controller;

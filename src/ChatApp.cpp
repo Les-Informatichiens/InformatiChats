@@ -1,16 +1,16 @@
 #include "ChatApp.h"
 #include "TranslationManager.h"
 
+
 static void glfw_error_callback(int error, const char *description);
+
 void SetImGuiStyles();
 
 ChatApp::ChatApp(Chat &chat)
-    : chatClient(chat), frameDisplaySize()
-{
+        : chatClient(chat), frameDisplaySize() {
 }
 
-void ChatApp::Run()
-{
+void ChatApp::Run() {
     this->Init();
 
     // Main loop
@@ -32,8 +32,7 @@ void ChatApp::Run()
     this->Uninit();
 }
 
-bool ChatApp::Init()
-{
+bool ChatApp::Init() {
     // create glfw window and get glsl shader version determined by opengl version
     std::string glslVersion;
     if (!WindowInit(glslVersion))
@@ -53,12 +52,9 @@ bool ChatApp::Init()
         auto result = historyMap.insert({e.senderId, {}});
         result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
 
-        if (e.senderId == selectedChat)
-        {
+        if (e.senderId == selectedChat) {
             console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
-        }
-        else
-        {
+        } else {
             ++result.first->second.unreadMessageCount;
         }
     });
@@ -66,8 +62,7 @@ bool ChatApp::Init()
     return true;
 }
 
-void ChatApp::Update()
-{
+void ChatApp::Update() {
     // Poll and handle events (inp      uts, window resize, etc.)
     // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
     // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -90,8 +85,7 @@ void ChatApp::Update()
     glfwSwapBuffers(window);
 }
 
-void ChatApp::Uninit()
-{
+void ChatApp::Uninit() {
     // Cleanup
     ImGui_ImplOpenGL3_Pixel_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -101,8 +95,7 @@ void ChatApp::Uninit()
     glfwTerminate();
 }
 
-void ChatApp::UpdateMainPanel()
-{
+void ChatApp::UpdateMainPanel() {
 #ifdef IMGUI_HAS_VIEWPORT
     ImGuiViewport *viewport = nullptr;
     viewport = ImGui::GetMainViewport();
@@ -115,7 +108,9 @@ void ChatApp::UpdateMainPanel()
 #endif
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::Begin("Root panel", (bool *) 0, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus);
+    ImGui::Begin("Root panel", (bool *) 0,
+                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                 ImGuiWindowFlags_NoBringToFrontOnFocus);
 
     // ImGui demo button and panel
     ImGui::BeginMainMenuBar();
@@ -128,16 +123,14 @@ void ChatApp::UpdateMainPanel()
     if (showDemoWindow)
         ImGui::ShowDemoWindow(&showDemoWindow);
 
-    for (const auto &view: views)
-    {
+    for (const auto &view: views) {
         view.get().Draw();
     }
     ImGui::End();
     ImGui::PopStyleVar();
 }
 
-void ChatApp::PrepareNextFrame()
-{
+void ChatApp::PrepareNextFrame() {
     int scaledDisplayWidth, scaledDisplayHeight;
     glfwGetFramebufferSize(window, &(this->frameDisplaySize.width), &(this->frameDisplaySize.height));
 
@@ -167,13 +160,12 @@ void ChatApp::PrepareNextFrame()
     ImGui::NewFrame();
 }
 
-bool ChatApp::WindowInit(std::string &outGlslVersion)
-{
+bool ChatApp::WindowInit(std::string &outGlslVersion) {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return false;
 
-        // Decide GL+GLSL versions
+    // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100
     glslVersion = "#version 100";
@@ -206,8 +198,7 @@ bool ChatApp::WindowInit(std::string &outGlslVersion)
     return true;
 }
 
-void ChatApp::CreateUIContext()
-{
+void ChatApp::CreateUIContext() {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -223,15 +214,13 @@ void ChatApp::CreateUIContext()
     SetImGuiStyles();
 }
 
-void ChatApp::SetupRendererBackend(const std::string &glslVersion)
-{
+void ChatApp::SetupRendererBackend(const std::string &glslVersion) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
     PxlUI::BatchRenderer::init();
 }
 
-void ChatApp::SetupPostProcessing()
-{
+void ChatApp::SetupPostProcessing() {
     ImGui_ImplGlfw_SetResFactor(resFactor);
 
     ShaderProg = new PxlUI::ShaderProgram(VERT_SHADER, FRAG_SHADER);
@@ -239,8 +228,7 @@ void ChatApp::SetupPostProcessing()
     ShaderProg->bind();
     auto wLocation = glGetUniformLocation(ShaderProg->getProgramId(), "uTextures");
     int32_t wSamplers[32];
-    for (int32_t i = 0; i < 32; i++)
-    {
+    for (int32_t i = 0; i < 32; i++) {
         wSamplers[i] = i;
     }
     glUniform1iv(wLocation, 32, wSamplers);
@@ -269,11 +257,11 @@ void ChatApp::SetupPostProcessing()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void ChatApp::RenderFrame()
-{
+void ChatApp::RenderFrame() {
     ImGui::Render();
 
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
+                 clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
 
     ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
@@ -284,8 +272,7 @@ void ChatApp::RenderFrame()
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
 }
 
-void ChatApp::ApplyPostProcessing()
-{
+void ChatApp::ApplyPostProcessing() {
     ShaderProg->setInt("uCrtEnabled", true);
 
     PxlUI::BatchRenderer::beginBatch();
@@ -295,18 +282,15 @@ void ChatApp::ApplyPostProcessing()
     PxlUI::BatchRenderer::flush();
 }
 
-void ChatApp::addView(IView &view)
-{
+void ChatApp::addView(IView &view) {
     views.emplace_back(view);
 }
 
-static void glfw_error_callback(int error, const char *description)
-{
+static void glfw_error_callback(int error, const char *description) {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-void SetImGuiStyles()
-{
+void SetImGuiStyles() {
     ImGuiStyle &style = ImGui::GetStyle();
 
     ImVec4 *colors = style.Colors;

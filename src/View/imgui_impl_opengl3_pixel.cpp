@@ -106,10 +106,13 @@
 #endif
 
 #include "imgui.h"
+
 #ifndef IMGUI_DISABLE
+
 #include "imgui_impl_opengl3_pixel.h"
 #include <stdint.h>// intptr_t
 #include <stdio.h>
+
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
 #endif
@@ -160,6 +163,7 @@
 #define IMGL3W_IMPL
 //#include "imgui_impl_opengl3_loader.h"
 #include "GL/glew.h"
+
 #endif
 
 // Vertex arrays are not supported on ES2/WebGL1 unless Emscripten which uses an extension
@@ -213,8 +217,7 @@
 #endif
 
 // OpenGL Data
-struct ImGui_ImplOpenGL3_Pixel_Data
-{
+struct ImGui_ImplOpenGL3_Pixel_Data {
     GLuint GlVersion;          // Extracted at runtime using GL_MAJOR_VERSION, GL_MINOR_VERSION queries (e.g. 320 for GL 3.2)
     char GlslVersionString[32];// Specified by user or detected based on compile time GL settings.
     bool GlProfileIsES2;
@@ -242,13 +245,14 @@ struct ImGui_ImplOpenGL3_Pixel_Data
 
 // Backend data stored in io.BackendRendererUserData to allow support for multiple Dear ImGui contexts
 // It is STRONGLY preferred that you use docking branch with multi-viewports (== single Dear ImGui context + multiple windows) instead of multiple Dear ImGui contexts.
-static ImGui_ImplOpenGL3_Pixel_Data *ImGui_ImplOpenGL3_Pixel_GetBackendData()
-{
-    return ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Pixel_Data *) ImGui::GetIO().BackendRendererUserData : nullptr;
+static ImGui_ImplOpenGL3_Pixel_Data *ImGui_ImplOpenGL3_Pixel_GetBackendData() {
+    return ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL3_Pixel_Data *) ImGui::GetIO().BackendRendererUserData
+                                      : nullptr;
 }
 
 // Forward Declarations
 static void ImGui_ImplOpenGL3_Pixel_InitPlatformInterface();
+
 static void ImGui_ImplOpenGL3_Pixel_ShutdownPlatformInterface();
 
 // OpenGL vertex attribute state (for ES 1.0 and ES 2.0 only)
@@ -278,15 +282,13 @@ struct ImGui_ImplOpenGL3_Pixel_VtxAttribState
 #endif
 
 // Functions
-bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version)
-{
+bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version) {
     ImGuiIO &io = ImGui::GetIO();
     IM_ASSERT(io.BackendRendererUserData == nullptr && "Already initialized a renderer backend!");
 
     // Initialize our loader
 #if !defined(IMGUI_IMPL_OPENGL_ES2) && !defined(IMGUI_IMPL_OPENGL_ES3) && !defined(IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
-    if (glewInit() != GLEW_OK)
-    {
+    if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to initialize OpenGL loader!\n");
         return false;
     }
@@ -308,8 +310,7 @@ bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version)
     GLint minor = 0;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    if (major == 0 && minor == 0)
-    {
+    if (major == 0 && minor == 0) {
         // Query GL_VERSION in desktop GL 2.x, the string will start with "<major>.<minor>"
         const char *gl_version = (const char *) glGetString(GL_VERSION);
         sscanf(gl_version, "%d.%d", &major, &minor);
@@ -348,8 +349,7 @@ bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version)
 
     // Store GLSL version string so we can refer to it later in case we recreate shaders.
     // Note: GLSL version is NOT the same as GL version. Leave this to nullptr if unsure.
-    if (glsl_version == nullptr)
-    {
+    if (glsl_version == nullptr) {
 #if defined(IMGUI_IMPL_OPENGL_ES2)
         glsl_version = "#version 100";
 #elif defined(IMGUI_IMPL_OPENGL_ES3)
@@ -374,8 +374,7 @@ bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version)
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_EXTENSIONS
     GLint num_extensions = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &num_extensions);
-    for (GLint i = 0; i < num_extensions; i++)
-    {
+    for (GLint i = 0; i < num_extensions; i++) {
         const char *extension = (const char *) glGetStringi(GL_EXTENSIONS, i);
         if (extension != nullptr && strcmp(extension, "GL_ARB_clip_control") == 0)
             bd->HasClipOrigin = true;
@@ -388,8 +387,7 @@ bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version)
     return true;
 }
 
-void ImGui_ImplOpenGL3_Pixel_Shutdown()
-{
+void ImGui_ImplOpenGL3_Pixel_Shutdown() {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
     IM_ASSERT(bd != nullptr && "No renderer backend to shutdown, or already shutdown?");
     ImGuiIO &io = ImGui::GetIO();
@@ -402,8 +400,7 @@ void ImGui_ImplOpenGL3_Pixel_Shutdown()
     IM_DELETE(bd);
 }
 
-void ImGui_ImplOpenGL3_Pixel_NewFrame()
-{
+void ImGui_ImplOpenGL3_Pixel_NewFrame() {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
     IM_ASSERT(bd != nullptr && "Did you call ImGui_ImplOpenGL3_Pixel_Init()?");
 
@@ -411,8 +408,8 @@ void ImGui_ImplOpenGL3_Pixel_NewFrame()
         ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects();
 }
 
-static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int fb_width, int fb_height, GLuint vertex_array_object)
-{
+static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int fb_width, int fb_height,
+                                                     GLuint vertex_array_object) {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
 
     // Setup render state: alpha-blending enabled, no face culling, no depth testing, scissor enabled, polygon fill
@@ -434,8 +431,7 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
     // Support for GL 4.5 rarely used glClipControl(GL_UPPER_LEFT)
 #if defined(GL_CLIP_ORIGIN)
     bool clip_origin_lower_left = true;
-    if (bd->HasClipOrigin)
-    {
+    if (bd->HasClipOrigin) {
         GLenum current_clip_origin = 0;
         glGetIntegerv(GL_CLIP_ORIGIN, (GLint *) &current_clip_origin);
         if (current_clip_origin == GL_UPPER_LEFT)
@@ -451,8 +447,7 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
     float T = draw_data->DisplayPos.y;
     float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
 #if defined(GL_CLIP_ORIGIN)
-    if (!clip_origin_lower_left)
-    {
+    if (!clip_origin_lower_left) {
         float tmp = T;
         T = B;
         B = tmp;
@@ -460,10 +455,10 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
 #endif
     const float ortho_projection[4][4] =
             {
-                    {2.0f / (R - L), 0.0f, 0.0f, 0.0f},
-                    {0.0f, 2.0f / (T - B), 0.0f, 0.0f},
-                    {0.0f, 0.0f, -1.0f, 0.0f},
-                    {(R + L) / (L - R), (T + B) / (B - T), 0.0f, 1.0f},
+                    {2.0f / (R - L),    0.0f,              0.0f,  0.0f},
+                    {0.0f,              2.0f / (T - B),    0.0f,  0.0f},
+                    {0.0f,              0.0f,              -1.0f, 0.0f},
+                    {(R + L) / (L - R), (T + B) / (B - T), 0.0f,  1.0f},
             };
     glUseProgram(bd->ShaderHandle);
     glUniform1i(bd->AttribLocationTex, 0);
@@ -471,7 +466,8 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
 
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_BIND_SAMPLER
     if (bd->GlVersion >= 330 || bd->GlProfileIsES3)
-        glBindSampler(0, 0);// We use combined texture/sampler state. Applications using GL 3.3 and GL ES 3.0 may set that otherwise.
+        glBindSampler(0,
+                      0);// We use combined texture/sampler state. Applications using GL 3.3 and GL ES 3.0 may set that otherwise.
 #endif
 
     (void) vertex_array_object;
@@ -485,9 +481,12 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
     GL_CALL(glEnableVertexAttribArray(bd->AttribLocationVtxPos));
     GL_CALL(glEnableVertexAttribArray(bd->AttribLocationVtxUV));
     GL_CALL(glEnableVertexAttribArray(bd->AttribLocationVtxColor));
-    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxPos, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid *) IM_OFFSETOF(ImDrawVert, pos)));
-    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid *) IM_OFFSETOF(ImDrawVert, uv)));
-    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid *) IM_OFFSETOF(ImDrawVert, col)));
+    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxPos, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+                                  (GLvoid *) IM_OFFSETOF(ImDrawVert, pos)));
+    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert),
+                                  (GLvoid *) IM_OFFSETOF(ImDrawVert, uv)));
+    GL_CALL(glVertexAttribPointer(bd->AttribLocationVtxColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert),
+                                  (GLvoid *) IM_OFFSETOF(ImDrawVert, col)));
 
 
     const float resFactor = 0.5;
@@ -504,8 +503,7 @@ static void ImGui_ImplOpenGL3_Pixel_SetupRenderState(ImDrawData *draw_data, int 
 // OpenGL3 Render function.
 // Note that this implementation is little overcomplicated because we are saving/setting up/restoring every OpenGL state explicitly.
 // This is in order to be able to run within an OpenGL engine that doesn't do so.
-void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
-{
+void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data) {
     // Avoid rendering when minimized, scale coordinates for retina displays (screen coordinates != framebuffer coordinates)
     int fb_width = (int) (draw_data->DisplaySize.x * draw_data->FramebufferScale.x);
     int fb_height = (int) (draw_data->DisplaySize.y * draw_data->FramebufferScale.y);
@@ -588,8 +586,7 @@ void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
     ImVec2 clip_scale = draw_data->FramebufferScale;// (1,1) unless using retina display which are often (2,2)
 
     // Render command lists
-    for (int n = 0; n < draw_data->CmdListsCount; n++)
-    {
+    for (int n = 0; n < draw_data->CmdListsCount; n++) {
         const ImDrawList *cmd_list = draw_data->CmdLists[n];
 
         // Upload vertex/index buffers
@@ -602,58 +599,60 @@ void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
         // - See https://github.com/ocornut/imgui/issues/4468 and please report any corruption issues.
         const GLsizeiptr vtx_buffer_size = (GLsizeiptr) cmd_list->VtxBuffer.Size * (int) sizeof(ImDrawVert);
         const GLsizeiptr idx_buffer_size = (GLsizeiptr) cmd_list->IdxBuffer.Size * (int) sizeof(ImDrawIdx);
-        if (bd->UseBufferSubData)
-        {
-            if (bd->VertexBufferSize < vtx_buffer_size)
-            {
+        if (bd->UseBufferSubData) {
+            if (bd->VertexBufferSize < vtx_buffer_size) {
                 bd->VertexBufferSize = vtx_buffer_size;
                 GL_CALL(glBufferData(GL_ARRAY_BUFFER, bd->VertexBufferSize, nullptr, GL_STREAM_DRAW));
             }
-            if (bd->IndexBufferSize < idx_buffer_size)
-            {
+            if (bd->IndexBufferSize < idx_buffer_size) {
                 bd->IndexBufferSize = idx_buffer_size;
                 GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, bd->IndexBufferSize, nullptr, GL_STREAM_DRAW));
             }
             GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, vtx_buffer_size, (const GLvoid *) cmd_list->VtxBuffer.Data));
-            GL_CALL(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, idx_buffer_size, (const GLvoid *) cmd_list->IdxBuffer.Data));
-        }
-        else
-        {
-            GL_CALL(glBufferData(GL_ARRAY_BUFFER, vtx_buffer_size, (const GLvoid *) cmd_list->VtxBuffer.Data, GL_STREAM_DRAW));
-            GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_size, (const GLvoid *) cmd_list->IdxBuffer.Data, GL_STREAM_DRAW));
+            GL_CALL(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, idx_buffer_size,
+                                    (const GLvoid *) cmd_list->IdxBuffer.Data));
+        } else {
+            GL_CALL(glBufferData(GL_ARRAY_BUFFER, vtx_buffer_size, (const GLvoid *) cmd_list->VtxBuffer.Data,
+                                 GL_STREAM_DRAW));
+            GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_size, (const GLvoid *) cmd_list->IdxBuffer.Data,
+                                 GL_STREAM_DRAW));
         }
 
-        for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
-        {
+        for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++) {
             const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[cmd_i];
-            if (pcmd->UserCallback != nullptr)
-            {
+            if (pcmd->UserCallback != nullptr) {
                 // User callback, registered via ImDrawList::AddCallback()
                 // (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
                 if (pcmd->UserCallback == ImDrawCallback_ResetRenderState)
                     ImGui_ImplOpenGL3_Pixel_SetupRenderState(draw_data, fb_width, fb_height, vertex_array_object);
                 else
                     pcmd->UserCallback(cmd_list, pcmd);
-            }
-            else
-            {
+            } else {
                 // Project scissor/clipping rectangles into framebuffer space
-                ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x, (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
-                ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x, (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
+                ImVec2 clip_min((pcmd->ClipRect.x - clip_off.x) * clip_scale.x,
+                                (pcmd->ClipRect.y - clip_off.y) * clip_scale.y);
+                ImVec2 clip_max((pcmd->ClipRect.z - clip_off.x) * clip_scale.x,
+                                (pcmd->ClipRect.w - clip_off.y) * clip_scale.y);
                 if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
                     continue;
 
                 // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
-                GL_CALL(glScissor((int) clip_min.x, (int) ((float) fb_height - clip_max.y), (int) (clip_max.x - clip_min.x), (int) (clip_max.y - clip_min.y)));
+                GL_CALL(glScissor((int) clip_min.x, (int) ((float) fb_height - clip_max.y),
+                                  (int) (clip_max.x - clip_min.x), (int) (clip_max.y - clip_min.y)));
 
                 // Bind texture, Draw
                 GL_CALL(glBindTexture(GL_TEXTURE_2D, (GLuint) (intptr_t) pcmd->GetTexID()));
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_VTX_OFFSET
                 if (bd->GlVersion >= 320)
-                    GL_CALL(glDrawElementsBaseVertex(GL_TRIANGLES, (GLsizei) pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void *) (intptr_t) (pcmd->IdxOffset * sizeof(ImDrawIdx)), (GLint) pcmd->VtxOffset));
+                    GL_CALL(glDrawElementsBaseVertex(GL_TRIANGLES, (GLsizei) pcmd->ElemCount,
+                                                     sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
+                                                     (void *) (intptr_t) (pcmd->IdxOffset * sizeof(ImDrawIdx)),
+                                                     (GLint) pcmd->VtxOffset));
                 else
 #endif
-                    GL_CALL(glDrawElements(GL_TRIANGLES, (GLsizei) pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, (void *) (intptr_t) (pcmd->IdxOffset * sizeof(ImDrawIdx))));
+                    GL_CALL(glDrawElements(GL_TRIANGLES, (GLsizei) pcmd->ElemCount,
+                                           sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
+                                           (void *) (intptr_t) (pcmd->IdxOffset * sizeof(ImDrawIdx))));
             }
         }
     }
@@ -712,8 +711,7 @@ void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
     else
         glDisable(GL_SCISSOR_TEST);
 #ifdef IMGUI_IMPL_OPENGL_MAY_HAVE_PRIMITIVE_RESTART
-    if (bd->GlVersion >= 310)
-    {
+    if (bd->GlVersion >= 310) {
         if (last_enable_primitive_restart) glEnable(GL_PRIMITIVE_RESTART);
         else
             glDisable(GL_PRIMITIVE_RESTART);
@@ -722,13 +720,10 @@ void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
 
 #ifdef IMGUI_IMPL_HAS_POLYGON_MODE
     // Desktop OpenGL 3.0 and OpenGL 3.1 had separate polygon draw modes for front-facing and back-facing faces of polygons
-    if (bd->GlVersion <= 310 || bd->GlProfileIsCompat)
-    {
+    if (bd->GlVersion <= 310 || bd->GlProfileIsCompat) {
         glPolygonMode(GL_FRONT, (GLenum) last_polygon_mode[0]);
         glPolygonMode(GL_BACK, (GLenum) last_polygon_mode[1]);
-    }
-    else
-    {
+    } else {
         glPolygonMode(GL_FRONT_AND_BACK, (GLenum) last_polygon_mode[0]);
     }
 #endif// IMGUI_IMPL_HAS_POLYGON_MODE
@@ -746,15 +741,15 @@ void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data)
     //    BatchRenderer::flush();
 }
 
-bool ImGui_ImplOpenGL3_Pixel_CreateFontsTexture()
-{
+bool ImGui_ImplOpenGL3_Pixel_CreateFontsTexture() {
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
 
     // Build texture atlas
     unsigned char *pixels;
     int width, height;
-    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);// Load as RGBA 32-bit (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width,
+                                 &height);// Load as RGBA 32-bit (75% of the memory is wasted, but default font is so small) because it is more likely to be compatible with user's existing shaders. If your ImTextureId represent a higher-level concept than just a GL texture id, consider calling GetTexDataAsAlpha8() instead to save on GPU memory.
 
     // Upload texture to graphics system
     // (Bilinear sampling is required by default. Set 'io.Fonts->Flags |= ImFontAtlasFlags_NoBakedLines' or 'style.AntiAliasedLinesUseTex = false' to allow point/nearest sampling)
@@ -778,12 +773,10 @@ bool ImGui_ImplOpenGL3_Pixel_CreateFontsTexture()
     return true;
 }
 
-void ImGui_ImplOpenGL3_Pixel_DestroyFontsTexture()
-{
+void ImGui_ImplOpenGL3_Pixel_DestroyFontsTexture() {
     ImGuiIO &io = ImGui::GetIO();
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
-    if (bd->FontTexture)
-    {
+    if (bd->FontTexture) {
         glDeleteTextures(1, &bd->FontTexture);
         io.Fonts->SetTexID(0);
         bd->FontTexture = 0;
@@ -791,16 +784,15 @@ void ImGui_ImplOpenGL3_Pixel_DestroyFontsTexture()
 }
 
 // If you get an error please report on github. You may try different GL context version or GLSL version. See GL<>GLSL version table at the top of this file.
-static bool CheckShader(GLuint handle, const char *desc)
-{
+static bool CheckShader(GLuint handle, const char *desc) {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
     GLint status = 0, log_length = 0;
     glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
     glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &log_length);
     if ((GLboolean) status == GL_FALSE)
-        fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects: failed to compile %s! With GLSL: %s\n", desc, bd->GlslVersionString);
-    if (log_length > 1)
-    {
+        fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects: failed to compile %s! With GLSL: %s\n",
+                desc, bd->GlslVersionString);
+    if (log_length > 1) {
         ImVector<char> buf;
         buf.resize((int) (log_length + 1));
         glGetShaderInfoLog(handle, log_length, nullptr, (GLchar *) buf.begin());
@@ -810,16 +802,15 @@ static bool CheckShader(GLuint handle, const char *desc)
 }
 
 // If you get an error please report on GitHub. You may try different GL context version or GLSL version.
-static bool CheckProgram(GLuint handle, const char *desc)
-{
+static bool CheckProgram(GLuint handle, const char *desc) {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
     GLint status = 0, log_length = 0;
     glGetProgramiv(handle, GL_LINK_STATUS, &status);
     glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &log_length);
     if ((GLboolean) status == GL_FALSE)
-        fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects: failed to link %s! With GLSL %s\n", desc, bd->GlslVersionString);
-    if (log_length > 1)
-    {
+        fprintf(stderr, "ERROR: ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects: failed to link %s! With GLSL %s\n", desc,
+                bd->GlslVersionString);
+    if (log_length > 1) {
         ImVector<char> buf;
         buf.resize((int) (log_length + 1));
         glGetProgramInfoLog(handle, log_length, nullptr, (GLchar *) buf.begin());
@@ -828,8 +819,7 @@ static bool CheckProgram(GLuint handle, const char *desc)
     return (GLboolean) status == GL_TRUE;
 }
 
-bool ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects()
-{
+bool ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects() {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
 
     // Backup GL state
@@ -1045,23 +1035,16 @@ bool ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects()
     // Select shaders matching our GLSL versions
     const GLchar *vertex_shader = nullptr;
     const GLchar *fragment_shader = nullptr;
-    if (glsl_version < 130)
-    {
+    if (glsl_version < 130) {
         vertex_shader = vertex_shader_glsl_120;
         fragment_shader = fragment_shader_glsl_120;
-    }
-    else if (glsl_version >= 410)
-    {
+    } else if (glsl_version >= 410) {
         //        vertex_shader = vertex_shader_glsl_410_core;
         //        fragment_shader = fragment_shader_glsl_410_core;
-    }
-    else if (glsl_version == 300)
-    {
+    } else if (glsl_version == 300) {
         vertex_shader = vertex_shader_glsl_300_es;
         fragment_shader = fragment_shader_glsl_300_es;
-    }
-    else
-    {
+    } else {
         vertex_shader = vertex_shader_glsl_130;
         fragment_shader = fragment_shader_glsl_130;
     }
@@ -1129,21 +1112,17 @@ bool ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects()
     return true;
 }
 
-void ImGui_ImplOpenGL3_Pixel_DestroyDeviceObjects()
-{
+void ImGui_ImplOpenGL3_Pixel_DestroyDeviceObjects() {
     ImGui_ImplOpenGL3_Pixel_Data *bd = ImGui_ImplOpenGL3_Pixel_GetBackendData();
-    if (bd->VboHandle)
-    {
+    if (bd->VboHandle) {
         glDeleteBuffers(1, &bd->VboHandle);
         bd->VboHandle = 0;
     }
-    if (bd->ElementsHandle)
-    {
+    if (bd->ElementsHandle) {
         glDeleteBuffers(1, &bd->ElementsHandle);
         bd->ElementsHandle = 0;
     }
-    if (bd->ShaderHandle)
-    {
+    if (bd->ShaderHandle) {
         glDeleteProgram(bd->ShaderHandle);
         bd->ShaderHandle = 0;
     }
@@ -1156,10 +1135,8 @@ void ImGui_ImplOpenGL3_Pixel_DestroyDeviceObjects()
 // If you are new to dear imgui or creating a new binding for dear imgui, it is recommended that you completely ignore this section first..
 //--------------------------------------------------------------------------------------------------------
 
-static void ImGui_ImplOpenGL3_Pixel_RenderWindow(ImGuiViewport *viewport, void *)
-{
-    if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear))
-    {
+static void ImGui_ImplOpenGL3_Pixel_RenderWindow(ImGuiViewport *viewport, void *) {
+    if (!(viewport->Flags & ImGuiViewportFlags_NoRendererClear)) {
         ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -1167,14 +1144,12 @@ static void ImGui_ImplOpenGL3_Pixel_RenderWindow(ImGuiViewport *viewport, void *
     ImGui_ImplOpenGL3_Pixel_RenderDrawData(viewport->DrawData);
 }
 
-static void ImGui_ImplOpenGL3_Pixel_InitPlatformInterface()
-{
+static void ImGui_ImplOpenGL3_Pixel_InitPlatformInterface() {
     ImGuiPlatformIO &platform_io = ImGui::GetPlatformIO();
     platform_io.Renderer_RenderWindow = ImGui_ImplOpenGL3_Pixel_RenderWindow;
 }
 
-static void ImGui_ImplOpenGL3_Pixel_ShutdownPlatformInterface()
-{
+static void ImGui_ImplOpenGL3_Pixel_ShutdownPlatformInterface() {
     ImGui::DestroyPlatformWindows();
 }
 

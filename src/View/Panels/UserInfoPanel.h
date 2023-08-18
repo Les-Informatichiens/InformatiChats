@@ -1,13 +1,15 @@
 //
 // Created by Jean on 8/17/2023.
 //
+
 #pragma once
-#include "../../Controller/IChannelController.h"
-#include "../../Model/Chat.h"
+
+#include <Controller/IChannelController.h>
+#include <Model/Chat.h>
 #include "IPanel.h"
 
-class UserInfoPanel : public IPanel
-{
+
+class UserInfoPanel : public IPanel {
 public:
     explicit UserInfoPanel(IChannelController &controller);
 

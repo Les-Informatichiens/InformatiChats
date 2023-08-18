@@ -6,37 +6,32 @@
 #include "imgui.h"
 
 
-LoginPanel::LoginPanel(ILoginController &controller) : controller(controller)
-{
+LoginPanel::LoginPanel(ILoginController &controller_) : controller(controller_) {
 }
 
 
-void LoginPanel::Draw()
-{
+void LoginPanel::Draw() {
 
-    if (!controller.IsConnected())
-    {
+    if (!controller.IsConnected()) {
         Update();
         // Draw the chat panel
     }
 }
 
-void LoginPanel::Update()
-{
+void LoginPanel::Update() {
 
-    LoginViewModel vm = controller.getViewModel();
+    LoginViewModel vm = controller.GetViewModel();
 
 
     ImGui::OpenPopup("Login");
-    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
+    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
         ImGui::Text("Enter your username");
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
         std::string buf;
-        if (ImGui::InputTextWithHint("##username", "otisma...", buf.data(), vm.maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
-        {
+        if (ImGui::InputTextWithHint("##username", "otisma...", buf.data(), vm.maxNameLength,
+                                     ImGuiInputTextFlags_EnterReturnsTrue)) {
             controller.AttemptConnectionWithUsername(buf);
         }
         ImGui::PopStyleVar();
@@ -45,7 +40,6 @@ void LoginPanel::Update()
     }
 }
 
-bool LoginPanel::IsVisible()
-{
+bool LoginPanel::IsVisible() {
     return false;
 }

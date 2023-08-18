@@ -2,11 +2,11 @@
 // Created by Jonathan Richard on 2023-08-09.
 //
 
-#ifndef INFORMATICHATS_SHADERS_H
-#define INFORMATICHATS_SHADERS_H
+#pragma once
 
 #include "GL/glew.h"
 #include "pxlui/ShaderProgram.h"
+
 
 static const char *VERT_SHADER =
         R"(#version 300 es
@@ -274,5 +274,3 @@ void main() {
     }
 }
 )";
-
-#endif//INFORMATICHATS_SHADERS_H

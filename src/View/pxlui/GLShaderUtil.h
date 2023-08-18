@@ -3,10 +3,8 @@
 #include <string>
 
 namespace PxlUI {
-    struct GLShaderUtil
-    {
-        struct ShaderProgramSource
-        {
+    struct GLShaderUtil {
+        struct ShaderProgramSource {
             std::string vertexSource;
             std::string fragmentSource;
         };

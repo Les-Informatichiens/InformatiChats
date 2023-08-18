@@ -4,19 +4,25 @@
 
 #pragma once
 
-#include "../../Controller/IChannelController.h"
+#include <Controller/IChannelController.h>
 #include "IView.h"
+
 #include <memory>
 #include <vector>
 
-class ChannelView : public IView
-{
+
+class ChannelView : public IView {
 public:
     explicit ChannelView(IChannelController &controller);
+
     ChannelView(std::vector<IPanel> &panels, IChannelController &controller);
-    void Draw() const override;
 
     void SetController(IChannelController &controller);
+
+    void Draw() const override;
+
+    bool IsVisible() override;
+
     void AddPanel(IPanel &panel) override;
 
 private:

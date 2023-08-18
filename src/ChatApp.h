@@ -2,8 +2,8 @@
 // Created by Jonathan Richard on 2023-08-09.
 //
 
-#ifndef INFORMATICHATS_CHATAPP_H
-#define INFORMATICHATS_CHATAPP_H
+#pragma once
+
 // Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
@@ -27,6 +27,7 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #else
+
 #include <GL/glew.h>
 #include <View/Views/IView.h>
 #include <View/pxlui/BatchRenderer.h>
@@ -34,6 +35,7 @@
 #include <View/pxlui/ShaderProgram.h>
 
 #endif
+
 #include <GLFW/glfw3.h>// Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
@@ -49,34 +51,41 @@
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 
-struct DisplaySize
-{
+struct DisplaySize {
     int width;
     int height;
 };
 
-class ChatApp
-{
+class ChatApp {
 public:
     ChatApp(Chat &chat);
+
     void Run();
+
     void addView(IView &view);
 
 private:
     void UpdateMainPanel();
 
     void PrepareNextFrame();
+
     void RenderFrame();
+
     void ApplyPostProcessing();
 
 private:
     bool Init();
+
     void Update();
+
     void Uninit();
 
     bool WindowInit(std::string &outGlslVersion);
+
     void CreateUIContext();
+
     void SetupRendererBackend(const std::string &glslVersion);
+
     void SetupPostProcessing();
 
 private:
@@ -90,8 +99,7 @@ private:
     ExampleAppConsole console;
     bool consoleOpen{};
 
-    struct PeerData
-    {
+    struct PeerData {
         ImVector<char *> history;
         size_t unreadMessageCount;
     };
@@ -111,8 +119,7 @@ private:
     char UsernameToConnectBuf[maxNameLength];
 
     // rendering
-    struct CRTShaderData
-    {
+    struct CRTShaderData {
         float mBlur = 1.f;
         float mCurvature = 0.f;
         float mChroma = 0.15f;
@@ -125,6 +132,3 @@ private:
     DisplaySize frameDisplaySize;
     std::vector<std::reference_wrapper<IView>> views;
 };
-
-
-#endif//INFORMATICHATS_CHATAPP_H

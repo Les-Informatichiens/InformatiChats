@@ -1,12 +1,12 @@
 #include "ChatPanel.h"
 #include "imgui.h"
 
-ChatPanel::ChatPanel(IChatController &controller) : controller(controller) {}
 
-void ChatPanel::Update()
-{
+ChatPanel::ChatPanel(IChatController &controller_) : controller(controller_) {}
 
-    ChatViewModel vm = controller.getViewModel();
+void ChatPanel::Update() {
+
+    ChatViewModel vm = controller.GetViewModel();
 
     ImGui::SameLine();
 
@@ -16,14 +16,14 @@ void ChatPanel::Update()
 
     // Command-line
     bool reclaim_focus = false;
-    ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+    ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
+                                           ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
     char InputBuf[256]{};
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags, &ExampleAppConsole::TextEditCallbackStub, (void *) &console))
-    {
+    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags,
+                         &ExampleAppConsole::TextEditCallbackStub, (void *) &console)) {
         char *s = InputBuf;
         Strtrim(s);
-        if (s[0])
-        {
+        if (s[0]) {
             // duplicate code, pls clean up
             auto result = historyMap.insert({selectedChat, {}});
             result.first->second.history.push_back(Strdup(std::format("[{}] {}", vm.userName, s).c_str()));
@@ -43,17 +43,14 @@ void ChatPanel::Update()
     ImGui::EndChild();
 }
 
-void ChatPanel::Draw()
-{
+void ChatPanel::Draw() {
     Update();
 
-    if (IsVisible())
-    {
+    if (IsVisible()) {
         // Draw the chat panel
     }
 }
 
-bool ChatPanel::IsVisible()
-{
+bool ChatPanel::IsVisible() {
     return false;
 }

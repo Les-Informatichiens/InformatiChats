@@ -24,19 +24,27 @@
 //  Only override if your GL version doesn't handle this GLSL version. See GLSL version table at the top of imgui_impl_opengl3.cpp.
 
 #pragma once
+
 #include "imgui.h"// IMGUI_IMPL_API
+
 #ifndef IMGUI_DISABLE
 
 // Backend API
 IMGUI_IMPL_API bool ImGui_ImplOpenGL3_Pixel_Init(const char *glsl_version = nullptr);
+
 IMGUI_IMPL_API void ImGui_ImplOpenGL3_Pixel_Shutdown();
+
 IMGUI_IMPL_API void ImGui_ImplOpenGL3_Pixel_NewFrame();
+
 IMGUI_IMPL_API void ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImDrawData *draw_data);
 
 // (Optional) Called by Init/NewFrame/Shutdown
 IMGUI_IMPL_API bool ImGui_ImplOpenGL3_Pixel_CreateFontsTexture();
+
 IMGUI_IMPL_API void ImGui_ImplOpenGL3_Pixel_DestroyFontsTexture();
+
 IMGUI_IMPL_API bool ImGui_ImplOpenGL3_Pixel_CreateDeviceObjects();
+
 IMGUI_IMPL_API void ImGui_ImplOpenGL3_Pixel_DestroyDeviceObjects();
 
 // Specific OpenGL ES versions
