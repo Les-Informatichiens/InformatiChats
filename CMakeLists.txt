@@ -44,11 +44,17 @@ add_executable(
         src/Controller/ChannelController.cpp
         src/Controller/ChannelController.h
         src/Controller/ViewModels/ChannelViewModel.h
-        src/Controller/ViewModels/ChannelViewModel.cpp
         src/Controller/IChannelController.h
         src/Controller/IChatController.h
-        src/Controller/ViewModels/ChatViewModel.cpp
         src/Controller/ViewModels/ChatViewModel.h
+        src/View/Views/ConnexionView.cpp
+        src/View/Views/ConnexionView.h
+        src/Controller/ConnexionController.cpp
+        src/Controller/ConnexionController.h
+        src/Controller/IConnexionController.h
+        src/View/Panels/ConnexionPanel.cpp
+        src/View/Panels/ConnexionPanel.h
+        src/Controller/ViewModels/ConnexionViewModel.h
 )
 
 target_include_directories(

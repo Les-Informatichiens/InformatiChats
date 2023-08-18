@@ -125,8 +125,6 @@ void ChatApp::UpdateMainPanel()
 
     // If the client is not connected to the server yet, ask the user to login.
     // Show the main application if connected.
-    if (chatClient.IsConnected())
-    {
         if (showDemoWindow)
             ImGui::ShowDemoWindow(&showDemoWindow);
 
@@ -134,35 +132,8 @@ void ChatApp::UpdateMainPanel()
         {
             view.get().Draw();
         }
-    }
-    else
-    {
-        UpdateLoginPopup();
-    }
-
     ImGui::End();
     ImGui::PopStyleVar();
-}
-
-void ChatApp::UpdateLoginPopup()
-{
-    ImGui::OpenPopup("Login");
-    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-    {
-        ImGui::Text("Enter your username");
-        ImGui::Separator();
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-        char buf[maxNameLength];
-        memset(buf, 0, maxNameLength*sizeof(char));
-        if (ImGui::InputTextWithHint("##username", "otisma...", buf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue))
-        {
-            chatClient.AttemptConnectionWithUsername(buf);
-        }
-        ImGui::PopStyleVar();
-
-        ImGui::EndPopup();
-    }
 }
 
 void ChatApp::PrepareNextFrame()

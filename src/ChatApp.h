@@ -63,7 +63,6 @@ public:
     void addView(IView& view);
 private:
     void UpdateMainPanel();
-    void UpdateLoginPopup();
 
     void PrepareNextFrame();
     void RenderFrame();
