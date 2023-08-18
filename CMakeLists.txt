@@ -45,6 +45,12 @@ add_executable(
         src/Controller/ChannelController.h
 )
 
+target_include_directories(
+        ${PROJECT_NAME}
+        PRIVATE
+        src
+)
+
 if(MSVC)
     # Set the app as solution startup project
     set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )

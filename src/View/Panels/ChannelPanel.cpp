@@ -1,7 +1,9 @@
-#include <string>
 #include "ChannelPanel.h"
+
 #include "imgui.h"
 #include "rtc/peerconnection.hpp"
+
+#include <string>
 
 ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {
 }

@@ -1,8 +1,10 @@
 #pragma once
 
 #include "IPanel.h"
+#include <Model/Chat.h>
+
 #include "imgui.h"
-#include "../../Model/Chat.h"
+
 #include <unordered_map>
 
 class ChannelPanel: public IPanel {

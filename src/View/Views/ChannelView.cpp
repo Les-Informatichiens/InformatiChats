@@ -1,5 +1,4 @@
 #include "ChannelView.h"
-#include "../../Controller/ChannelController.h"
 
 /**
  * @brief Builds a view with no panels

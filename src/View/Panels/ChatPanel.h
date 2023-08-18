@@ -1,8 +1,9 @@
 #pragma once
 
 #include "IPanel.h"
-#include "../console.h"
-#include "../../Model/Chat.h"
+#include <Model/Chat.h>
+
+#include <View/console.h>
 
 class ChatPanel: public IPanel {
 public:

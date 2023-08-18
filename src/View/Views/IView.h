@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Panels/IPanel.h"
+#include <View/Panels/IPanel.h>
 
  class IView{
 public:

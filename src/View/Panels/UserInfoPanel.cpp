@@ -4,8 +4,8 @@
 
 #include "UserInfoPanel.h"
 #include "imgui.h"
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient) {  }
 

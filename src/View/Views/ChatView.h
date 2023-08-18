@@ -3,10 +3,11 @@
 //
 #pragma once
 
+#include "IView.h"
+#include <Controller/ChatController.h>
+
 #include <vector>
 #include <memory>
-#include "IView.h"
-#include "../../Controller/ChatController.h"
 
 class ChatView : public IView {
 public:

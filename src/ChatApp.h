@@ -28,10 +28,10 @@
 #include <GLES2/gl2.h>
 #else
 #include <GL/glew.h>
-#include "View/pxlui/ShaderProgram.h"
-#include "View/pxlui/BatchRenderer.h"
-#include "View/pxlui/GLShaderUtil.h"
-#include "View/Views/IView.h"
+#include <View/pxlui/ShaderProgram.h>
+#include <View/pxlui/BatchRenderer.h>
+#include <View/pxlui/GLShaderUtil.h>
+#include <View/Views/IView.h>
 
 #endif
 #include <GLFW/glfw3.h> // Will drag system OpenGL headers

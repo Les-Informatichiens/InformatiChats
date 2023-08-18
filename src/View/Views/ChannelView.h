@@ -4,10 +4,11 @@
 
 #pragma once
 
+#include "IView.h"
+#include <Controller/ChannelController.h>
+
 #include <vector>
 #include <memory>
-#include "IView.h"
-#include "../../Controller/ChannelController.h"
 
 class ChannelView : public IView{
 public:

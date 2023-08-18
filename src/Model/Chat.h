@@ -5,7 +5,8 @@
 #ifndef INFORMATICHATS_CHAT_H
 #define INFORMATICHATS_CHAT_H
 
-#include "../View/console.h"
+#include <View/console.h>
+
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
 #include <utility>
