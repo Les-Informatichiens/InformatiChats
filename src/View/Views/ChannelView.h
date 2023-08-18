@@ -7,17 +7,17 @@
 #include <vector>
 #include <memory>
 #include "IView.h"
-#include "../../Controller/ChannelController.h"
+#include "../../Controller/IChannelController.h"
 
 class ChannelView : public IView{
 public:
-    explicit ChannelView(ChannelController &controller);
-    ChannelView(std::vector<IPanel>& panels, ChannelController& controller);
+    explicit ChannelView(IChannelController &controller);
+    ChannelView(std::vector<IPanel>& panels, IChannelController& controller);
     void Draw() const override;
 
-    void SetController(ChannelController &controller);
+    void SetController(IChannelController &controller);
     void AddPanel(IPanel &panel) override;
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
-    ChannelController& controller;
+    IChannelController& controller;
 };

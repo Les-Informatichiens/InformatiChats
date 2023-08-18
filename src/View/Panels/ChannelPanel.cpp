@@ -3,10 +3,14 @@
 #include "imgui.h"
 #include "rtc/peerconnection.hpp"
 
-ChannelPanel::ChannelPanel(Chat &chatClient) : chatClient(chatClient) {
+
+ChannelPanel::ChannelPanel(IChannelController& controller) : controller(controller){
 }
 
 void ChannelPanel::Update() {
+
+    ChannelViewModel vm = controller.getViewModel();
+
     ImGui::BeginGroup();
 
     ImGui::BeginChild("Npcs", ImVec2(200, -50), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
@@ -24,8 +28,8 @@ void ChannelPanel::Update() {
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-            char UsernameToConnectBuf[maxNameLength]{0};
-            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf, maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
+            std::string UsernameToConnectBuf;
+            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf.data(), maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
 
             bool addNewChatPressed = ImGui::Button("Add new chat");
@@ -34,9 +38,8 @@ void ChannelPanel::Update() {
             {
                 if(UsernameToConnectBuf[0] != '\0')
                 {
-                    //Controller code
-                    chatClient.AttemptToConnectToPeer(UsernameToConnectBuf);
-                    memset(UsernameToConnectBuf, 0, sizeof(UsernameToConnectBuf));
+                    controller.AttemptToConnectToPeer(UsernameToConnectBuf);
+                    UsernameToConnectBuf = "";
                     addNewChatPrompt = false;
                 }
             }
@@ -56,7 +59,7 @@ void ChannelPanel::Update() {
     // draw chat names
 
     //Controller code (controller needs to return list of connections from the model)
-    for (const auto& peerConnection : chatClient.GetPeerConnections())
+    for (const auto& peerConnection : vm.peerConnectionMap)
     {
         const std::string& peerId = peerConnection.first;
         bool isSelected = selectedChat == peerId;

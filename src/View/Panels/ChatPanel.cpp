@@ -1,9 +1,12 @@
 #include "ChatPanel.h"
 #include "imgui.h"
 
-ChatPanel::ChatPanel(Chat &chatClient) : chatClient(chatClient){}
+ChatPanel::ChatPanel(IChatController& controller) : controller(controller){}
 
 void ChatPanel::Update() {
+
+    ChatViewModel vm = controller.getViewModel();
+
     ImGui::SameLine();
 
     ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
@@ -22,10 +25,10 @@ void ChatPanel::Update() {
         {
             // duplicate code, pls clean up
             auto result = historyMap.insert({ selectedChat, {} });
-            result.first->second.history.push_back(Strdup(std::format("[{}] {}", chatClient.GetUsername(), s).c_str()));
+            result.first->second.history.push_back(Strdup(std::format("[{}] {}", vm.userName, s).c_str()));
 
-            console.AddLog("[%s] %s", chatClient.GetUsername().c_str(), s);
-            chatClient.SendMessageToPeer(selectedChat, s);
+            console.AddLog("[%s] %s", vm.userName.c_str(), s);
+            //chatClient.SendMessageToPeer(selectedChat, s);
         }
         strcpy(s, "");
         reclaim_focus = true;

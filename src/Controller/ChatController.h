@@ -1,14 +1,16 @@
 //
 // Created by Jean on 8/18/2023.
 //
+#pragma once
 
-#ifndef INFORMATICHATS_CHATCONTROLLER_H
-#define INFORMATICHATS_CHATCONTROLLER_H
+#include "IChatController.h"
+#include <string>
 
+class ChatController : public IChatController{
+public:
+    ChatViewModel getViewModel() override;
 
-class ChatController {
+private:
 
+    std::string userName;
 };
-
-
-#endif //INFORMATICHATS_CHATCONTROLLER_H

@@ -145,7 +145,7 @@ void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, cons
     dc->onOpen([this, peerId, wdc = std::weak_ptr(dc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
         if (auto dc = wdc.lock())
-            dc->send("Hello from " + GetUsername());
+            dc->send("Hello from " + username);
     });
 
     dc->onClosed([this, peerId]() {
@@ -186,24 +186,6 @@ void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, cons
     });
 
     dataChannelMap.emplace(peerId, dc);
-}
-
-void Chat::AttemptToConnectToPeer(const std::string& peerId)
-{
-    if (peerId == username)
-    {
-        std::cout << "Cannot connect to own id" << std::endl;
-        return;
-    }
-    if (peerConnectionMap.find(peerId) != peerConnectionMap.end())
-    {
-        std::cout << "Already connected with user: " + peerId << std::endl;
-        return;
-    }
-
-    std::cout << "Offering to " + peerId << std::endl;
-    auto pc = CreatePeerConnection(peerId);
-    CreateDataChannel(pc, peerId);
 }
 
 void Chat::SendMessageToPeer(const std::string& peerId, const char *message)

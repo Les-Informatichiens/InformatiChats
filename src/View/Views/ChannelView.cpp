@@ -4,14 +4,14 @@
 /**
  * @brief Builds a view with no panels
  */
-ChannelView::ChannelView(ChannelController &controller_) : controller(controller_) {
+ChannelView::ChannelView(IChannelController& controller_) : controller(controller_) {
 }
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ChannelView::ChannelView(std::vector<IPanel>& panels_,  ChannelController &controller_):controller(controller_)
+ChannelView::ChannelView(std::vector<IPanel>& panels_,  IChannelController& controller_):controller(controller_)
 {
     for (IPanel& panel : panels_) {
         this->panels.emplace_back(panel);
@@ -39,7 +39,7 @@ void ChannelView::AddPanel(IPanel& panel_) {
  * Sets the controller for the view
  * @param controller_
  */
-void ChannelView::SetController(ChannelController &controller_) {
+void ChannelView::SetController(IChannelController &controller_) {
     this->controller = controller_;
 }
 

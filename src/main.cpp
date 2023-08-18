@@ -26,9 +26,9 @@ int main(int, char**)
     ChatView chatView = ChatView(chatController);
     ChannelView channelView = ChannelView(channelController);
 
-    auto channelPanel = ChannelPanel(chatClient);
-    auto userInfoPanel = UserInfoPanel(chatClient);
-    auto chatPanel = ChatPanel(chatClient);
+    auto channelPanel = ChannelPanel(channelController);
+    auto userInfoPanel = UserInfoPanel(channelController);
+    auto chatPanel = ChatPanel(chatController);
 
     chatView.AddPanel(chatPanel);
     channelView.AddPanel(channelPanel);

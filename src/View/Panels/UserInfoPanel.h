@@ -4,10 +4,11 @@
 #pragma once
 #include "IPanel.h"
 #include "../../Model/Chat.h"
+#include "../../Controller/IChannelController.h"
 
 class UserInfoPanel : public IPanel {
 public:
-    explicit UserInfoPanel(Chat &chatClient);
+    explicit UserInfoPanel(IChannelController& controller);
 
     void Draw() override;
 
@@ -15,5 +16,7 @@ public:
 
     bool IsVisible() override;
 
-    Chat& chatClient;
+private:
+    IChannelController& controller;
+
 };

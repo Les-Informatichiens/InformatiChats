@@ -7,13 +7,14 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
-UserInfoPanel::UserInfoPanel(Chat &chatClient): chatClient(chatClient) {  }
+UserInfoPanel::UserInfoPanel(IChannelController& controller) : controller(controller){}
 
     void UserInfoPanel::Update() {
+        ChannelViewModel vm = controller.getViewModel();
 
         ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
-        ImGui::Text("%s", chatClient.GetUsername().c_str());
+        ImGui::Text("%s", vm.userName.c_str());
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 

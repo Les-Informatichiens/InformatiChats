@@ -1,16 +1,17 @@
 #include "ChatView.h"
+#include "../../Controller/ChatController.h"
 
 /**
  * @brief Builds a view with no panels
  */
-ChatView::ChatView(ChatController &controller_) : controller(controller_) {
+ChatView::ChatView(IChatController &controller) : controller(controller) {
 }
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ChatView::ChatView(std::vector<IPanel>& panels_,  ChatController &controller_):controller(controller_)
+ChatView::ChatView(std::vector<IPanel>& panels_,  IChatController &controller):controller(controller)
 {
     for (IPanel& panel : panels_) {
         this->panels.emplace_back(panel);
@@ -34,11 +35,12 @@ void ChatView::AddPanel(IPanel& panel_) {
     this->panels.emplace_back(panel_);
 }
 
+
 /**
  * Sets the controller for the view
  * @param controller_
  */
-void ChatView::SetController(ChatController &controller_) {
+void ChatView::SetController(IChatController &controller_) {
     this->controller = controller_;
 }
 

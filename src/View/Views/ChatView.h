@@ -6,19 +6,19 @@
 #include <vector>
 #include <memory>
 #include "IView.h"
-#include "../../Controller/ChatController.h"
+#include "../../Controller/IChatController.h"
 
 class ChatView : public IView {
 public:
 
-    explicit ChatView(ChatController &controller);
-    ChatView(std::vector<IPanel>& panels, ChatController& controller);
+    explicit ChatView(IChatController &controller);
+    ChatView(std::vector<IPanel>& panels, IChatController& controller);
     void Draw() const override;
 
-    void SetController(ChatController &controller);
+    void SetController(IChatController &controller);
     void AddPanel(IPanel &panel) override;
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
-    ChatController& controller;
+    IChatController& controller;
 
 };

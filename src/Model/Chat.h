@@ -32,7 +32,6 @@ public:
 
     void AttemptConnectionWithUsername(const char* newUsername);
 
-    void AttemptToConnectToPeer(const std::string& peerId);
     void SendMessageToPeer(const std::string& peerId, const char* message);
 
     void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) { onMessageReceivedCallback = std::move(callback); };
@@ -62,7 +61,7 @@ private:
     std::promise<void> wsPromise;
     std::shared_ptr<rtc::WebSocket> webSocket;
 
-    std::string username;
+    std::string username;//
 
     bool connected{};
 

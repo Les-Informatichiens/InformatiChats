@@ -43,6 +43,12 @@ add_executable(
         src/View/Views/ChatView.h
         src/Controller/ChannelController.cpp
         src/Controller/ChannelController.h
+        src/Controller/ViewModels/ChannelViewModel.h
+        src/Controller/ViewModels/ChannelViewModel.cpp
+        src/Controller/IChannelController.h
+        src/Controller/IChatController.h
+        src/Controller/ViewModels/ChatViewModel.cpp
+        src/Controller/ViewModels/ChatViewModel.h
 )
 
 if(MSVC)

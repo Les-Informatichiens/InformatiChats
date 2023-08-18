@@ -3,12 +3,13 @@
 #include "IPanel.h"
 #include "imgui.h"
 #include "../../Model/Chat.h"
+#include "../../Controller/IChannelController.h"
 #include <unordered_map>
 
 class ChannelPanel: public IPanel {
 public:
 
-    explicit ChannelPanel(Chat &chatClient);
+    explicit ChannelPanel(IChannelController& channelController);
 
     void Draw() override;
     void Update() override;
@@ -23,9 +24,8 @@ public:
     };
     std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
-    Chat& chatClient;
     ExampleAppConsole console;
     static constexpr int maxNameLength{32};
-
+    IChannelController& controller;
 
 };
