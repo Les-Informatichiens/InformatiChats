@@ -2,9 +2,9 @@
 // Created by Jean on 8/18/2023.
 //
 
-#include "ConnexionController.h"
+#include "LoginController.h"
 
-void ConnexionController::AttemptConnectionWithUsername(const std::string &newUsername)
+void LoginController::AttemptConnectionWithUsername(const std::string &newUsername)
 {
     auto wsFuture = wsPromise.get_future();
 
@@ -110,7 +110,7 @@ void ConnexionController::AttemptConnectionWithUsername(const std::string &newUs
     wsFuture.get();
 }
 
-std::shared_ptr<rtc::PeerConnection> ConnexionController::CreatePeerConnection(const std::string &peerId)
+std::shared_ptr<rtc::PeerConnection> LoginController::CreatePeerConnection(const std::string &peerId)
 {
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
@@ -161,7 +161,7 @@ std::shared_ptr<rtc::PeerConnection> ConnexionController::CreatePeerConnection(c
     return pc;
 }
 
-void ConnexionController::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId)
+void LoginController::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId)
 {
     dc->onOpen([this, peerId, wdc = std::weak_ptr(dc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
@@ -208,7 +208,7 @@ void ConnexionController::RegisterDataChannel(const std::shared_ptr<rtc::DataCha
     dataChannelMap.emplace(peerId, dc);
 }
 
-ConnexionViewModel ConnexionController::getViewModel()
+LoginViewModel LoginController::getViewModel()
 {
     return {maxNameLength};
 }

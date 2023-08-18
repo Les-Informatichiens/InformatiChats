@@ -47,14 +47,16 @@ add_executable(
         src/Controller/IChannelController.h
         src/Controller/IChatController.h
         src/Controller/ViewModels/ChatViewModel.h
-        src/View/Views/ConnexionView.cpp
-        src/View/Views/ConnexionView.h
-        src/Controller/ConnexionController.cpp
-        src/Controller/ConnexionController.h
-        src/Controller/IConnexionController.h
-        src/View/Panels/ConnexionPanel.cpp
-        src/View/Panels/ConnexionPanel.h
-        src/Controller/ViewModels/ConnexionViewModel.h
+        src/View/Views/LoginView.cpp
+        src/View/Views/LoginView.h
+        src/Controller/LoginController.cpp
+        src/Controller/LoginController.h
+        src/Controller/ILoginController.h
+        src/View/Panels/LoginPanel.cpp
+        src/View/Panels/LoginPanel.h
+        src/Controller/ViewModels/LoginViewModel.h
+        src/Model/User.cpp
+        src/Model/User.h
 )
 
 target_include_directories(

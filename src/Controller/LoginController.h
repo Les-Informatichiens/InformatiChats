@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include "IConnexionController.h"
+#include "ILoginController.h"
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
-#include <Controller/ViewModels/ConnexionViewModel.h>
+#include <Controller/ViewModels/LoginViewModel.h>
 
-class ConnexionController : public IConnexionController
+class LoginController : public ILoginController
 {
 public:
-    ConnexionViewModel getViewModel() override;
+    LoginViewModel getViewModel() override;
 
     bool IsConnected() override { return connected; };
 

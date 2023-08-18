@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "Controller/ViewModels/ConnexionViewModel.h"
+#include "Controller/ViewModels/LoginViewModel.h"
 
-class IConnexionController
+class ILoginController
 {
 public:
     virtual void AttemptConnectionWithUsername(const std::string &newUsername) = 0;
-    virtual ConnexionViewModel getViewModel() = 0;
+    virtual LoginViewModel getViewModel() = 0;
     virtual bool IsConnected() = 0;
 };

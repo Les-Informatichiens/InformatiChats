@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "Controller/IConnexionController.h"
+#include "Controller/ILoginController.h"
 #include "IPanel.h"
 
-class ConnexionPanel : public IPanel
+class LoginPanel : public IPanel
 {
 public:
-    explicit ConnexionPanel(IConnexionController &controller);
+    explicit LoginPanel(ILoginController &controller);
 
     void Draw() override;
 
@@ -19,5 +19,5 @@ public:
     bool IsVisible() override;
 
 private:
-    IConnexionController &controller;
+    ILoginController &controller;
 };

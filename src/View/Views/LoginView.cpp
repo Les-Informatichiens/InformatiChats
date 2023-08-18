@@ -2,12 +2,12 @@
 // Created by Jean on 8/18/2023.
 //
 
-#include "ConnexionView.h"
+#include "LoginView.h"
 
 /**
  * @brief Builds a view with no panels
  */
-ConnexionView::ConnexionView(IConnexionController &controller)
+LoginView::LoginView(ILoginController &controller)
     : controller(controller)
 {
 }
@@ -16,7 +16,7 @@ ConnexionView::ConnexionView(IConnexionController &controller)
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ConnexionView::ConnexionView(std::vector<IPanel> &panels_, IConnexionController &controller)
+LoginView::LoginView(std::vector<IPanel> &panels_, ILoginController &controller)
     : controller(controller)
 {
     for (IPanel &panel: panels_)
@@ -25,7 +25,7 @@ ConnexionView::ConnexionView(std::vector<IPanel> &panels_, IConnexionController 
     }
 }
 
-void ConnexionView::Draw() const
+void LoginView::Draw() const
 {
     for (IPanel &panel: this->panels)
     {
@@ -33,7 +33,7 @@ void ConnexionView::Draw() const
     }
 }
 
-void ConnexionView::AddPanel(IPanel &panel)
+void LoginView::AddPanel(IPanel &panel)
 {
     this->panels.emplace_back(panel);
 }

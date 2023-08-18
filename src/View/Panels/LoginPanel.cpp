@@ -2,16 +2,16 @@
 // Created by Jean on 8/18/2023.
 //
 
-#include "ConnexionPanel.h"
+#include "LoginPanel.h"
 #include "imgui.h"
 
 
-ConnexionPanel::ConnexionPanel(IConnexionController &controller) : controller(controller)
+LoginPanel::LoginPanel(ILoginController &controller) : controller(controller)
 {
 }
 
 
-void ConnexionPanel::Draw()
+void LoginPanel::Draw()
 {
 
     if (!controller.IsConnected())
@@ -21,10 +21,10 @@ void ConnexionPanel::Draw()
     }
 }
 
-void ConnexionPanel::Update()
+void LoginPanel::Update()
 {
 
-    ConnexionViewModel vm = controller.getViewModel();
+    LoginViewModel vm = controller.getViewModel();
 
 
     ImGui::OpenPopup("Login");
@@ -45,7 +45,7 @@ void ConnexionPanel::Update()
     }
 }
 
-bool ConnexionPanel::IsVisible()
+bool LoginPanel::IsVisible()
 {
     return false;
 }

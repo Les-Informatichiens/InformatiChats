@@ -4,7 +4,7 @@
 #pragma once
 #include <string>
 
-struct ConnexionViewModel
+struct LoginViewModel
 {
     int maxNameLength;
     std::string signalingServer;

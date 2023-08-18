@@ -1,7 +1,7 @@
 #include "ChatApp.h"
-#include "Controller/ConnexionController.h"
-#include "View/Panels/ConnexionPanel.h"
-#include "View/Views/ConnexionView.h"
+#include "Controller/LoginController.h"
+#include "View/Panels/LoginPanel.h"
+#include "View/Views/LoginView.h"
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <View/Panels/ChannelPanel.h>
@@ -24,29 +24,29 @@ int main(int, char **)
     //init controller
     auto chatController = ChatController();
     auto channelController = ChannelController();
-    auto connexionController = ConnexionController();
+    auto loginController = LoginController();
 
     //init view
     auto chatView = ChatView(chatController);
     auto channelView = ChannelView(channelController);
-    auto connexionView = ConnexionView(connexionController);
+    auto loginView = LoginView(loginController);
 
 
     auto channelPanel = ChannelPanel(channelController);
     auto userInfoPanel = UserInfoPanel(channelController);
     auto chatPanel = ChatPanel(chatController);
-    auto connexionPanel = ConnexionPanel(connexionController);
+    auto loginPanel = LoginPanel(loginController);
 
     chatView.AddPanel(chatPanel);
     channelView.AddPanel(channelPanel);
     channelView.AddPanel(userInfoPanel);
-    connexionView.AddPanel(connexionPanel);
+    loginView.AddPanel(loginPanel);
 
     //init app
     ChatApp app(chatClient);
     app.addView(channelView);
     app.addView(chatView);
-    app.addView(connexionView);
+    app.addView(loginView);
 
     app.Run();
 
