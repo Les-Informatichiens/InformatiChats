@@ -5,7 +5,8 @@
 #include <unordered_map>
 
 namespace PxlUI {
-    class ShaderProgram {
+    class ShaderProgram
+    {
     public:
         ShaderProgram(const std::string &iFilePath);
 

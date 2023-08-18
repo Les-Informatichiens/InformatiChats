@@ -7,7 +7,8 @@
 #include <Controller/ViewModels/LoginViewModel.h>
 
 
-class ILoginController {
+class ILoginController
+{
 public:
     virtual void AttemptConnectionWithUsername(const std::string &newUsername) = 0;
 

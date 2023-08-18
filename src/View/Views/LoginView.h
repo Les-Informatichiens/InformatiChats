@@ -4,13 +4,14 @@
 
 #pragma once
 
-#include <Controller/ILoginController.h>
 #include "IView.h"
+#include <Controller/ILoginController.h>
 
 #include <vector>
 
 
-class LoginView : public IView {
+class LoginView : public IView
+{
 public:
     explicit LoginView(ILoginController &controller);
 

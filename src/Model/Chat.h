@@ -11,19 +11,22 @@
 #include <utility>
 
 
-struct MessageReceivedEvent {
+struct MessageReceivedEvent
+{
     std::string senderId;
     std::string content;
 };
 
-struct ConnectionConfig {
+struct ConnectionConfig
+{
     std::string stunServer;
     std::string stunServerPort;
     std::string signalingServer;
     std::string signalingServerPort;
 };
 
-class Chat {
+class Chat
+{
 public:
     explicit Chat(const ConnectionConfig &config);
 
@@ -33,7 +36,8 @@ public:
 
     void SendMessageToPeer(const std::string &peerId, const char *message);
 
-    void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback) {
+    void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback)
+    {
         onMessageReceivedCallback = std::move(callback);
     };
 

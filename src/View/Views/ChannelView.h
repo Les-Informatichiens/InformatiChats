@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include <Controller/IChannelController.h>
 #include "IView.h"
+#include <Controller/IChannelController.h>
 
 #include <memory>
 #include <vector>
 
 
-class ChannelView : public IView {
+class ChannelView : public IView
+{
 public:
     explicit ChannelView(IChannelController &controller);
 

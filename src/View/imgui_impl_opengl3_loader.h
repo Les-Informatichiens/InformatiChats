@@ -482,9 +482,11 @@ GL3W_API int imgl3wIsSupported(int major, int minor);
 GL3W_API GL3WglProc imgl3wGetProcAddress(const char *proc);
 
 /* gl3w internal state */
-union GL3WProcs {
+union GL3WProcs
+{
     GL3WglProc ptr[59];
-    struct {
+    struct
+    {
         PFNGLACTIVETEXTUREPROC ActiveTexture;
         PFNGLATTACHSHADERPROC AttachShader;
         PFNGLBINDBUFFERPROC BindBuffer;

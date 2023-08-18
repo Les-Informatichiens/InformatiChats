@@ -8,18 +8,22 @@
 
 
 // Portable helpers
-static int Stricmp(const char *s1, const char *s2) {
+static int Stricmp(const char *s1, const char *s2)
+{
     int d;
-    while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1) {
+    while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
+    {
         s1++;
         s2++;
     }
     return d;
 }
 
-static int Strnicmp(const char *s1, const char *s2, int n) {
+static int Strnicmp(const char *s1, const char *s2, int n)
+{
     int d = 0;
-    while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1) {
+    while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
+    {
         s1++;
         s2++;
         n--;
@@ -27,7 +31,8 @@ static int Strnicmp(const char *s1, const char *s2, int n) {
     return d;
 }
 
-static char *Strdup(const char *s) {
+static char *Strdup(const char *s)
+{
     IM_ASSERT(s);
     size_t len = strlen(s) + 1;
     void *buf = malloc(len);
@@ -35,13 +40,15 @@ static char *Strdup(const char *s) {
     return (char *) memcpy(buf, (const void *) s, len);
 }
 
-static void Strtrim(char *s) {
+static void Strtrim(char *s)
+{
     char *str_end = s + strlen(s);
     while (str_end > s && str_end[-1] == ' ') str_end--;
     *str_end = 0;
 }
 
-struct ExampleAppConsole {
+struct ExampleAppConsole
+{
     //    char                  InputBuf[256];
     ImVector<char *> Items;
     ImVector<const char *> Commands;
@@ -51,7 +58,8 @@ struct ExampleAppConsole {
     bool AutoScroll;
     bool ScrollToBottom;
 
-    ExampleAppConsole() {
+    ExampleAppConsole()
+    {
         ClearLog();
         //        memset(InputBuf, 0, sizeof(InputBuf));
         HistoryPos = -1;
@@ -66,34 +74,39 @@ struct ExampleAppConsole {
         AddLog("Welcome to Dear ImGui!");
     }
 
-    ~ExampleAppConsole() {
+    ~ExampleAppConsole()
+    {
         ClearLog();
         for (int i = 0; i < History.Size; i++)
             free(History[i]);
     }
 
-    void SetLogHistory(ImVector<char *> &history) {
+    void SetLogHistory(ImVector<char *> &history)
+    {
         Items = history;
     }
 
-    void ClearLog() {
+    void ClearLog()
+    {
         for (int i = 0; i < Items.Size; i++)
             free(Items[i]);
         Items.clear();
     }
 
-    void AddLog(const char *fmt, ...) IM_FMTARGS(2) {
+    void AddLog(const char *fmt, ...) IM_FMTARGS(2)
+    {
         // FIXME-OPT
         char buf[1024];
         va_list args;
-                va_start(args, fmt);
+        va_start(args, fmt);
         vsnprintf(buf, IM_ARRAYSIZE(buf), fmt, args);
         buf[IM_ARRAYSIZE(buf) - 1] = 0;
-                va_end(args);
+        va_end(args);
         Items.push_back(Strdup(buf));
     }
 
-    void Draw(const char *title, bool *p_open) {
+    void Draw(const char *title, bool *p_open)
+    {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         //        if (!ImGui::Begin(title, p_open))
         //        {
@@ -118,7 +131,8 @@ struct ExampleAppConsole {
 
         // TODO: display items starting from the bottom
 
-        if (ImGui::SmallButton("Add Debug Text")) {
+        if (ImGui::SmallButton("Add Debug Text"))
+        {
             AddLog("%d some text", Items.Size);
             AddLog("some more text");
             AddLog("display very important message here!");
@@ -134,7 +148,8 @@ struct ExampleAppConsole {
         ImGui::Separator();
 
         // Options menu
-        if (ImGui::BeginPopup("Options")) {
+        if (ImGui::BeginPopup("Options"))
+        {
             ImGui::Checkbox("Auto-scroll", &AutoScroll);
             ImGui::EndPopup();
         }
@@ -149,8 +164,10 @@ struct ExampleAppConsole {
         // Reserve enough left-over height for 1 separator + 1 input text
         const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false,
-                              ImGuiWindowFlags_HorizontalScrollbar)) {
-            if (ImGui::BeginPopupContextWindow()) {
+                              ImGuiWindowFlags_HorizontalScrollbar))
+        {
+            if (ImGui::BeginPopupContextWindow())
+            {
                 if (ImGui::Selectable("Clear")) ClearLog();
                 ImGui::EndPopup();
             }
@@ -182,7 +199,8 @@ struct ExampleAppConsole {
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1));// Tighten spacing
             if (copy_to_clipboard)
                 ImGui::LogToClipboard();
-            for (int i = 0; i < Items.Size; i++) {
+            for (int i = 0; i < Items.Size; i++)
+            {
                 const char *item = Items[i];
                 if (!Filter.PassFilter(item))
                     continue;
@@ -191,10 +209,13 @@ struct ExampleAppConsole {
                 // (e.g. make Items[] an array of structure, store color/type etc.)
                 ImVec4 color;
                 bool has_color = false;
-                if (strstr(item, "[error]")) {
+                if (strstr(item, "[error]"))
+                {
                     color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                     has_color = true;
-                } else if (strncmp(item, "# ", 2) == 0) {
+                }
+                else if (strncmp(item, "# ", 2) == 0)
+                {
                     color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f);
                     has_color = true;
                 }
@@ -239,14 +260,16 @@ struct ExampleAppConsole {
         //        ImGui::End();
     }
 
-    void ExecCommand(const char *command_line) {
+    void ExecCommand(const char *command_line)
+    {
         AddLog("# %s\n", command_line);
 
         // Insert into history. First find match and delete it so it can be pushed to the back.
         // This isn't trying to be smart or optimal.
         HistoryPos = -1;
         for (int i = History.Size - 1; i >= 0; i--)
-            if (Stricmp(History[i], command_line) == 0) {
+            if (Stricmp(History[i], command_line) == 0)
+            {
                 free(History[i]);
                 History.erase(History.begin() + i);
                 break;
@@ -254,17 +277,24 @@ struct ExampleAppConsole {
         History.push_back(Strdup(command_line));
 
         // Process command
-        if (Stricmp(command_line, "CLEAR") == 0) {
+        if (Stricmp(command_line, "CLEAR") == 0)
+        {
             ClearLog();
-        } else if (Stricmp(command_line, "HELP") == 0) {
+        }
+        else if (Stricmp(command_line, "HELP") == 0)
+        {
             AddLog("Commands:");
             for (int i = 0; i < Commands.Size; i++)
                 AddLog("- %s", Commands[i]);
-        } else if (Stricmp(command_line, "HISTORY") == 0) {
+        }
+        else if (Stricmp(command_line, "HISTORY") == 0)
+        {
             int first = History.Size - 10;
             for (int i = first > 0 ? first : 0; i < History.Size; i++)
                 AddLog("%3d: %s\n", i, History[i]);
-        } else {
+        }
+        else
+        {
             AddLog("Unknown command: '%s'\n", command_line);
         }
 
@@ -273,21 +303,25 @@ struct ExampleAppConsole {
     }
 
     // In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data) {
+    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data)
+    {
         ExampleAppConsole *console = (ExampleAppConsole *) data->UserData;
         return console->TextEditCallback(data);
     }
 
-    int TextEditCallback(ImGuiInputTextCallbackData *data) {
+    int TextEditCallback(ImGuiInputTextCallbackData *data)
+    {
         //AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
-        switch (data->EventFlag) {
+        switch (data->EventFlag)
+        {
             case ImGuiInputTextFlags_CallbackCompletion: {
                 // Example of TEXT COMPLETION
 
                 // Locate beginning of current word
                 const char *word_end = data->Buf + data->CursorPos;
                 const char *word_start = word_end;
-                while (word_start > data->Buf) {
+                while (word_start > data->Buf)
+                {
                     const char c = word_start[-1];
                     if (c == ' ' || c == '\t' || c == ',' || c == ';')
                         break;
@@ -300,19 +334,25 @@ struct ExampleAppConsole {
                     if (Strnicmp(Commands[i], word_start, (int) (word_end - word_start)) == 0)
                         candidates.push_back(Commands[i]);
 
-                if (candidates.Size == 0) {
+                if (candidates.Size == 0)
+                {
                     // No match
                     AddLog("No match for \"%.*s\"!\n", (int) (word_end - word_start), word_start);
-                } else if (candidates.Size == 1) {
+                }
+                else if (candidates.Size == 1)
+                {
                     // Single match. Delete the beginning of the word and replace it entirely so we've got nice casing.
                     data->DeleteChars((int) (word_start - data->Buf), (int) (word_end - word_start));
                     data->InsertChars(data->CursorPos, candidates[0]);
                     data->InsertChars(data->CursorPos, " ");
-                } else {
+                }
+                else
+                {
                     // Multiple matches. Complete as much as we can..
                     // So inputing "C"+Tab will complete to "CL" then display "CLEAR" and "CLASSIFY" as matches.
                     int match_len = (int) (word_end - word_start);
-                    for (;;) {
+                    for (;;)
+                    {
                         int c = 0;
                         bool all_candidates_matches = true;
                         for (int i = 0; i < candidates.Size && all_candidates_matches; i++)
@@ -325,7 +365,8 @@ struct ExampleAppConsole {
                         match_len++;
                     }
 
-                    if (match_len > 0) {
+                    if (match_len > 0)
+                    {
                         data->DeleteChars((int) (word_start - data->Buf), (int) (word_end - word_start));
                         data->InsertChars(data->CursorPos, candidates[0], candidates[0] + match_len);
                     }
@@ -341,19 +382,23 @@ struct ExampleAppConsole {
             case ImGuiInputTextFlags_CallbackHistory: {
                 // Example of HISTORY
                 const int prev_history_pos = HistoryPos;
-                if (data->EventKey == ImGuiKey_UpArrow) {
+                if (data->EventKey == ImGuiKey_UpArrow)
+                {
                     if (HistoryPos == -1)
                         HistoryPos = History.Size - 1;
                     else if (HistoryPos > 0)
                         HistoryPos--;
-                } else if (data->EventKey == ImGuiKey_DownArrow) {
+                }
+                else if (data->EventKey == ImGuiKey_DownArrow)
+                {
                     if (HistoryPos != -1)
                         if (++HistoryPos >= History.Size)
                             HistoryPos = -1;
                 }
 
                 // A better implementation would preserve the data on the current input line along with cursor position.
-                if (prev_history_pos != HistoryPos) {
+                if (prev_history_pos != HistoryPos)
+                {
                     const char *history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, history_str);
@@ -364,7 +409,8 @@ struct ExampleAppConsole {
     }
 };
 
-static void ShowExampleAppConsole(bool *p_open) {
+static void ShowExampleAppConsole(bool *p_open)
+{
     static ExampleAppConsole console;
     console.Draw("Example: Console", p_open);
 }

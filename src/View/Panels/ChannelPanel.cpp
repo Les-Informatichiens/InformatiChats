@@ -5,10 +5,12 @@
 #include <string>
 
 
-ChannelPanel::ChannelPanel(IChannelController &controller_) : controller(controller_) {
+ChannelPanel::ChannelPanel(IChannelController &controller_) : controller(controller_)
+{
 }
 
-void ChannelPanel::Update() {
+void ChannelPanel::Update()
+{
 
     ChannelViewModel vm = controller.GetViewModel();
 
@@ -17,12 +19,15 @@ void ChannelPanel::Update() {
     ImGui::BeginChild("Npcs", ImVec2(200, -50), true,
                       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
-    if (ImGui::Button("Add new user")) {
+    if (ImGui::Button("Add new user"))
+    {
         addNewChatPrompt = true;
     }
-    if (addNewChatPrompt) {
+    if (addNewChatPrompt)
+    {
         ImGui::OpenPopup("New chat");
-        if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+        if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+        {
             ImGui::Text("Enter a username");
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -34,8 +39,10 @@ void ChannelPanel::Update() {
 
             bool addNewChatPressed = ImGui::Button("Add new chat");
 
-            if (enterPressed || addNewChatPressed) {
-                if (UsernameToConnectBuf[0] != '\0') {
+            if (enterPressed || addNewChatPressed)
+            {
+                if (UsernameToConnectBuf[0] != '\0')
+                {
                     controller.AttemptToConnectToPeer(UsernameToConnectBuf);
                     UsernameToConnectBuf = "";
                     addNewChatPrompt = false;
@@ -44,7 +51,8 @@ void ChannelPanel::Update() {
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Cancel")) {
+            if (ImGui::Button("Cancel"))
+            {
                 addNewChatPrompt = false;
             }
 
@@ -57,7 +65,8 @@ void ChannelPanel::Update() {
     // draw chat names
 
     //Controller code (controller needs to return list of connections from the model)
-    for (const auto &peerConnection: vm.peerConnectionMap) {
+    for (const auto &peerConnection: vm.peerConnectionMap)
+    {
         const std::string &peerId = peerConnection.first;
         bool isSelected = selectedChat == peerId;
 
@@ -66,7 +75,8 @@ void ChannelPanel::Update() {
         std::string displayText = peerId;
         ImVec4 color;
         bool hasColor = false;
-        switch (state) {
+        switch (state)
+        {
             case rtc::PeerConnection::State::New:
                 break;
             case rtc::PeerConnection::State::Connecting: {
@@ -103,22 +113,27 @@ void ChannelPanel::Update() {
 
         auto peerDataIt = historyMap.find(peerId);
         PeerData *pPeerData = nullptr;
-        if (peerDataIt != historyMap.end()) {
+        if (peerDataIt != historyMap.end())
+        {
             pPeerData = &peerDataIt->second;
         }
 
-        if (pPeerData != nullptr) {
-            if (isSelected) {
+        if (pPeerData != nullptr)
+        {
+            if (isSelected)
+            {
                 pPeerData->unreadMessageCount = 0;
             }
-            if (pPeerData->unreadMessageCount > 0) {
+            if (pPeerData->unreadMessageCount > 0)
+            {
                 displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount,
                                            pPeerData->unreadMessageCount == 1 ? "" : "s");
             }
         }
 
         if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
-        if (ImGui::Selectable(displayText.c_str(), isSelected)) {
+        if (ImGui::Selectable(displayText.c_str(), isSelected))
+        {
             if (pPeerData != nullptr)
                 console.SetLogHistory(pPeerData->history);
             selectedChat = peerId;
@@ -129,14 +144,17 @@ void ChannelPanel::Update() {
     ImGui::EndChild();
 }
 
-void ChannelPanel::Draw() {
+void ChannelPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the channels panel
     }
 }
 
-bool ChannelPanel::IsVisible() {
+bool ChannelPanel::IsVisible()
+{
     return false;
 }

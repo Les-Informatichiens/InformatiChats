@@ -5,7 +5,8 @@
 
 namespace PxlUI {
 
-    class BatchRenderer {
+    class BatchRenderer
+    {
     public:
         static void init();
 
@@ -25,7 +26,8 @@ namespace PxlUI {
 
         static void drawScreenTexSmaller(uint32_t iTextureId);
 
-        struct Stats {
+        struct Stats
+        {
             size_t mDrawCount = 0;
         };
 

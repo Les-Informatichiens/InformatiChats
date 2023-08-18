@@ -13,14 +13,16 @@ namespace PxlUI {
     static const size_t skMaxVertexCount = 3 * 1024;
     static const size_t skMaxTextures = 32;
 
-    struct Vertex {
+    struct Vertex
+    {
         glm::vec3 mPosition;
         glm::vec4 mColor;
         glm::vec2 mTexCoords;
         float mTexIndex;
     };
 
-    struct RendererData {
+    struct RendererData
+    {
 
         GLuint mVertexArray = 0;
         GLuint mVertexBuffer = 0;
@@ -41,7 +43,8 @@ namespace PxlUI {
 
     static RendererData sData;
 
-    void BatchRenderer::init() {
+    void BatchRenderer::init()
+    {
 
         sData.mBufferData = new Vertex[skMaxVertexCount];
 
@@ -74,12 +77,14 @@ namespace PxlUI {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &wColor);
 
         sData.mTextureSlots[0] = sData.mWhiteTexture;
-        for (size_t i = 1; i < skMaxTextures; i++) {
+        for (size_t i = 1; i < skMaxTextures; i++)
+        {
             sData.mTextureSlots[i] = 0;
         }
     }
 
-    void BatchRenderer::shutdown() {
+    void BatchRenderer::shutdown()
+    {
         glDeleteVertexArrays(1, &sData.mVertexArray);
         glDeleteBuffers(1, &sData.mVertexBuffer);
         glDeleteTextures(1, &sData.mWhiteTexture);
@@ -87,18 +92,22 @@ namespace PxlUI {
         delete[] sData.mBufferData;
     }
 
-    void BatchRenderer::beginBatch() {
+    void BatchRenderer::beginBatch()
+    {
         sData.mBufferDataPtr = sData.mBufferData;
     }
 
-    void BatchRenderer::endBatch() {
+    void BatchRenderer::endBatch()
+    {
         GLsizeiptr wSize = (uint8_t *) sData.mBufferDataPtr - (uint8_t *) sData.mBufferData;
         glBindBuffer(GL_ARRAY_BUFFER, sData.mVertexBuffer);
         glBufferSubData(GL_ARRAY_BUFFER, 0, wSize, sData.mBufferData);
     }
 
-    void BatchRenderer::flush() {
-        for (uint32_t i = 0; i < sData.mTextureSlotIndex; i++) {
+    void BatchRenderer::flush()
+    {
+        for (uint32_t i = 0; i < sData.mTextureSlotIndex; i++)
+        {
             glBindTextureUnit(i, sData.mTextureSlots[i]);
         }
         glBindVertexArray(sData.mVertexArray);
@@ -111,8 +120,10 @@ namespace PxlUI {
     }
 
     void BatchRenderer::drawTriangle(const glm::vec3 &iP1, const glm::vec3 &iP2, const glm::vec3 &iP3,
-                                     const glm::vec4 &iColor) {
-        if (sData.mVertexCount >= skMaxVertexCount) {
+                                     const glm::vec4 &iColor)
+    {
+        if (sData.mVertexCount >= skMaxVertexCount)
+        {
             endBatch();
             flush();
             beginBatch();
@@ -141,8 +152,10 @@ namespace PxlUI {
         sData.mVertexCount += 3;
     }
 
-    void BatchRenderer::drawScreenTex(uint32_t iTextureId) {
-        if (sData.mVertexCount >= skMaxVertexCount) {
+    void BatchRenderer::drawScreenTex(uint32_t iTextureId)
+    {
+        if (sData.mVertexCount >= skMaxVertexCount)
+        {
             endBatch();
             flush();
             beginBatch();
@@ -151,14 +164,17 @@ namespace PxlUI {
         constexpr glm::vec4 wColor = {1.f, 1.f, 1.f, 1.f};
 
         float wTexIndex = 0.f;
-        for (uint32_t i = 1; i < sData.mTextureSlotIndex; i++) {
-            if (sData.mTextureSlots[i] == iTextureId) {
+        for (uint32_t i = 1; i < sData.mTextureSlotIndex; i++)
+        {
+            if (sData.mTextureSlots[i] == iTextureId)
+            {
                 wTexIndex = (float) i;
                 break;
             }
         }
 
-        if (wTexIndex == 0.f) {
+        if (wTexIndex == 0.f)
+        {
             wTexIndex = (float) sData.mTextureSlotIndex;
             sData.mTextureSlots[sData.mTextureSlotIndex] = iTextureId;
             sData.mTextureSlotIndex++;
@@ -203,8 +219,10 @@ namespace PxlUI {
         sData.mVertexCount += 6;
     }
 
-    void BatchRenderer::drawScreenTexSmaller(uint32_t iTextureId) {
-        if (sData.mVertexCount >= skMaxVertexCount) {
+    void BatchRenderer::drawScreenTexSmaller(uint32_t iTextureId)
+    {
+        if (sData.mVertexCount >= skMaxVertexCount)
+        {
             endBatch();
             flush();
             beginBatch();
@@ -213,14 +231,17 @@ namespace PxlUI {
         constexpr glm::vec4 wColor = {1.f, 0.f, 0.f, 0.1f};
 
         float wTexIndex = 0.f;
-        for (uint32_t i = 1; i < sData.mTextureSlotIndex; i++) {
-            if (sData.mTextureSlots[i] == iTextureId) {
+        for (uint32_t i = 1; i < sData.mTextureSlotIndex; i++)
+        {
+            if (sData.mTextureSlots[i] == iTextureId)
+            {
                 wTexIndex = (float) i;
                 break;
             }
         }
 
-        if (wTexIndex == 0.f) {
+        if (wTexIndex == 0.f)
+        {
             wTexIndex = (float) sData.mTextureSlotIndex;
             sData.mTextureSlots[sData.mTextureSlotIndex] = iTextureId;
             sData.mTextureSlotIndex++;
@@ -265,11 +286,13 @@ namespace PxlUI {
         sData.mVertexCount += 6;
     }
 
-    const BatchRenderer::Stats &BatchRenderer::getStats() {
+    const BatchRenderer::Stats &BatchRenderer::getStats()
+    {
         return sData.renderStats;
     }
 
-    void BatchRenderer::resetStats() {
+    void BatchRenderer::resetStats()
+    {
         sData.renderStats = {};
     }
 

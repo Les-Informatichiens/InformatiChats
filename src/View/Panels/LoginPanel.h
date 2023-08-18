@@ -4,11 +4,12 @@
 
 #pragma once
 
-#include <Controller/ILoginController.h>
 #include "IPanel.h"
+#include <Controller/ILoginController.h>
 
 
-class LoginPanel : public IPanel {
+class LoginPanel : public IPanel
+{
 public:
     explicit LoginPanel(ILoginController &controller);
 

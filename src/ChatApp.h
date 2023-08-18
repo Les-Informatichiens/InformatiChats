@@ -51,12 +51,14 @@
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 
-struct DisplaySize {
+struct DisplaySize
+{
     int width;
     int height;
 };
 
-class ChatApp {
+class ChatApp
+{
 public:
     ChatApp(Chat &chat);
 
@@ -99,7 +101,8 @@ private:
     ExampleAppConsole console;
     bool consoleOpen{};
 
-    struct PeerData {
+    struct PeerData
+    {
         ImVector<char *> history;
         size_t unreadMessageCount;
     };
@@ -119,7 +122,8 @@ private:
     char UsernameToConnectBuf[maxNameLength];
 
     // rendering
-    struct CRTShaderData {
+    struct CRTShaderData
+    {
         float mBlur = 1.f;
         float mCurvature = 0.f;
         float mChroma = 0.15f;

@@ -9,7 +9,8 @@
 #include <string>
 
 
-class ChatController : public IChatController {
+class ChatController : public IChatController
+{
 public:
     ChatViewModel GetViewModel() override;
 

@@ -4,12 +4,13 @@
 
 #pragma once
 
+#include "IPanel.h"
 #include <Controller/IChannelController.h>
 #include <Model/Chat.h>
-#include "IPanel.h"
 
 
-class UserInfoPanel : public IPanel {
+class UserInfoPanel : public IPanel
+{
 public:
     explicit UserInfoPanel(IChannelController &controller);
 

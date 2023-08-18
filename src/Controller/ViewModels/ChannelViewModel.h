@@ -7,7 +7,8 @@
 #include "rtc/rtc.hpp"
 
 
-struct ChannelViewModel {
+struct ChannelViewModel
+{
     std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
     std::string userName;
 };

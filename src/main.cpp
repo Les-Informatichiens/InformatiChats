@@ -1,18 +1,19 @@
 #include "ChatApp.h"
-#include <Controller/LoginController.h>
-#include <View/Panels/LoginPanel.h>
-#include <View/Views/LoginView.h>
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
+#include <Controller/LoginController.h>
 #include <View/Panels/ChannelPanel.h>
 #include <View/Panels/ChatPanel.h>
+#include <View/Panels/LoginPanel.h>
 #include <View/Panels/UserInfoPanel.h>
 #include <View/Views/ChannelView.h>
 #include <View/Views/ChatView.h>
+#include <View/Views/LoginView.h>
 
 
 // Main code
-int main(int, char **) {
+int main(int, char **)
+{
     //init model
     const std::string stunServer = "stun.l.google.com";
     const std::string stunServerPort = "19302";

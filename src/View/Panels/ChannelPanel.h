@@ -1,14 +1,15 @@
 #pragma once
 
+#include "IPanel.h"
 #include <Controller/IChannelController.h>
 #include <Model/Chat.h>
-#include "IPanel.h"
 
 #include "imgui.h"
 #include <unordered_map>
 
 
-class ChannelPanel : public IPanel {
+class ChannelPanel : public IPanel
+{
 public:
     explicit ChannelPanel(IChannelController &channelController);
 
@@ -20,7 +21,8 @@ public:
 
     bool addNewChatPrompt{false};
 
-    struct PeerData {
+    struct PeerData
+    {
         ImVector<char *> history;
         size_t unreadMessageCount;
     };

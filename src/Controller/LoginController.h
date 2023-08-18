@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include <Controller/ViewModels/LoginViewModel.h>
 #include "ILoginController.h"
+#include <Controller/ViewModels/LoginViewModel.h>
 
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
 
 
-class LoginController : public ILoginController {
+class LoginController : public ILoginController
+{
 public:
     LoginViewModel GetViewModel() override;
 
@@ -20,7 +21,8 @@ public:
     void AttemptConnectionWithUsername(const std::string &newUsername) override;
 
 private:
-    struct MessageReceivedEvent {
+    struct MessageReceivedEvent
+    {
         std::string senderId;
         std::string content;
     };

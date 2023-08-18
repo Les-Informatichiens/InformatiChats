@@ -1,6 +1,7 @@
 #pragma once
 
-class IPanel {
+class IPanel
+{
 public:
     virtual void Draw() = 0;
 

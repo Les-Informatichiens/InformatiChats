@@ -9,7 +9,8 @@
 #include <string>
 
 
-class IChannelController {
+class IChannelController
+{
 public:
     virtual ChannelViewModel GetViewModel() = 0;
 

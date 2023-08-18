@@ -7,7 +7,8 @@
 #include <string>
 
 
-struct LoginViewModel {
+struct LoginViewModel
+{
     int maxNameLength;
     std::string signalingServer;
     std::string signalingServerPort;

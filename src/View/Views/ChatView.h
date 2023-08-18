@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include <Controller/IChatController.h>
 #include "IView.h"
+#include <Controller/IChatController.h>
 
 #include <memory>
 #include <vector>
 
 
-class ChatView : public IView {
+class ChatView : public IView
+{
 public:
     explicit ChatView(IChatController &controller);
 

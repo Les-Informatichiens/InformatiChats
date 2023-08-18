@@ -7,7 +7,8 @@
 #include <Controller/ViewModels/ChatViewModel.h>
 
 
-class IChatController {
+class IChatController
+{
 public:
     virtual ChatViewModel GetViewModel() = 0;
 };

@@ -12,14 +12,16 @@
 #include <utility>
 
 
-class ChannelController : public IChannelController {
+class ChannelController : public IChannelController
+{
 public:
     ChannelViewModel GetViewModel() override;
 
     void AttemptToConnectToPeer(std::string &peerName) override;
 
 private:
-    struct MessageReceivedEvent {
+    struct MessageReceivedEvent
+    {
         std::string senderId;
         std::string content;
     };

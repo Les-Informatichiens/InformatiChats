@@ -4,7 +4,8 @@
 
 ChatPanel::ChatPanel(IChatController &controller_) : controller(controller_) {}
 
-void ChatPanel::Update() {
+void ChatPanel::Update()
+{
 
     ChatViewModel vm = controller.GetViewModel();
 
@@ -20,10 +21,12 @@ void ChatPanel::Update() {
                                            ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
     char InputBuf[256]{};
     if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags,
-                         &ExampleAppConsole::TextEditCallbackStub, (void *) &console)) {
+                         &ExampleAppConsole::TextEditCallbackStub, (void *) &console))
+    {
         char *s = InputBuf;
         Strtrim(s);
-        if (s[0]) {
+        if (s[0])
+        {
             // duplicate code, pls clean up
             auto result = historyMap.insert({selectedChat, {}});
             result.first->second.history.push_back(Strdup(std::format("[{}] {}", vm.userName, s).c_str()));
@@ -43,14 +46,17 @@ void ChatPanel::Update() {
     ImGui::EndChild();
 }
 
-void ChatPanel::Draw() {
+void ChatPanel::Draw()
+{
     Update();
 
-    if (IsVisible()) {
+    if (IsVisible())
+    {
         // Draw the chat panel
     }
 }
 
-bool ChatPanel::IsVisible() {
+bool ChatPanel::IsVisible()
+{
     return false;
 }
