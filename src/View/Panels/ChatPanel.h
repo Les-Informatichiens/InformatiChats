@@ -16,6 +16,7 @@ public:
     void Update() override;
     bool IsVisible() override;
 
+private:
     ExampleAppConsole console{};
 
     bool consoleOpen{true};
@@ -29,4 +30,6 @@ public:
     // chat histories
     std::unordered_map<std::string, PeerData> historyMap;
     IChatController &controller;
+
+    char inputBuf[256]{};
 };

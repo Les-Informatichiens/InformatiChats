@@ -19,11 +19,11 @@ void ChatPanel::Update()
     bool reclaim_focus = false;
     ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
                                            ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-    char InputBuf[256]{};
-    if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), input_text_flags,
+
+    if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), input_text_flags,
                          &ExampleAppConsole::TextEditCallbackStub, (void *) &console))
     {
-        char *s = InputBuf;
+        char *s = inputBuf;
         Strtrim(s);
         if (s[0])
         {
