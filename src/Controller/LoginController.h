@@ -19,11 +19,10 @@ public:
 
     LoginViewModel GetViewModel() override;
 
-    void LoginAttempt(const std::string& username);
+    void LoginAttempt(const std::string& username) override;
 
-    bool IsConnected();
+    bool IsConnected() override;
 
 private:
-
     Model& model;
 };

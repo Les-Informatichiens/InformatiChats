@@ -15,7 +15,7 @@ public:
 
     void LoginWithNewUser(std::unique_ptr<User> user_);
 
-    std::string UserGetUsername() const;
+    std::string GetOwnUsername() const;
     int GetMaxNameLength() const { return maxNameLength; };
     bool IsClientConnected() const { return this->chatClient != nullptr && this->chatClient->IsConnected(); };
 

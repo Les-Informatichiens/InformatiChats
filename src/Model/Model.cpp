@@ -38,7 +38,7 @@ void Model::SetChatClient(std::unique_ptr<ChatClient> chatClient_)
     this->chatClient = std::move(chatClient_);
 }
 
-std::string Model::UserGetUsername() const
+std::string Model::GetOwnUsername() const
 {
     if(this->user != nullptr)
     {

@@ -141,5 +141,5 @@ ChannelController::ChannelController(Model &model_)
 }
 std::string ChannelController::GetUsername()
 {
-    return this->model.UserGetUsername();
+    return this->model.GetOwnUsername();
 }
