@@ -60,7 +60,7 @@ struct DisplaySize
 class ChatApp
 {
 public:
-    explicit ChatApp(Chat &chat);
+    ChatApp();
 
     void Run();
 
@@ -85,8 +85,7 @@ private:
 
 private:
     GLFWwindow *window{};
-
-    Chat &chatClient;
+    
     std::string selectedChat;
     bool addNewChatPrompt{};
 
@@ -112,7 +111,7 @@ private:
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
 
-    char UsernameToConnectBuf[maxNameLength];
+    char UsernameToConnectBuf[maxNameLength]{};
 
     // rendering
     struct CRTShaderData

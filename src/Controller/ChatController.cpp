@@ -9,3 +9,7 @@ ChatViewModel ChatController::GetViewModel()
 {
     return {userName};
 }
+ChatController::ChatController(Model &model_)
+: model(model_)
+{
+}

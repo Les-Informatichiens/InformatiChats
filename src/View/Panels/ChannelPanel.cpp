@@ -31,9 +31,9 @@ void ChannelPanel::Update()
             ImGui::Text("Enter a username");
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-            std::string UsernameToConnectBuf;
-            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", UsernameToConnectBuf.data(),
+            
+            
+            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", this->UsernameToConnectToBuf.data(),
                                                          maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
 
@@ -41,10 +41,10 @@ void ChannelPanel::Update()
 
             if (enterPressed || addNewChatPressed)
             {
-                if (UsernameToConnectBuf[0] != '\0')
+                if (this->UsernameToConnectToBuf[0] != '\0')
                 {
-                    controller.AttemptToConnectToPeer(UsernameToConnectBuf);
-                    UsernameToConnectBuf = "";
+                    controller.AttemptToConnectToPeer(this->UsernameToConnectToBuf);
+                    this->UsernameToConnectToBuf = "";
                     addNewChatPrompt = false;
                 }
             }

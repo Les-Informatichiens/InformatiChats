@@ -1,4 +1,9 @@
 #include "ChatApp.h"
+
+#include <Model/ChatClient.h>
+#include <Model/User.h>
+#include <Model/Model.h>
+
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/LoginController.h>
@@ -15,17 +20,12 @@
 int main(int, char **)
 {
     //init model
-    const std::string stunServer = "stun.l.google.com";
-    const std::string stunServerPort = "19302";
-    const std::string signalingServer = "51.79.86.30";
-    const std::string signalingServerPort = "51337";
-    ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
-    Chat chatClient(config);
+    Model model = Model();
 
     //init controller
-    auto chatController = ChatController();
-    auto channelController = ChannelController();
-    auto loginController = LoginController();
+    auto chatController = ChatController(model);
+    auto channelController = ChannelController(model);
+    auto loginController = LoginController(model);
 
     //init view
     auto chatView = ChatView(chatController);
@@ -44,7 +44,7 @@ int main(int, char **)
     loginView.AddPanel(loginPanel);
 
     //init app
-    ChatApp app(chatClient);
+    ChatApp app;
     app.AddView(channelView);
     app.AddView(chatView);
     app.AddView(loginView);

@@ -10,9 +10,8 @@
 class ILoginController
 {
 public:
-    virtual void AttemptConnectionWithUsername(const std::string &newUsername) = 0;
-
     virtual LoginViewModel GetViewModel() = 0;
 
+    virtual void LoginAttempt(const std::string& username) = 0;
     virtual bool IsConnected() = 0;
 };

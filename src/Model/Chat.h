@@ -5,32 +5,19 @@
 #pragma once
 
 #include <View/console.h>
+#include "ChatClient.h"
 
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
 #include <utility>
 
 
-struct MessageReceivedEvent
-{
-    std::string senderId;
-    std::string content;
-};
-
-struct ConnectionConfig
-{
-    std::string stunServer;
-    std::string stunServerPort;
-    std::string signalingServer;
-    std::string signalingServerPort;
-};
-
 class Chat
 {
 public:
-    explicit Chat(const ConnectionConfig &config);
+    explicit Chat(const ConnectionConfig& config);
 
-    explicit Chat() = default;
+    Chat() = default;
 
     void AttemptConnectionWithUsername(const char *newUsername);
 

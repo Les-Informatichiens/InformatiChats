@@ -19,4 +19,6 @@ public:
 
 private:
     ILoginController &controller;
+
+    std::string UsernameBuf;
 };

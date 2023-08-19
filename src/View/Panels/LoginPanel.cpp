@@ -34,11 +34,11 @@ void LoginPanel::Update()
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        std::string buf;
-        if (ImGui::InputTextWithHint("##username", "otisma...", buf.data(), vm.maxNameLength,
+
+        if (ImGui::InputTextWithHint("##username", "otisma...", this->UsernameBuf.data(), vm.maxNameLength,
                                      ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            controller.AttemptConnectionWithUsername(buf);
+            controller.LoginAttempt(this->UsernameBuf);
         }
         ImGui::PopStyleVar();
 

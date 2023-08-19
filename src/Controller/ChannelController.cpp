@@ -135,3 +135,11 @@ void ChannelController::RegisterDataChannel(const std::shared_ptr<rtc::DataChann
 
     dataChannelMap.emplace(peerId, dc);
 }
+ChannelController::ChannelController(Model &model_)
+: model(model_)
+{
+}
+std::string ChannelController::GetUsername()
+{
+    return this->model.UserGetUsername();
+}

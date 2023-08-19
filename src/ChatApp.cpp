@@ -6,8 +6,8 @@ static void glfw_error_callback(int error, const char *description);
 
 void SetImGuiStyles();
 
-ChatApp::ChatApp(Chat &chat)
-    : chatClient(chat), frameDisplaySize()
+ChatApp::ChatApp()
+    : frameDisplaySize()
 {
 }
 
@@ -51,19 +51,19 @@ bool ChatApp::Init()
     SetupPostProcessing();
 
     // message callback
-    chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent &e) {
-        auto result = historyMap.insert({e.senderId, {}});
-        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
-
-        if (e.senderId == selectedChat)
-        {
-            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
-        }
-        else
-        {
-            ++result.first->second.unreadMessageCount;
-        }
-    });
+//    chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent &e) {
+//        auto result = historyMap.insert({e.senderId, {}});
+//        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
+//
+//        if (e.senderId == selectedChat)
+//        {
+//            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
+//        }
+//        else
+//        {
+//            ++result.first->second.unreadMessageCount;
+//        }
+//    });
 
     return true;
 }

@@ -10,6 +10,4 @@
 struct LoginViewModel
 {
     int maxNameLength;
-    std::string signalingServer;
-    std::string signalingServerPort;
 };

@@ -6,6 +6,7 @@
 
 #include "IChannelController.h"
 
+#include "Model/Model.h"
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
 #include <cstdio>
@@ -15,9 +16,13 @@
 class ChannelController : public IChannelController
 {
 public:
+    explicit ChannelController(Model& model);
+
     ChannelViewModel GetViewModel() override;
 
     void AttemptToConnectToPeer(std::string &peerName) override;
+
+    std::string GetUsername() override;
 
 private:
     struct MessageReceivedEvent
@@ -39,4 +44,6 @@ private:
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
 
     void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
+
+    Model& model;
 };

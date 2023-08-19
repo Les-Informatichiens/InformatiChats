@@ -55,6 +55,10 @@ add_executable(
         src/View/Panels/LoginPanel.cpp
         src/View/Panels/LoginPanel.h
         src/Controller/ViewModels/LoginViewModel.h
+        src/Model/ChatClient.cpp
+        src/Model/ChatClient.h
+        src/Model/User.cpp
+        src/Model/User.h
 )
 
 target_include_directories(
