@@ -15,7 +15,7 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
         std::cout << "WebSocket connected, signaling ready" << std::endl;
         wsPromise.set_value();
 
-        this->username.assign(newUsername.c_str());
+        this->username = newUsername;
         connected = true;
     });
 

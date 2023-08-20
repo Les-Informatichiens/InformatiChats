@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "rtc/peerconnection.hpp"
+#include <misc/cpp/imgui_stdlib.h>
 #include <string>
 
 
@@ -32,9 +33,7 @@ void ChannelPanel::Update()
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-            this->UsernameToConnectToBuf.resize(maxNameLength);
-            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", this->UsernameToConnectToBuf.data(),
-                                                         maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
+            bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", &UsernameToConnectToBuf, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
 
             bool addNewChatPressed = ImGui::Button("Add new chat");

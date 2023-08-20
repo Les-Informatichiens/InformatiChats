@@ -4,6 +4,7 @@
 
 #include "LoginPanel.h"
 #include "imgui.h"
+#include <misc/cpp/imgui_stdlib.h>
 
 
 LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
@@ -34,8 +35,7 @@ void LoginPanel::Update()
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-
-        if (ImGui::InputTextWithHint("##username", "otisma...", this->UsernameBuf.data(), vm.maxNameLength,
+        if (ImGui::InputTextWithHint("##username", "otisma...", &this->UsernameBuf,
                                      ImGuiInputTextFlags_EnterReturnsTrue))
         {
             controller.LoginAttempt(this->UsernameBuf);
