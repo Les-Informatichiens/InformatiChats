@@ -7,7 +7,7 @@
 
 ChatViewModel ChatController::GetViewModel()
 {
-    return {userName};
+    return {this->model.GetOwnUsername()};
 }
 ChatController::ChatController(Model &model_)
 : model(model_)

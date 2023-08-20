@@ -20,7 +20,6 @@ public:
     LoginViewModel GetViewModel() override;
 
     void LoginAttempt(const std::string& username) override;
-
     bool IsConnected() override;
 
 private:

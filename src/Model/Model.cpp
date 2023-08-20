@@ -5,15 +5,25 @@
 #include "Model.h"
 
 
-Model::Model()
-    : user(nullptr), chatClient(nullptr)
+Model::Model(IUser& user_, IChatClient& chatClient_)
+: user(user_), chatClient(chatClient_)
 {
 }
 
-void Model::LoginWithNewUser(std::unique_ptr<User> user_)
+
+void Model::LoginWithNewUser(const std::string& username_)
 {
-    this->SetUser(std::move(user_));
-    this->SetChatClient(std::make_unique<ChatClient>());
+    this->user.Reset(username_);
+    this->chatClient.Reset();
+    //this->SetUser(user_);
+    //this->SetChatClient(ChatClient());
+
+    this->chatClient.SetOnPeerConnectionStateChange([this](PeerConnectionStateChangeEvent e) {
+        this->user.UpdatePeerState(e.peerId, e.connectionState);
+    });
+    this->chatClient.SetOnMessageReceived([this](MessageReceivedEvent e) {
+        this->user.IncrementPeerUnreadMessageCount(e.senderId);
+    });
 
     // re-init the new chat client
     const std::string stunServer = "stun.l.google.com";
@@ -21,29 +31,34 @@ void Model::LoginWithNewUser(std::unique_ptr<User> user_)
     const std::string signalingServer = "51.79.86.30";
     const std::string signalingServerPort = "51337";
     ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
-    this->chatClient->Init(config);
+    this->chatClient.Init(config);
 
-    this->chatClient->AttemptConnectionWithUsername(this->user->GetUsername());
+    this->chatClient.AttemptConnectionWithUsername(this->user.GetUsername());
 }
 
-void Model::SetUser(std::unique_ptr<User> user_)
+void Model::AddNewChatPeer(const std::string &peerId)
 {
-    this->user.reset(nullptr);
-    this->user = std::move(user_);
+    this->chatClient.AttemptToConnectToPeer(peerId);
 }
 
-void Model::SetChatClient(std::unique_ptr<ChatClient> chatClient_)
+void Model::SetUser(IUser& user_)
 {
-    this->chatClient.reset(nullptr);
-    this->chatClient = std::move(chatClient_);
+    this->user = user_;
+}
+
+void Model::SetChatClient(IChatClient& chatClient_)
+{
+    //this->chatClient = std::move(chatClient_);
+
+
 }
 
 std::string Model::GetOwnUsername() const
 {
-    if(this->user != nullptr)
-    {
-        return this->user->GetUsername();
-    }
+    return this->user.GetUsername();
+}
 
-    return {};
+std::unordered_map<std::string, PeerData> Model::GetPeerDataMap()
+{
+    return this->user.GetPeerDataMap();
 }

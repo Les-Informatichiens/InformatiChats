@@ -32,7 +32,7 @@ void ChannelPanel::Update()
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
             
-            
+            this->UsernameToConnectToBuf.resize(maxNameLength);
             bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", this->UsernameToConnectToBuf.data(),
                                                          maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
             ImGui::PopStyleVar();
@@ -43,8 +43,8 @@ void ChannelPanel::Update()
             {
                 if (this->UsernameToConnectToBuf[0] != '\0')
                 {
-                    controller.AttemptToConnectToPeer(this->UsernameToConnectToBuf);
-                    this->UsernameToConnectToBuf = "";
+                    controller.AddNewChatPeer(this->UsernameToConnectToBuf);
+                    this->UsernameToConnectToBuf.clear();
                     addNewChatPrompt = false;
                 }
             }
@@ -56,7 +56,6 @@ void ChannelPanel::Update()
                 addNewChatPrompt = false;
             }
 
-
             ImGui::EndPopup();
         }
     }
@@ -65,41 +64,46 @@ void ChannelPanel::Update()
     // draw chat names
 
     //Controller code (controller needs to return list of connections from the model)
-    for (const auto &peerConnection: vm.peerConnectionMap)
+    for (const auto &peerConnection : vm.peerDataMap)
     {
-        const std::string &peerId = peerConnection.first;
+        // TODO: what the hell is going on
+        std::string peerId = peerConnection.first.c_str();
         bool isSelected = selectedChat == peerId;
 
-        rtc::PeerConnection::State state = peerConnection.second->state();
+        ConnectionState state = peerConnection.second.connectionState;
 
         std::string displayText = peerId;
         ImVec4 color;
         bool hasColor = false;
         switch (state)
         {
-            case rtc::PeerConnection::State::New:
+            case ConnectionState::New:
+            {
                 break;
-            case rtc::PeerConnection::State::Connecting: {
+            }
+            case ConnectionState::Connecting: {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.9f, 0.2f, 1.0f);
                 displayText += " [Connecting...]";
                 break;
             }
-            case rtc::PeerConnection::State::Connected:
+            case ConnectionState::Connected:
+            {
                 break;
-            case rtc::PeerConnection::State::Disconnected: {
+            }
+            case ConnectionState::Disconnected: {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Disconnected]";
                 break;
             }
-            case rtc::PeerConnection::State::Failed: {
+            case ConnectionState::Failed: {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Connection failed]";
                 break;
             }
-            case rtc::PeerConnection::State::Closed: {
+            case ConnectionState::Closed: {
                 hasColor = true;
                 color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);
                 displayText += " [Connection closed]";
@@ -111,31 +115,31 @@ void ChannelPanel::Update()
             }
         }
 
-        auto peerDataIt = historyMap.find(peerId);
-        PeerData *pPeerData = nullptr;
-        if (peerDataIt != historyMap.end())
-        {
-            pPeerData = &peerDataIt->second;
-        }
+//        auto peerDataIt = historyMap.find(peerId);
+//        PeerData *pPeerData = nullptr;
+//        if (peerDataIt != historyMap.end())
+//        {
+//            pPeerData = &peerDataIt->second;
+//        }
 
-        if (pPeerData != nullptr)
-        {
-            if (isSelected)
-            {
-                pPeerData->unreadMessageCount = 0;
-            }
-            if (pPeerData->unreadMessageCount > 0)
-            {
-                displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount,
-                                           pPeerData->unreadMessageCount == 1 ? "" : "s");
-            }
-        }
+//        if (pPeerData != nullptr)
+//        {
+//            if (isSelected)
+//            {
+//                pPeerData->unreadMessageCount = 0;
+//            }
+//            if (pPeerData->unreadMessageCount > 0)
+//            {
+//                displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount,
+//                                           pPeerData->unreadMessageCount == 1 ? "" : "s");
+//            }
+//        }
 
         if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
         if (ImGui::Selectable(displayText.c_str(), isSelected))
         {
-            if (pPeerData != nullptr)
-                console.SetLogHistory(pPeerData->history);
+//            if (pPeerData != nullptr)
+//                console.SetLogHistory(pPeerData->history);
             selectedChat = peerId;
         }
         if (hasColor) ImGui::PopStyleColor();

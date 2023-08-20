@@ -20,7 +20,10 @@
 int main(int, char **)
 {
     //init model
-    Model model = Model();
+    User user{};
+    ChatClient chatClient{};
+
+    Model model = Model(user, chatClient);
 
     //init controller
     auto chatController = ChatController(model);
@@ -32,7 +35,7 @@ int main(int, char **)
     auto channelView = ChannelView(channelController);
     auto loginView = LoginView(loginController);
 
-
+    //init panels
     auto channelPanel = ChannelPanel(channelController);
     auto userInfoPanel = UserInfoPanel(channelController);
     auto chatPanel = ChatPanel(chatController);

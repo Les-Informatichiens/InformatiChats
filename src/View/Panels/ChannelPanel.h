@@ -19,12 +19,6 @@ public:
 
     bool addNewChatPrompt{false};
 
-    struct PeerData
-    {
-        ImVector<char *> history;
-        size_t unreadMessageCount;
-    };
-    std::unordered_map<std::string, PeerData> historyMap;
     std::string selectedChat;
     ExampleAppConsole console;
     static constexpr int maxNameLength{32};

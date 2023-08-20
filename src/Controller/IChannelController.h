@@ -14,7 +14,5 @@ class IChannelController
 public:
     virtual ChannelViewModel GetViewModel() = 0;
 
-    virtual void AttemptToConnectToPeer(std::string &peerId) = 0;
-
-    virtual std::string GetUsername() = 0;
+    virtual void AddNewChatPeer(const std::string &peerName) = 0;
 };

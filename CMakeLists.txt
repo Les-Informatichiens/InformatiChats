@@ -59,6 +59,9 @@ add_executable(
         src/Model/ChatClient.h
         src/Model/User.cpp
         src/Model/User.h
+        src/Model/PeerData.h
+        src/Model/IUser.h
+        src/Model/IChatClient.h
 )
 
 target_include_directories(

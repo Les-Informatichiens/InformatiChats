@@ -18,7 +18,7 @@ void UserInfoPanel::Update()
     ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true,
                       ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
 
-    ImGui::Text("%s", this->controller.GetUsername().c_str());
+    ImGui::Text("%s", vm.userName.c_str());
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 

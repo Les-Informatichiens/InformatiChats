@@ -20,7 +20,7 @@ LoginViewModel LoginController::GetViewModel()
 
 void LoginController::LoginAttempt(const std::string &username_)
 {
-    model.LoginWithNewUser(std::make_unique<User>(username_));
+    model.LoginWithNewUser(username_);
 }
 
 bool LoginController::IsConnected()

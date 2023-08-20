@@ -1,40 +1,36 @@
 #pragma once
 
-#include <rtc/rtc.hpp>
-#include <nlohmann/json.hpp>
+#include "IChatClient.h"
+
+#include "PeerData.h"
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <rtc/rtc.hpp>
 #include <string>
 
 
-struct MessageReceivedEvent
-{
-    std::string senderId;
-    std::string content;
-};
-
-struct ConnectionConfig
-{
-    std::string stunServer;
-    std::string stunServerPort;
-    std::string signalingServer;
-    std::string signalingServerPort;
-};
-
-
-class ChatClient
+class ChatClient : public IChatClient
 {
 public:
-    void Init(const ConnectionConfig& config);
+    void Reset() override;
 
-    bool ICEServerExists() const;
+    void Init(const ConnectionConfig& config) override;
 
-    bool IsConnected() const { return this->connected; };
+    bool ICEServerExists() const override;
 
-    void AttemptConnectionWithUsername(const std::string &newUsername);
+    bool IsConnected() const override { return this->connected; };
+
+    void AttemptConnectionWithUsername(const std::string &newUsername) override;
+
+    void AttemptToConnectToPeer(const std::string &peerId) override;
+
+    void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
+    void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
 
 private:
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
     void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
+    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
 
 private:
     rtc::Configuration rtcConfig;
@@ -42,6 +38,7 @@ private:
     std::string signalingServer;
     std::string signalingServerPort;
 
+    std::function<void(PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCallback;
     std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
 
     std::string username;
