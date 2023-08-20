@@ -30,8 +30,8 @@ namespace PxlUI {
         GLuint mWhiteTexture = 0;
         uint32_t mWhiteTextureSlot = 0;
 
-        Vertex *mBufferData = nullptr;
-        Vertex *mBufferDataPtr = nullptr;
+        Vertex* mBufferData = nullptr;
+        Vertex* mBufferDataPtr = nullptr;
 
         size_t mVertexCount = 0;
 
@@ -56,16 +56,16 @@ namespace PxlUI {
         glBufferData(GL_ARRAY_BUFFER, skMaxVertexCount * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
         glEnableVertexArrayAttrib(sData.mVertexArray, 0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *) offsetof(Vertex, mPosition));
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mPosition));
 
         glEnableVertexArrayAttrib(sData.mVertexArray, 1);
-        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *) offsetof(Vertex, mColor));
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mColor));
 
         glEnableVertexArrayAttrib(sData.mVertexArray, 2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *) offsetof(Vertex, mTexCoords));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mTexCoords));
 
         glEnableVertexArrayAttrib(sData.mVertexArray, 3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void *) offsetof(Vertex, mTexIndex));
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mTexIndex));
 
         glCreateTextures(GL_TEXTURE_2D, 1, &sData.mWhiteTexture);
         glBindTexture(GL_TEXTURE_2D, sData.mWhiteTexture);
@@ -99,7 +99,7 @@ namespace PxlUI {
 
     void BatchRenderer::endBatch()
     {
-        GLsizeiptr wSize = (uint8_t *) sData.mBufferDataPtr - (uint8_t *) sData.mBufferData;
+        GLsizeiptr wSize = (uint8_t*) sData.mBufferDataPtr - (uint8_t*) sData.mBufferData;
         glBindBuffer(GL_ARRAY_BUFFER, sData.mVertexBuffer);
         glBufferSubData(GL_ARRAY_BUFFER, 0, wSize, sData.mBufferData);
     }
@@ -119,8 +119,8 @@ namespace PxlUI {
         sData.renderStats.mDrawCount++;
     }
 
-    void BatchRenderer::drawTriangle(const glm::vec3 &iP1, const glm::vec3 &iP2, const glm::vec3 &iP3,
-                                     const glm::vec4 &iColor)
+    void BatchRenderer::drawTriangle(const glm::vec3& iP1, const glm::vec3& iP2, const glm::vec3& iP3,
+                                     const glm::vec4& iColor)
     {
         if (sData.mVertexCount >= skMaxVertexCount)
         {
@@ -286,7 +286,7 @@ namespace PxlUI {
         sData.mVertexCount += 6;
     }
 
-    const BatchRenderer::Stats &BatchRenderer::getStats()
+    const BatchRenderer::Stats& BatchRenderer::getStats()
     {
         return sData.renderStats;
     }

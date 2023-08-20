@@ -1,8 +1,8 @@
 #include "ChatApp.h"
 
 #include <Model/ChatClient.h>
-#include <Model/User.h>
 #include <Model/Model.h>
+#include <Model/User.h>
 
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
@@ -17,7 +17,7 @@
 
 
 // Main code
-int main(int, char **)
+int main(int, char**)
 {
     //init model
     User user{};

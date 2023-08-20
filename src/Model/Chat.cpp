@@ -7,7 +7,7 @@
 #include "nlohmann/json.hpp"
 
 
-Chat::Chat(const ConnectionConfig &config)
+Chat::Chat(const ConnectionConfig& config)
     : rtcConfig(), signalingServer(config.signalingServer), signalingServerPort(config.signalingServerPort),
       webSocket(std::make_shared<rtc::WebSocket>()), connected(false)
 {
@@ -36,7 +36,7 @@ Chat::Chat(const ConnectionConfig &config)
 }
 
 
-void Chat::CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId)
+void Chat::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId)
 {
     // We are the offerer, so create a data channel to initiate the process
     const std::string label = "test";
@@ -46,7 +46,7 @@ void Chat::CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std
     RegisterDataChannel(dc, peerId);
 }
 
-void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId)
+void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId)
 {
     dc->onOpen([this, peerId, wdc = std::weak_ptr(dc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
@@ -93,7 +93,7 @@ void Chat::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, cons
     dataChannelMap.emplace(peerId, dc);
 }
 
-void Chat::SendMessageToPeer(const std::string &peerId, const char *message)
+void Chat::SendMessageToPeer(const std::string& peerId, const char* message)
 {
     auto dcIt = dataChannelMap.find(peerId);
     if (dcIt == dataChannelMap.end())
@@ -101,7 +101,7 @@ void Chat::SendMessageToPeer(const std::string &peerId, const char *message)
     dcIt->second->send(message);
 }
 
-std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::string &peerId)
+std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::string& peerId)
 {
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
@@ -123,7 +123,7 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
         std::cout << "Gathering State: " << state << std::endl;
     });
 
-    pc->onLocalDescription([wss = std::weak_ptr(webSocket), peerId](const rtc::Description &description) {
+    pc->onLocalDescription([wss = std::weak_ptr(webSocket), peerId](const rtc::Description& description) {
         nlohmann::json message = {{"id", peerId},
                                   {"type", description.typeString()},
                                   {"description", std::string(description)}};
@@ -131,7 +131,7 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
             ws->send(message.dump());
     });
 
-    pc->onLocalCandidate([wss = std::weak_ptr(webSocket), peerId](const rtc::Candidate &candidate) {
+    pc->onLocalCandidate([wss = std::weak_ptr(webSocket), peerId](const rtc::Candidate& candidate) {
         nlohmann::json message = {{"id", peerId},
                                   {"type", "candidate"},
                                   {"candidate", std::string(candidate)},
@@ -141,7 +141,7 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
             ws->send(message.dump());
     });
 
-    pc->onDataChannel([peerId, this](const std::shared_ptr<rtc::DataChannel> &dc) {
+    pc->onDataChannel([peerId, this](const std::shared_ptr<rtc::DataChannel>& dc) {
         std::cout << "DataChannel from " << peerId << " received with label \"" << dc->label() << "\""
                   << std::endl;
 

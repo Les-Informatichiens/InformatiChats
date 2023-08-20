@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <View/console.h>
 #include "ChatClient.h"
+#include <View/console.h>
 
 #include "nlohmann/json.hpp"
 #include "rtc/rtc.hpp"
@@ -19,29 +19,29 @@ public:
 
     Chat() = default;
 
-    void AttemptConnectionWithUsername(const char *newUsername);
+    void AttemptConnectionWithUsername(const char* newUsername);
 
-    void SendMessageToPeer(const std::string &peerId, const char *message);
+    void SendMessageToPeer(const std::string& peerId, const char* message);
 
     void SetOnMessageRecieved(std::function<void(MessageReceivedEvent)> callback)
     {
         onMessageReceivedCallback = std::move(callback);
     };
 
-    [[nodiscard]] const std::string &GetUsername() const { return username; };
+    [[nodiscard]] const std::string& GetUsername() const { return username; };
 
     [[nodiscard]] bool IsConnected() const { return connected; };
 
-    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> &
+    const std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>>&
     GetPeerConnections() { return peerConnectionMap; };
 
 private:
-    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
+    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId);
 
-    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
+    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId);
 
     // Create and setup a PeerConnection
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
 
 private:
     rtc::Configuration rtcConfig;

@@ -20,17 +20,17 @@ public:
 
     bool IsConnected() const override { return this->connected; };
 
-    void AttemptConnectionWithUsername(const std::string &newUsername) override;
+    void AttemptConnectionWithUsername(const std::string& newUsername) override;
 
-    void AttemptToConnectToPeer(const std::string &peerId) override;
+    void AttemptToConnectToPeer(const std::string& peerId) override;
 
     void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
     void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
 
 private:
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string &peerId);
-    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel> &dc, const std::string &peerId);
-    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection> &pc, const std::string &peerId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
+    void RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId);
+    void CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId);
 
 private:
     rtc::Configuration rtcConfig;
@@ -50,5 +50,3 @@ private:
 
     bool connected{false};
 };
-
-

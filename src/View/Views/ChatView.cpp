@@ -5,7 +5,7 @@
 /**
  * @brief Builds a view with no panels
  */
-ChatView::ChatView(IChatController &controller_) : controller(controller_)
+ChatView::ChatView(IChatController& controller_) : controller(controller_)
 {
 }
 
@@ -13,9 +13,9 @@ ChatView::ChatView(IChatController &controller_) : controller(controller_)
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ChatView::ChatView(std::vector<IPanel> &panels_, IChatController &controller_) : controller(controller_)
+ChatView::ChatView(std::vector<IPanel>& panels_, IChatController& controller_) : controller(controller_)
 {
-    for (IPanel &panel: panels_)
+    for (IPanel& panel: panels_)
     {
         this->panels.emplace_back(panel);
     }
@@ -26,7 +26,7 @@ ChatView::ChatView(std::vector<IPanel> &panels_, IChatController &controller_) :
  */
 void ChatView::Draw() const
 {
-    for (IPanel &panel: this->panels)
+    for (IPanel& panel: this->panels)
     {
         panel.Draw();
     }
@@ -36,7 +36,7 @@ void ChatView::Draw() const
  * @brief Adds a panel to the view
  * @param panel_ panel to be added
  */
-void ChatView::AddPanel(IPanel &panel_)
+void ChatView::AddPanel(IPanel& panel_)
 {
     this->panels.emplace_back(panel_);
 }
@@ -46,7 +46,7 @@ void ChatView::AddPanel(IPanel &panel_)
  * Sets the controller for the view
  * @param controller_
  */
-void ChatView::SetController(IChatController &controller_)
+void ChatView::SetController(IChatController& controller_)
 {
     this->controller = controller_;
 }

@@ -8,17 +8,17 @@
 #include <memory>
 
 
-LoginController::LoginController(Model &model_)
+LoginController::LoginController(Model& model_)
     : model(model_)
 {
 }
 
 LoginViewModel LoginController::GetViewModel()
 {
-    return { model.GetMaxNameLength() };
+    return {model.GetMaxNameLength()};
 }
 
-void LoginController::LoginAttempt(const std::string &username_)
+void LoginController::LoginAttempt(const std::string& username_)
 {
     model.LoginWithNewUser(username_);
 }

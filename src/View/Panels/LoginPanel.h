@@ -11,14 +11,14 @@
 class LoginPanel : public IPanel
 {
 public:
-    explicit LoginPanel(ILoginController &controller);
+    explicit LoginPanel(ILoginController& controller);
 
     void Draw() override;
     void Update() override;
     bool IsVisible() override;
 
 private:
-    ILoginController &controller;
+    ILoginController& controller;
 
     std::string UsernameBuf;
 };

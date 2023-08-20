@@ -14,16 +14,16 @@
 class ChannelView : public IView
 {
 public:
-    explicit ChannelView(IChannelController &controller);
-    ChannelView(std::vector<IPanel> &panels, IChannelController &controller);
+    explicit ChannelView(IChannelController& controller);
+    ChannelView(std::vector<IPanel>& panels, IChannelController& controller);
 
-    void SetController(IChannelController &controller);
+    void SetController(IChannelController& controller);
 
     void Draw() const override;
     bool IsVisible() override;
-    void AddPanel(IPanel &panel) override;
+    void AddPanel(IPanel& panel) override;
 
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
-    IChannelController &controller;
+    IChannelController& controller;
 };

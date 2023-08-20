@@ -20,7 +20,7 @@ public:
 
     ChannelViewModel GetViewModel() override;
 
-    void AddNewChatPeer(const std::string &peerName) override;
+    void AddNewChatPeer(const std::string& peerName) override;
 
 private:
     Model& model;

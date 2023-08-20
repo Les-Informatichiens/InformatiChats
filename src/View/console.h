@@ -8,7 +8,7 @@
 
 
 // Portable helpers
-static int Stricmp(const char *s1, const char *s2)
+static int Stricmp(const char* s1, const char* s2)
 {
     int d;
     while ((d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
@@ -19,7 +19,7 @@ static int Stricmp(const char *s1, const char *s2)
     return d;
 }
 
-static int Strnicmp(const char *s1, const char *s2, int n)
+static int Strnicmp(const char* s1, const char* s2, int n)
 {
     int d = 0;
     while (n > 0 && (d = toupper(*s2) - toupper(*s1)) == 0 && *s1)
@@ -31,18 +31,18 @@ static int Strnicmp(const char *s1, const char *s2, int n)
     return d;
 }
 
-static char *Strdup(const char *s)
+static char* Strdup(const char* s)
 {
     IM_ASSERT(s);
     size_t len = strlen(s) + 1;
-    void *buf = malloc(len);
+    void* buf = malloc(len);
     IM_ASSERT(buf);
-    return (char *) memcpy(buf, (const void *) s, len);
+    return (char*) memcpy(buf, (const void*) s, len);
 }
 
-static void Strtrim(char *s)
+static void Strtrim(char* s)
 {
-    char *str_end = s + strlen(s);
+    char* str_end = s + strlen(s);
     while (str_end > s && str_end[-1] == ' ') str_end--;
     *str_end = 0;
 }
@@ -50,9 +50,9 @@ static void Strtrim(char *s)
 struct ExampleAppConsole
 {
     //    char                  InputBuf[256];
-    ImVector<char *> Items;
-    ImVector<const char *> Commands;
-    ImVector<char *> History;
+    ImVector<char*> Items;
+    ImVector<const char*> Commands;
+    ImVector<char*> History;
     int HistoryPos;// -1: new line, 0..History.Size-1 browsing history.
     ImGuiTextFilter Filter;
     bool AutoScroll;
@@ -81,7 +81,7 @@ struct ExampleAppConsole
             free(History[i]);
     }
 
-    void SetLogHistory(ImVector<char *> &history)
+    void SetLogHistory(ImVector<char*>& history)
     {
         Items = history;
     }
@@ -93,7 +93,7 @@ struct ExampleAppConsole
         Items.clear();
     }
 
-    void AddLog(const char *fmt, ...) IM_FMTARGS(2)
+    void AddLog(const char* fmt, ...) IM_FMTARGS(2)
     {
         // FIXME-OPT
         char buf[1024];
@@ -105,7 +105,7 @@ struct ExampleAppConsole
         Items.push_back(Strdup(buf));
     }
 
-    void Draw(const char *title, bool *p_open)
+    void Draw(const char* title, bool* p_open)
     {
         ImGui::SetNextWindowSize(ImVec2(520, 600), ImGuiCond_FirstUseEver);
         //        if (!ImGui::Begin(title, p_open))
@@ -201,7 +201,7 @@ struct ExampleAppConsole
                 ImGui::LogToClipboard();
             for (int i = 0; i < Items.Size; i++)
             {
-                const char *item = Items[i];
+                const char* item = Items[i];
                 if (!Filter.PassFilter(item))
                     continue;
 
@@ -260,7 +260,7 @@ struct ExampleAppConsole
         //        ImGui::End();
     }
 
-    void ExecCommand(const char *command_line)
+    void ExecCommand(const char* command_line)
     {
         AddLog("# %s\n", command_line);
 
@@ -303,13 +303,13 @@ struct ExampleAppConsole
     }
 
     // In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
-    static int TextEditCallbackStub(ImGuiInputTextCallbackData *data)
+    static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
     {
-        ExampleAppConsole *console = (ExampleAppConsole *) data->UserData;
+        ExampleAppConsole* console = (ExampleAppConsole*) data->UserData;
         return console->TextEditCallback(data);
     }
 
-    int TextEditCallback(ImGuiInputTextCallbackData *data)
+    int TextEditCallback(ImGuiInputTextCallbackData* data)
     {
         //AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
         switch (data->EventFlag)
@@ -318,8 +318,8 @@ struct ExampleAppConsole
                 // Example of TEXT COMPLETION
 
                 // Locate beginning of current word
-                const char *word_end = data->Buf + data->CursorPos;
-                const char *word_start = word_end;
+                const char* word_end = data->Buf + data->CursorPos;
+                const char* word_start = word_end;
                 while (word_start > data->Buf)
                 {
                     const char c = word_start[-1];
@@ -329,7 +329,7 @@ struct ExampleAppConsole
                 }
 
                 // Build a list of candidates
-                ImVector<const char *> candidates;
+                ImVector<const char*> candidates;
                 for (int i = 0; i < Commands.Size; i++)
                     if (Strnicmp(Commands[i], word_start, (int) (word_end - word_start)) == 0)
                         candidates.push_back(Commands[i]);
@@ -399,7 +399,7 @@ struct ExampleAppConsole
                 // A better implementation would preserve the data on the current input line along with cursor position.
                 if (prev_history_pos != HistoryPos)
                 {
-                    const char *history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
+                    const char* history_str = (HistoryPos >= 0) ? History[HistoryPos] : "";
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, history_str);
                 }
@@ -409,7 +409,7 @@ struct ExampleAppConsole
     }
 };
 
-static void ShowExampleAppConsole(bool *p_open)
+static void ShowExampleAppConsole(bool* p_open)
 {
     static ExampleAppConsole console;
     console.Draw("Example: Console", p_open);

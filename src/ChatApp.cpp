@@ -2,7 +2,7 @@
 #include "TranslationManager.h"
 
 
-static void glfw_error_callback(int error, const char *description);
+static void glfw_error_callback(int error, const char* description);
 
 void SetImGuiStyles();
 
@@ -51,19 +51,19 @@ bool ChatApp::Init()
     SetupPostProcessing();
 
     // message callback
-//    chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent &e) {
-//        auto result = historyMap.insert({e.senderId, {}});
-//        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
-//
-//        if (e.senderId == selectedChat)
-//        {
-//            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
-//        }
-//        else
-//        {
-//            ++result.first->second.unreadMessageCount;
-//        }
-//    });
+    //    chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent &e) {
+    //        auto result = historyMap.insert({e.senderId, {}});
+    //        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
+    //
+    //        if (e.senderId == selectedChat)
+    //        {
+    //            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
+    //        }
+    //        else
+    //        {
+    //            ++result.first->second.unreadMessageCount;
+    //        }
+    //    });
 
     return true;
 }
@@ -106,7 +106,7 @@ void ChatApp::Uninit()
 void ChatApp::UpdateMainPanel()
 {
 #ifdef IMGUI_HAS_VIEWPORT
-    ImGuiViewport *viewport = nullptr;
+    ImGuiViewport* viewport = nullptr;
     viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
     ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -117,7 +117,7 @@ void ChatApp::UpdateMainPanel()
 #endif
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::Begin("Root panel", (bool *) 0,
+    ImGui::Begin("Root panel", (bool*) 0,
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                          ImGuiWindowFlags_NoBringToFrontOnFocus);
 
@@ -132,7 +132,7 @@ void ChatApp::UpdateMainPanel()
     if (showDemoWindow)
         ImGui::ShowDemoWindow(&showDemoWindow);
 
-    for (const auto &view: views)
+    for (const auto& view: views)
     {
         view.get().Draw();
     }
@@ -171,7 +171,7 @@ void ChatApp::PrepareNextFrame()
     ImGui::NewFrame();
 }
 
-bool ChatApp::WindowInit(std::string &outGlslVersion)
+bool ChatApp::WindowInit(std::string& outGlslVersion)
 {
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
@@ -215,7 +215,7 @@ void ChatApp::CreateUIContext()
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
+    ImGuiIO& io = ImGui::GetIO();
     (void) io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
@@ -227,7 +227,7 @@ void ChatApp::CreateUIContext()
     SetImGuiStyles();
 }
 
-void ChatApp::SetupRendererBackend(const std::string &glslVersion)
+void ChatApp::SetupRendererBackend(const std::string& glslVersion)
 {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
@@ -300,21 +300,21 @@ void ChatApp::ApplyPostProcessing()
     PxlUI::BatchRenderer::flush();
 }
 
-void ChatApp::AddView(IView &view)
+void ChatApp::AddView(IView& view)
 {
     views.emplace_back(view);
 }
 
-static void glfw_error_callback(int error, const char *description)
+static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
 void SetImGuiStyles()
 {
-    ImGuiStyle &style = ImGui::GetStyle();
+    ImGuiStyle& style = ImGui::GetStyle();
 
-    ImVec4 *colors = style.Colors;
+    ImVec4* colors = style.Colors;
     colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
     colors[ImGuiCol_TextDisabled] = ImVec4(0.55f, 0.61f, 0.71f, 1.00f);
     colors[ImGuiCol_WindowBg] = ImVec4(0.09f, 0.08f, 0.15f, 1.00f);

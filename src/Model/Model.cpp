@@ -6,7 +6,7 @@
 
 
 Model::Model(IUser& user_, IChatClient& chatClient_)
-: user(user_), chatClient(chatClient_)
+    : user(user_), chatClient(chatClient_)
 {
 }
 
@@ -36,7 +36,7 @@ void Model::LoginWithNewUser(const std::string& username_)
     this->chatClient.AttemptConnectionWithUsername(this->user.GetUsername());
 }
 
-void Model::AddNewChatPeer(const std::string &peerId)
+void Model::AddNewChatPeer(const std::string& peerId)
 {
     this->chatClient.AttemptToConnectToPeer(peerId);
 }
@@ -49,8 +49,6 @@ void Model::SetUser(IUser& user_)
 void Model::SetChatClient(IChatClient& chatClient_)
 {
     //this->chatClient = std::move(chatClient_);
-
-
 }
 
 std::string Model::GetOwnUsername() const

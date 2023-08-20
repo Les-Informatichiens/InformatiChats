@@ -9,7 +9,7 @@
 #include "imgui.h"
 
 
-UserInfoPanel::UserInfoPanel(IChannelController &controller_) : controller(controller_) {}
+UserInfoPanel::UserInfoPanel(IChannelController& controller_) : controller(controller_) {}
 
 void UserInfoPanel::Update()
 {
@@ -20,7 +20,7 @@ void UserInfoPanel::Update()
 
     ImGui::Text("%s", vm.userName.c_str());
 
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
     auto time = glfwGetTime();
     for (double i = 0; i < 20; ++i)

@@ -8,7 +8,7 @@
 #include "pxlui/ShaderProgram.h"
 
 
-static const char *VERT_SHADER =
+static const char* VERT_SHADER =
         R"(#version 300 es
 
 precision highp float;
@@ -30,7 +30,7 @@ void main(void) {
 }
 )";
 
-static const char *FRAG_SHADER = R"(#version 300 es
+static const char* FRAG_SHADER = R"(#version 300 es
 
 #define PI 3.1415926535897932384626433832795
 

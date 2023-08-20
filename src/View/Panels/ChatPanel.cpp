@@ -2,7 +2,7 @@
 #include "imgui.h"
 
 
-ChatPanel::ChatPanel(IChatController &controller_) : controller(controller_) {}
+ChatPanel::ChatPanel(IChatController& controller_) : controller(controller_) {}
 
 void ChatPanel::Update()
 {
@@ -20,9 +20,9 @@ void ChatPanel::Update()
                                            ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
 
     if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), input_text_flags,
-                         &ExampleAppConsole::TextEditCallbackStub, (void *) &console))
+                         &ExampleAppConsole::TextEditCallbackStub, (void*) &console))
     {
-        char *s = inputBuf;
+        char* s = inputBuf;
         Strtrim(s);
         if (s[0])
         {

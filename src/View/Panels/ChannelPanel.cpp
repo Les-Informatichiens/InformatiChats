@@ -5,7 +5,7 @@
 #include <string>
 
 
-ChannelPanel::ChannelPanel(IChannelController &controller_) : controller(controller_)
+ChannelPanel::ChannelPanel(IChannelController& controller_) : controller(controller_)
 {
 }
 
@@ -31,7 +31,7 @@ void ChannelPanel::Update()
             ImGui::Text("Enter a username");
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-            
+
             this->UsernameToConnectToBuf.resize(maxNameLength);
             bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", this->UsernameToConnectToBuf.data(),
                                                          maxNameLength, ImGuiInputTextFlags_EnterReturnsTrue);
@@ -64,7 +64,7 @@ void ChannelPanel::Update()
     // draw chat names
 
     //Controller code (controller needs to return list of connections from the model)
-    for (const auto &peerConnection : vm.peerDataMap)
+    for (const auto& peerConnection: vm.peerDataMap)
     {
         // TODO: what the hell is going on
         std::string peerId = peerConnection.first.c_str();
@@ -77,8 +77,7 @@ void ChannelPanel::Update()
         bool hasColor = false;
         switch (state)
         {
-            case ConnectionState::New:
-            {
+            case ConnectionState::New: {
                 break;
             }
             case ConnectionState::Connecting: {
@@ -87,8 +86,7 @@ void ChannelPanel::Update()
                 displayText += " [Connecting...]";
                 break;
             }
-            case ConnectionState::Connected:
-            {
+            case ConnectionState::Connected: {
                 break;
             }
             case ConnectionState::Disconnected: {
@@ -115,31 +113,31 @@ void ChannelPanel::Update()
             }
         }
 
-//        auto peerDataIt = historyMap.find(peerId);
-//        PeerData *pPeerData = nullptr;
-//        if (peerDataIt != historyMap.end())
-//        {
-//            pPeerData = &peerDataIt->second;
-//        }
+        //        auto peerDataIt = historyMap.find(peerId);
+        //        PeerData *pPeerData = nullptr;
+        //        if (peerDataIt != historyMap.end())
+        //        {
+        //            pPeerData = &peerDataIt->second;
+        //        }
 
-//        if (pPeerData != nullptr)
-//        {
-//            if (isSelected)
-//            {
-//                pPeerData->unreadMessageCount = 0;
-//            }
-//            if (pPeerData->unreadMessageCount > 0)
-//            {
-//                displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount,
-//                                           pPeerData->unreadMessageCount == 1 ? "" : "s");
-//            }
-//        }
+        //        if (pPeerData != nullptr)
+        //        {
+        //            if (isSelected)
+        //            {
+        //                pPeerData->unreadMessageCount = 0;
+        //            }
+        //            if (pPeerData->unreadMessageCount > 0)
+        //            {
+        //                displayText += std::format(" [{} unread message{}]", pPeerData->unreadMessageCount,
+        //                                           pPeerData->unreadMessageCount == 1 ? "" : "s");
+        //            }
+        //        }
 
         if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
         if (ImGui::Selectable(displayText.c_str(), isSelected))
         {
-//            if (pPeerData != nullptr)
-//                console.SetLogHistory(pPeerData->history);
+            //            if (pPeerData != nullptr)
+            //                console.SetLogHistory(pPeerData->history);
             selectedChat = peerId;
         }
         if (hasColor) ImGui::PopStyleColor();

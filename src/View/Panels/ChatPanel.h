@@ -10,7 +10,7 @@
 class ChatPanel : public IPanel
 {
 public:
-    explicit ChatPanel(IChatController &channelController);
+    explicit ChatPanel(IChatController& channelController);
 
     void Draw() override;
     void Update() override;
@@ -24,12 +24,12 @@ private:
 
     struct PeerData
     {
-        ImVector<char *> history;
+        ImVector<char*> history;
         size_t unreadMessageCount;
     };
     // chat histories
     std::unordered_map<std::string, PeerData> historyMap;
-    IChatController &controller;
+    IChatController& controller;
 
     char inputBuf[256]{};
 };

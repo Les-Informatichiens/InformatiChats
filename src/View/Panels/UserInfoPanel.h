@@ -12,12 +12,12 @@
 class UserInfoPanel : public IPanel
 {
 public:
-    explicit UserInfoPanel(IChannelController &controller);
+    explicit UserInfoPanel(IChannelController& controller);
 
     void Draw() override;
     void Update() override;
     bool IsVisible() override;
 
 private:
-    IChannelController &controller;
+    IChannelController& controller;
 };

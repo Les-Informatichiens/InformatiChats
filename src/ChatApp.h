@@ -64,7 +64,7 @@ public:
 
     void Run();
 
-    void AddView(IView &view);
+    void AddView(IView& view);
 
 private:
     void UpdateMainPanel();
@@ -77,15 +77,15 @@ private:
     void Update();
     void Uninit();
 
-    bool WindowInit(std::string &outGlslVersion);
+    bool WindowInit(std::string& outGlslVersion);
     void CreateUIContext();
 
-    void SetupRendererBackend(const std::string &glslVersion);
+    void SetupRendererBackend(const std::string& glslVersion);
     void SetupPostProcessing();
 
 private:
-    GLFWwindow *window{};
-    
+    GLFWwindow* window{};
+
     std::string selectedChat;
     bool addNewChatPrompt{};
 
@@ -95,7 +95,7 @@ private:
 
     struct PeerData
     {
-        ImVector<char *> history;
+        ImVector<char*> history;
         size_t unreadMessageCount;
     };
     // chat histories
@@ -107,7 +107,7 @@ private:
     bool showDemoWindow{};
     const float resFactor = 0.5f;
     static constexpr int maxNameLength{32};
-    PxlUI::ShaderProgram *ShaderProg{};
+    PxlUI::ShaderProgram* ShaderProg{};
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
 

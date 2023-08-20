@@ -9,7 +9,7 @@ ChatViewModel ChatController::GetViewModel()
 {
     return {this->model.GetOwnUsername()};
 }
-ChatController::ChatController(Model &model_)
-: model(model_)
+ChatController::ChatController(Model& model_)
+    : model(model_)
 {
 }

@@ -11,7 +11,7 @@
 class ChannelPanel : public IPanel
 {
 public:
-    explicit ChannelPanel(IChannelController &channelController);
+    explicit ChannelPanel(IChannelController& channelController);
 
     void Draw() override;
     void Update() override;
@@ -22,7 +22,7 @@ public:
     std::string selectedChat;
     ExampleAppConsole console;
     static constexpr int maxNameLength{32};
-    IChannelController &controller;
+    IChannelController& controller;
 
     std::string UsernameToConnectToBuf;
 };

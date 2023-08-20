@@ -42,9 +42,9 @@ public:
 
     virtual bool IsConnected() const = 0;
 
-    virtual void AttemptConnectionWithUsername(const std::string &newUsername) = 0;
+    virtual void AttemptConnectionWithUsername(const std::string& newUsername) = 0;
 
-    virtual void AttemptToConnectToPeer(const std::string &peerId) = 0;
+    virtual void AttemptToConnectToPeer(const std::string& peerId) = 0;
 
     virtual void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
     virtual void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) = 0;

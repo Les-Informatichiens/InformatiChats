@@ -6,7 +6,7 @@
 #include "imgui.h"
 
 
-LoginPanel::LoginPanel(ILoginController &controller_) : controller(controller_)
+LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
 {
 }
 

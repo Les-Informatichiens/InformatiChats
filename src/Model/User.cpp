@@ -4,7 +4,7 @@
 
 
 User::User(std::string username_)
-: username(std::move(username_))
+    : username(std::move(username_))
 {
 }
 

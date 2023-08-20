@@ -10,12 +10,12 @@ ChannelViewModel ChannelController::GetViewModel()
     return {this->model.GetPeerDataMap(), this->model.GetOwnUsername()};
 }
 
-ChannelController::ChannelController(Model &model_)
-: model(model_)
+ChannelController::ChannelController(Model& model_)
+    : model(model_)
 {
 }
 
-void ChannelController::AddNewChatPeer(const std::string &peerName)
+void ChannelController::AddNewChatPeer(const std::string& peerName)
 {
     this->model.AddNewChatPeer(peerName);
 }

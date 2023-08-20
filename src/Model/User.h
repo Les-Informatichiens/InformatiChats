@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ChatClient.h"
-#include "PeerData.h"
 #include "IUser.h"
+#include "PeerData.h"
 
 
 class User : public IUser
