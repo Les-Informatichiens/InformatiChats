@@ -21,7 +21,6 @@ public:
 
     std::string selectedChat;
     ExampleAppConsole console;
-    static constexpr int maxNameLength{32};
     IChannelController& controller;
 
     std::string UsernameToConnectToBuf;

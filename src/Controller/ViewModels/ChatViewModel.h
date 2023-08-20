@@ -4,10 +4,12 @@
 
 #pragma once
 
+#include <Model/IUser.h>
+
 #include <string>
 
 
 struct ChatViewModel
 {
-    std::string userName;
+    const ChatHistory* chatHistory;
 };

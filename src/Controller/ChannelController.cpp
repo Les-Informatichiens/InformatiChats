@@ -15,7 +15,12 @@ ChannelController::ChannelController(Model& model_)
 {
 }
 
-void ChannelController::AddNewChatPeer(const std::string& peerName)
+void ChannelController::AddNewChatPeer(const std::string& peerName_)
 {
-    this->model.AddNewChatPeer(peerName);
+    this->model.AddNewChatPeer(peerName_);
+}
+
+void ChannelController::SetSelectedPeerId(const std::string& peerId_)
+{
+    this->model.SetSelectedPeerId(peerId_);
 }

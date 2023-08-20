@@ -5,8 +5,6 @@
 #include "LoginController.h"
 #include "Model/User.h"
 
-#include <memory>
-
 
 LoginController::LoginController(Model& model_)
     : model(model_)

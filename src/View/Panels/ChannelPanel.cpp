@@ -1,7 +1,6 @@
 #include "ChannelPanel.h"
 
 #include "imgui.h"
-#include "rtc/peerconnection.hpp"
 #include <misc/cpp/imgui_stdlib.h>
 #include <string>
 
@@ -66,7 +65,7 @@ void ChannelPanel::Update()
     for (const auto& peerConnection: vm.peerDataMap)
     {
         // TODO: what the hell is going on
-        std::string peerId = peerConnection.first.c_str();
+        std::string peerId = peerConnection.first;
         bool isSelected = selectedChat == peerId;
 
         ConnectionState state = peerConnection.second.connectionState;
@@ -138,6 +137,7 @@ void ChannelPanel::Update()
             //            if (pPeerData != nullptr)
             //                console.SetLogHistory(pPeerData->history);
             selectedChat = peerId;
+            controller.SetSelectedPeerId(peerId);
         }
         if (hasColor) ImGui::PopStyleColor();
     }

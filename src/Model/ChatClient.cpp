@@ -125,7 +125,7 @@ void ChatClient::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, con
 
 void ChatClient::AttemptToConnectToPeer(const std::string& peerId)
 {
-    if (peerId == username)
+    if (peerId == this->username)
     {
         std::cout << "Cannot connect to own id" << std::endl;
         return;
@@ -278,4 +278,16 @@ void ChatClient::SetOnMessageReceived(std::function<void(MessageReceivedEvent)> 
 void ChatClient::Reset()
 {
     *this = ChatClient();
+}
+
+
+void ChatClient::SendMessageToPeer(const std::string& peerId, const std::string& message)
+{
+    auto dcIt = this->dataChannelMap.find(peerId);
+    if (dcIt == this->dataChannelMap.end())
+    {
+        return;
+    }
+
+    dcIt->second->send(message);
 }

@@ -19,16 +19,11 @@ public:
 private:
     ExampleAppConsole console{};
 
+    std::unordered_map<std::string, ChatMessage> chatBuffers;
+
     bool consoleOpen{true};
     std::string selectedChat;
 
-    struct PeerData
-    {
-        ImVector<char*> history;
-        size_t unreadMessageCount;
-    };
-    // chat histories
-    std::unordered_map<std::string, PeerData> historyMap;
     IChatController& controller;
 
     char inputBuf[256]{};

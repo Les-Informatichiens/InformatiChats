@@ -17,15 +17,15 @@ public:
     void Init(const ConnectionConfig& config) override;
 
     bool ICEServerExists() const override;
-
     bool IsConnected() const override { return this->connected; };
 
     void AttemptConnectionWithUsername(const std::string& newUsername) override;
-
     void AttemptToConnectToPeer(const std::string& peerId) override;
 
     void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
     void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
+
+    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
 
 private:
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);

@@ -17,6 +17,8 @@ public:
 
     ChatViewModel GetViewModel() override;
 
+    void SendMessage(const std::string& message) override;
+
 private:
     std::string userName;
 

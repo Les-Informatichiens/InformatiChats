@@ -25,6 +25,12 @@ public:
     int GetMaxNameLength() const { return maxNameLength; };
     bool IsClientConnected() const { return this->chatClient.IsConnected(); };
 
+    void SendMessage(const std::string& peerId, const std::string& message) const;
+
+    void SetSelectedPeerId(const std::string& peerId);
+    const std::string& GetSelectedPeerId() const;
+    const ChatHistory* GetSelectedChatHistory();
+
 private:
     void SetUser(IUser& user_);
     void SetChatClient(IChatClient& chatClient);
