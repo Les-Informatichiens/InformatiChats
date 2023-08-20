@@ -62,6 +62,7 @@ add_executable(
         src/Model/PeerData.h
         src/Model/IUser.h
         src/Model/IChatClient.h
+        src/Factory/AbstractViewFactory.h
 )
 
 target_include_directories(
