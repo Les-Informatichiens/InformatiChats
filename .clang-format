@@ -17,6 +17,7 @@ AlwaysBreakAfterReturnType: None
 AlwaysBreakTemplateDeclarations: Yes
 BreakBeforeBraces: Custom
 BraceWrapping:
+  BeforeLambdaBody: false
   AfterCaseLabel: false
   AfterClass: true
   AfterStruct: true
@@ -45,7 +46,8 @@ MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
-PointerAlignment: Right
+PointerAlignment: Left
+ReferenceAlignment: Left
 ReflowComments: false
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false

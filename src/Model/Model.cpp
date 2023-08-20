@@ -26,24 +26,29 @@ void Model::LoginWithNewUser(std::unique_ptr<User> user_)
     this->chatClient->AttemptConnectionWithUsername(this->user->GetUsername());
 }
 
-void Model::SetUser(std::unique_ptr<User> user_)
+void Model::AddNewChatPeer(const std::string &peerId)
 {
-    this->user.reset(nullptr);
-    this->user = std::move(user_);
+    this->chatClient.AttemptToConnectToPeer(peerId);
+}
+
+void Model::SetUser(IUser& user_)
+{
+    this->user = user_;
 }
 
 void Model::SetChatClient(std::unique_ptr<ChatClient> chatClient_)
 {
-    this->chatClient.reset(nullptr);
-    this->chatClient = std::move(chatClient_);
+    //this->chatClient = std::move(chatClient_);
+
+
 }
 
 std::string Model::GetOwnUsername() const
 {
-    if(this->user != nullptr)
-    {
-        return this->user->GetUsername();
-    }
+    return this->user.GetUsername();
+}
 
-    return {};
+std::unordered_map<std::string, PeerData> Model::GetPeerDataMap()
+{
+    return this->user.GetPeerDataMap();
 }

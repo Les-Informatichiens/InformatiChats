@@ -6,7 +6,6 @@ ChatPanel::ChatPanel(IChatController &controller_) : controller(controller_) {}
 
 void ChatPanel::Update()
 {
-
     ChatViewModel vm = controller.GetViewModel();
 
     ImGui::SameLine();

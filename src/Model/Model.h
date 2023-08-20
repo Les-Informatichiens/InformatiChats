@@ -13,7 +13,10 @@ class Model
 public:
     Model();
 
-    void LoginWithNewUser(std::unique_ptr<User> user_);
+    void LoginWithNewUser(const std::string& username_);
+    void AddNewChatPeer(const std::string& peerId);
+
+    std::unordered_map<std::string, PeerData> GetPeerDataMap();
 
     std::string GetOwnUsername() const;
     int GetMaxNameLength() const { return maxNameLength; };
