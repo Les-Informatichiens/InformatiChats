@@ -62,9 +62,6 @@ add_executable(
         src/Model/PeerData.h
         src/Model/IUser.h
         src/Model/IChatClient.h
-        src/Factory/AbstractViewFactory.h
-        src/Factory/ChannelViewFactory.cpp
-        src/Factory/ChannelViewFactory.h
 )
 
 target_include_directories(
