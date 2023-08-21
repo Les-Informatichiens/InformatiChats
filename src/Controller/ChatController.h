@@ -20,7 +20,5 @@ public:
     void SendMessage(const std::string& message) override;
 
 private:
-    std::string userName;
-
     Model& model;
 };
