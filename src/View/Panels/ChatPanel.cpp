@@ -1,20 +1,24 @@
 #include "ChatPanel.h"
 #include "Model/IUser.h"
+
 #include "imgui.h"
+#include <misc/cpp/imgui_stdlib.h>
+
 
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
-    using namespace std::chrono;
-    auto secs = duration_cast<seconds>(ms);
-    ms -= duration_cast<milliseconds>(secs);
-    auto mins = duration_cast<minutes>(secs);
-    secs -= duration_cast<seconds>(mins);
-    auto hour = duration_cast<hours>(mins);
-    mins -= duration_cast<minutes>(hour);
+    // Convert epoch time to a time_point
+    std::chrono::system_clock::time_point timePoint = std::chrono::time_point<std::chrono::system_clock>(ms);
 
-    std::stringstream ss;
-    ss << hour.count() << ":" << mins.count() << ":" << secs.count();
-    return ss.str();
+    // Convert time_point to a time structure (tm)
+    std::time_t rawTime = std::chrono::system_clock::to_time_t(timePoint);
+    std::tm* timeInfo = std::localtime(&rawTime);
+
+    // Format the time structure to a string
+    std::stringstream buffer;
+    buffer << std::put_time(timeInfo, "%H:%M:%S");
+
+    return buffer.str();
 }
 
 ChatPanel::ChatPanel(IChatController& controller_) : controller(controller_) {}
