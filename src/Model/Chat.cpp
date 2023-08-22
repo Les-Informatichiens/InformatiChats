@@ -106,7 +106,7 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
     pc->onStateChange([this, peerId, pc](rtc::PeerConnection::State state) {
-        std::cout << "State: " << state << std::endl;
+//        std::cout << "State: " << state << std::endl;
         if (state == rtc::PeerConnection::State::Closed ||
             state == rtc::PeerConnection::State::Disconnected ||
             state == rtc::PeerConnection::State::Failed)
@@ -120,7 +120,7 @@ std::shared_ptr<rtc::PeerConnection> Chat::CreatePeerConnection(const std::strin
     });
 
     pc->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) {
-        std::cout << "Gathering State: " << state << std::endl;
+//        std::cout << "Gathering State: " << state << std::endl;
     });
 
     pc->onLocalDescription([wss = std::weak_ptr(webSocket), peerId](const rtc::Description& description) {

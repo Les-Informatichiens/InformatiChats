@@ -8,6 +8,8 @@
 #include <rtc/rtc.hpp>
 #include <string>
 
+#include <future>
+
 
 class ChatClient : public IChatClient
 {

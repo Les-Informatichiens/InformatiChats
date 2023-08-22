@@ -1,5 +1,6 @@
 #include "ChatApp.h"
 #include "TranslationManager.h"
+#include <emscripten/html5_webgl.h>
 
 
 static void glfw_error_callback(int error, const char* description);
@@ -19,7 +20,7 @@ void ChatApp::Run()
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
     // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-    io.IniFilename = nullptr;
+    ImGui::GetIO().IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
     while (!glfwWindowShouldClose(window))
@@ -34,12 +35,34 @@ void ChatApp::Run()
     this->Uninit();
 }
 
+EM_BOOL emscripten_window_resized_callback(int eventType, const void *reserved, void *userData){
+    GLFWwindow* window = static_cast<GLFWwindow*>(userData);
+
+    double width, height;
+    emscripten_get_element_css_size("canvas", &width, &height);
+
+    int w = (int)width, h = (int)height;
+
+    // resize SDL window
+    glfwSetWindowSize(window, w, h);
+    return true;
+}
+
 bool ChatApp::Init()
 {
     // create glfw window and get glsl shader version determined by opengl version
     std::string glslVersion;
     if (!WindowInit(glslVersion))
         return false;
+
+#ifdef __EMSCRIPTEN__
+    EmscriptenFullscreenStrategy strategy;
+    strategy.scaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_STDDEF;
+    strategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT;
+    strategy.canvasResizedCallback = emscripten_window_resized_callback;
+    strategy.canvasResizedCallbackUserData = this->window;   // pointer to user data
+    emscripten_enter_soft_fullscreen("canvas", &strategy);
+#endif
 
     // create ImGui context and setup styles
     CreateUIContext();
@@ -95,7 +118,7 @@ void ChatApp::Update()
 void ChatApp::Uninit()
 {
     // Cleanup
-    ImGui_ImplOpenGL3_Pixel_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
@@ -165,7 +188,7 @@ void ChatApp::PrepareNextFrame()
     glViewport(0, 0, scaledDisplayWidth, scaledDisplayHeight);
 
     // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_Pixel_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
 
     ImGui::NewFrame();
@@ -180,7 +203,7 @@ bool ChatApp::WindowInit(std::string& outGlslVersion)
         // Decide GL+GLSL versions
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GL ES 2.0 + GLSL 100
-    glslVersion = "#version 100";
+    outGlslVersion = "#version 300 es";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
@@ -205,7 +228,7 @@ bool ChatApp::WindowInit(std::string& outGlslVersion)
     if (window == nullptr)
         return false;
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);// Enable vsync
+//    glfwSwapInterval(1);// Enable vsync
 
     return true;
 }
@@ -230,7 +253,7 @@ void ChatApp::CreateUIContext()
 void ChatApp::SetupRendererBackend(const std::string& glslVersion)
 {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
+    ImGui_ImplOpenGL3_Init(glslVersion.c_str());
     PxlUI::BatchRenderer::init();
 }
 
@@ -258,7 +281,7 @@ void ChatApp::SetupPostProcessing()
     ShaderProg->setInt("uCrtEnabled", false);
     ShaderProg->setFloat("iResFactor", resFactor);
 
-    glCreateTextures(GL_TEXTURE_2D, 1, &FramebufferTexture);
+    glGenTextures(1, &FramebufferTexture);
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 100, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -277,16 +300,17 @@ void ChatApp::RenderFrame()
 {
     ImGui::Render();
 
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
-                 clear_color.w);
+    glClearColor(0.2,0.0,0.1,0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // draw the framebuffer texture onto the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, this->frameDisplaySize.width, this->frameDisplaySize.height);
+
     glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+
 }
 
 void ChatApp::ApplyPostProcessing()
@@ -294,10 +318,14 @@ void ChatApp::ApplyPostProcessing()
     ShaderProg->setInt("uCrtEnabled", true);
 
     PxlUI::BatchRenderer::beginBatch();
-
     PxlUI::BatchRenderer::drawScreenTex(FramebufferTexture);
     PxlUI::BatchRenderer::endBatch();
     PxlUI::BatchRenderer::flush();
+
+//    PxlUI::BatchRenderer::beginBatch();
+//    PxlUI::BatchRenderer::drawTriangle({-0.5, -0.5, 0}, {0.0, 0.5, 0}, {0.5, -0.5, 0}, {1,1,1,1});
+//    PxlUI::BatchRenderer::beginBatch();
+//    PxlUI::BatchRenderer::flush();
 }
 
 void ChatApp::AddView(IView& view)

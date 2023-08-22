@@ -48,26 +48,26 @@ namespace PxlUI {
 
         sData.mBufferData = new Vertex[skMaxVertexCount];
 
-        glCreateVertexArrays(1, &sData.mVertexArray);
+        glGenVertexArrays(1, &sData.mVertexArray);
         glBindVertexArray(sData.mVertexArray);
 
-        glCreateBuffers(1, &sData.mVertexBuffer);
+        glGenBuffers(1, &sData.mVertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, sData.mVertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, skMaxVertexCount * sizeof(Vertex), nullptr, GL_DYNAMIC_DRAW);
 
-        glEnableVertexArrayAttrib(sData.mVertexArray, 0);
+        glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mPosition));
 
-        glEnableVertexArrayAttrib(sData.mVertexArray, 1);
+        glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mColor));
 
-        glEnableVertexArrayAttrib(sData.mVertexArray, 2);
+        glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mTexCoords));
 
-        glEnableVertexArrayAttrib(sData.mVertexArray, 3);
+        glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*) offsetof(Vertex, mTexIndex));
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &sData.mWhiteTexture);
+        glGenTextures(1, &sData.mWhiteTexture);
         glBindTexture(GL_TEXTURE_2D, sData.mWhiteTexture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -108,7 +108,9 @@ namespace PxlUI {
     {
         for (uint32_t i = 0; i < sData.mTextureSlotIndex; i++)
         {
-            glBindTextureUnit(i, sData.mTextureSlots[i]);
+//            glBindTextureUnit(i, sData.mTextureSlots[i]);
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, sData.mTextureSlots[i]);
         }
         glBindVertexArray(sData.mVertexArray);
         glDrawArrays(GL_TRIANGLES, 0, sData.mVertexCount);
@@ -133,19 +135,19 @@ namespace PxlUI {
 
         sData.mBufferDataPtr->mPosition = {iP1.x, iP1.y, iP1.z};
         sData.mBufferDataPtr->mColor = iColor;
-        sData.mBufferDataPtr->mTexCoords = {0.f, 0.f};
+        sData.mBufferDataPtr->mTexCoords = {iP1.x, iP1.y};
         sData.mBufferDataPtr->mTexIndex = wTexIndex;
         sData.mBufferDataPtr++;
 
         sData.mBufferDataPtr->mPosition = {iP2.x, iP2.y, iP2.z};
         sData.mBufferDataPtr->mColor = iColor;
-        sData.mBufferDataPtr->mTexCoords = {0.f, 0.f};
+        sData.mBufferDataPtr->mTexCoords = {iP2.x, iP2.y};
         sData.mBufferDataPtr->mTexIndex = wTexIndex;
         sData.mBufferDataPtr++;
 
         sData.mBufferDataPtr->mPosition = {iP3.x, iP3.y, iP3.z};
         sData.mBufferDataPtr->mColor = iColor;
-        sData.mBufferDataPtr->mTexCoords = {0.f, 0.f};
+        sData.mBufferDataPtr->mTexCoords = {iP3.x, iP3.y};
         sData.mBufferDataPtr->mTexIndex = wTexIndex;
         sData.mBufferDataPtr++;
 

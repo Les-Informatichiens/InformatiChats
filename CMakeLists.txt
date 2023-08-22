@@ -78,19 +78,37 @@ if(MSVC)
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
 endif()
 
+if(EMSCRIPTEN)
+    target_link_options(${PROJECT_NAME} PRIVATE "-s WASM=1 -sUSE_GLFW=3 -sUSE_WEBGL2 -sEMULATE_FUNCTION_POINTER_CASTS=1 -sALLOW_MEMORY_GROWTH=1 -sEXPORTED_RUNTIME_METHODS=\"['ccall', 'cwrap']\"")
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX .html)
+    set(CMAKE_CXX_FLAGS  "--preload-file res")
+endif()
+
 # Dependencies ========================================================================================
 include(cmake/CPM.cmake)
 
 # LibDataChannel ======================================================================================
-if(NOT TARGET LibDataChannel::LibDataChannelStatic)
-    CPMFindPackage(
-        NAME "LibDataChannel"
-        VERSION "0.18.5"
-        GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
-    )
-endif()
+if(EMSCRIPTEN)
+    if(NOT TARGET datachannel-wasm)
+        CPMFindPackage(
+                NAME "datachannel-wasm"
+                GIT_TAG "master"
+                GITHUB_REPOSITORY "paullouisageneau/datachannel-wasm"
+        )
+    endif()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStatic)
+    target_link_libraries(${PROJECT_NAME} PRIVATE datachannel-wasm)
+else()
+    if(NOT TARGET LibDataChannel::LibDataChannelStatic)
+        CPMFindPackage(
+                NAME "LibDataChannel"
+                VERSION "0.18.5"
+                GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
+        )
+    endif()
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStatic)
+endif()
 # =====================================================================================================
 
 # nlohmann-json =======================================================================================
@@ -115,16 +133,26 @@ CPMAddPackage(
 target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 # =====================================================================================================
 
-# glew ================================================================================================
-if(NOT TARGET libglew_static)
-    CPMAddPackage(
-        NAME "GLEW"
-        GITHUB_REPOSITORY "Perlmint/glew-cmake"
-        GIT_TAG "glew-cmake-2.2.0"
-    )
+# glfw ================================================================================================
+if(EMSCRIPTEN)
+    target_link_options(${PROJECT_NAME} PRIVATE "-sUSE_GLFW=3")
 endif()
+# =====================================================================================================
 
-target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
+# glew ================================================================================================
+if(EMSCRIPTEN)
+    target_link_options(${PROJECT_NAME} PRIVATE "-sUSE_WEBGL2=1")
+else()
+    if(NOT TARGET libglew_static)
+        CPMAddPackage(
+            NAME "GLEW"
+            GITHUB_REPOSITORY "Perlmint/glew-cmake"
+            GIT_TAG "glew-cmake-2.2.0"
+        )
+    endif()
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
+endif()
 # =====================================================================================================
 
 # imgui ===============================================================================================

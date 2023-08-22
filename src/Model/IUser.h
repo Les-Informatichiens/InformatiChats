@@ -10,6 +10,8 @@
 #include <chrono>
 #include <unordered_map>
 
+#include <string>
+
 struct ChatMessage
 {
     std::string content;

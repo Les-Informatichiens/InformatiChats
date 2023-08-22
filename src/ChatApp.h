@@ -11,8 +11,8 @@
 #include <imgui.h>
 //#include <backends/imgui_impl_glfw.h>
 #include "View/imgui_impl_glfw_pixel.h"
-//#include <backends/imgui_impl_opengl3.h>
-#include "View/imgui_impl_opengl3_pixel.h"
+#include <backends/imgui_impl_opengl3.h>
+//#include "View/imgui_impl_opengl3_pixel.h"
 #include <cstdio>
 
 #include "Model/Chat.h"
@@ -27,13 +27,7 @@
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #else
-
 #include <GL/glew.h>
-#include <View/Views/IView.h>
-#include <View/pxlui/BatchRenderer.h>
-#include <View/pxlui/GLShaderUtil.h>
-#include <View/pxlui/ShaderProgram.h>
-
 #endif
 
 #include <GLFW/glfw3.h>// Will drag system OpenGL headers
@@ -47,9 +41,14 @@
 
 // This example can also compile and run with Emscripten! See 'Makefile.emscripten' for details.
 #ifdef __EMSCRIPTEN__
-#include "../libs/emscripten/emscripten_mainloop_stub.h"
+#include <View/emscripten_mainloop_stub.h>
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
+
+#include <View/Views/IView.h>
+#include <View/pxlui/BatchRenderer.h>
+#include <View/pxlui/GLShaderUtil.h>
+#include <View/pxlui/ShaderProgram.h>
 
 struct DisplaySize
 {
@@ -65,6 +64,7 @@ public:
     void Run();
 
     void AddView(IView& view);
+    void Update();
 
 private:
     void UpdateMainPanel();
@@ -74,7 +74,6 @@ private:
 
 private:
     bool Init();
-    void Update();
     void Uninit();
 
     bool WindowInit(std::string& outGlslVersion);

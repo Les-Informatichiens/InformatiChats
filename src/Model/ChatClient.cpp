@@ -9,7 +9,7 @@ bool ChatClient::ICEServerExists() const
 
 void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
 {
-    auto wsFuture = wsPromise.get_future();
+//    auto wsFuture = wsPromise.get_future();
 
     webSocket->onOpen([this, newUsername]() {
         std::cout << "WebSocket connected, signaling ready" << std::endl;
@@ -62,7 +62,7 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
             auto badPcIt = peerConnectionMap.find(destIt->get<std::string>());
             if (badPcIt != peerConnectionMap.end())
             {
-                badPcIt->second->close();
+//                badPcIt->second->close();
             }
             return;
         }
@@ -110,7 +110,7 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
     webSocket->open(url);
 
     std::cout << "Waiting for signaling to be connected..." << std::endl;
-    wsFuture.get();
+//    wsFuture.get();
 }
 
 void ChatClient::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId)
@@ -172,7 +172,7 @@ std::shared_ptr<rtc::PeerConnection> ChatClient::CreatePeerConnection(const std:
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
     pc->onStateChange([this, peerId, pc](rtc::PeerConnection::State state) {
-        std::cout << "State: " << state << std::endl;
+//        std::cout << "State: " << state << std::endl;
         onPeerConnectionStateChangeCallback(PeerConnectionStateChangeEvent(peerId, static_cast<ConnectionState>(state)));
         if (state == rtc::PeerConnection::State::Closed ||
             state == rtc::PeerConnection::State::Disconnected ||
@@ -187,7 +187,7 @@ std::shared_ptr<rtc::PeerConnection> ChatClient::CreatePeerConnection(const std:
     });
 
     pc->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) {
-        std::cout << "Gathering State: " << state << std::endl;
+//        std::cout << "Gathering State: " << state << std::endl;
     });
 
     pc->onLocalDescription([wss = std::weak_ptr(webSocket), peerId](const rtc::Description& description) {

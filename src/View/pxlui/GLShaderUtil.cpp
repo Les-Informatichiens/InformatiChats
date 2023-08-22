@@ -45,7 +45,7 @@ int PxlUI::GLShaderUtil::compileShader(unsigned int type, const std::string& sou
     {
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*) _malloca(length * sizeof(char));
+        char* message = (char*) malloc(length * sizeof(char));
         glGetShaderInfoLog(id, length, &length, message);
         std::cout << "Failed to compile " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << " shader!"
                   << std::endl;

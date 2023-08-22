@@ -2,6 +2,8 @@
 #include "Model/IUser.h"
 #include "imgui.h"
 
+#include <sstream>
+
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
     using namespace std::chrono;

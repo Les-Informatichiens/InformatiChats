@@ -3,7 +3,6 @@
 //
 
 #include "LoginView.h"
-#include <Controller/ILoginController.h>
 
 
 /**
