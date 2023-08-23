@@ -9,16 +9,21 @@ env:
   BUILD_TYPE: Release
   
 jobs:
-  Test:
+  Build:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os:
+          - windows-latest
+          - ubuntu-latest
           # - macos-12
-        compiler: [ {cpp: llvm, c: llvm}, {cpp: g++, c: gcc}, {cpp: msvc, c: msvc} ]
         generator:
           - Ninja
+        compiler:
+          - llvm
+          - gcc
+          # you can specify the version after `-` like `llvm-13.0.0`.
         include:
           - os: "windows-latest"
             compiler: "msvc"
@@ -36,7 +41,8 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER=${{ matrix.compiler.c }} -D CMAKE_CXX_COMPILER=${{ matrix.compiler.cpp }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.compiler.cc }} -G "Ninja"
+          echo "${{ matrix.compiler }}"
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -D CMAKE_C_COMPILER=${{ matrix.compiler }} -D CMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.compiler.cc }} -G "Ninja"
           
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
