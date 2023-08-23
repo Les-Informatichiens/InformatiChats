@@ -6,8 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
-        src/Model/Chat.cpp
-        src/Model/Chat.h
         src/View/imgui_impl_opengl3_loader.h
         src/View/imgui_impl_opengl3_pixel.cpp
         src/View/imgui_impl_opengl3_pixel.h

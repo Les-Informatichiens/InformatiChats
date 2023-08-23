@@ -6,7 +6,6 @@
 
 #include "IPanel.h"
 #include <Controller/IChannelController.h>
-#include <Model/Chat.h>
 
 
 class UserInfoPanel : public IPanel

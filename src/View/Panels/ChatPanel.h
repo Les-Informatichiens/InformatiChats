@@ -2,9 +2,6 @@
 
 #include "IPanel.h"
 #include <Controller/IChatController.h>
-#include <Model/Chat.h>
-
-#include "../console.h"
 
 
 class ChatPanel : public IPanel
@@ -17,8 +14,6 @@ public:
     bool IsVisible() override;
 
 private:
-    ExampleAppConsole console{};
-
     std::unordered_map<std::string, ChatMessage> lastChatMessages;
 
     bool consoleOpen{true};

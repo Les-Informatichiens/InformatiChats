@@ -2,7 +2,6 @@
 
 #include "IPanel.h"
 #include <Controller/IChannelController.h>
-#include <Model/Chat.h>
 
 #include "imgui.h"
 #include <unordered_map>
@@ -20,7 +19,6 @@ public:
     bool addNewChatPrompt{false};
 
     std::string selectedChat;
-    ExampleAppConsole console;
     IChannelController& controller;
 
     std::string usernameToConnectToBuf;

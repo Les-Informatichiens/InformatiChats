@@ -13,15 +13,12 @@
 #include "View/imgui_impl_glfw_pixel.h"
 //#include <backends/imgui_impl_opengl3.h>
 #include "View/imgui_impl_opengl3_pixel.h"
-#include <cstdio>
-
-#include "Model/Chat.h"
+#include "View/Shaders.h"
 
 #include <cstdio>
 #include <memory>
 #include <unordered_map>
 
-#include "View/Shaders.h"
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -88,10 +85,6 @@ private:
 
     std::string selectedChat;
     bool addNewChatPrompt{};
-
-    // chat message space
-    ExampleAppConsole console;
-    bool consoleOpen{};
 
     struct PeerData
     {
