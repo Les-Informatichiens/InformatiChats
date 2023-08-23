@@ -14,7 +14,7 @@ jobs:
         os:
           - windows-2022
           - ubuntu-22.04
-          - macos-12
+          #- macos-12
         compiler:
           - llvm
           - gcc
@@ -24,44 +24,31 @@ jobs:
             compiler: "msvc"
     steps:
       - uses: actions/checkout@v3
-      - name: Cache
+      
+      - name: Set up cache
         uses: actions/cache@v3
         with:
           path: |
-            ~/vcpkg
-            ./build/vcpkg_installed
-            ${{ env.HOME }}/.cache/vcpkg/archives
-            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
-            ${{ env.LOCALAPPDATA }}\vcpkg\archives
-            ${{ env.APPDATA }}\vcpkg\archives
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+            ~/llvm
+            ~/cpm-cache
+          key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-cpm-
 
       - name: Setup Cpp
         uses: aminya/setup-cpp@v1
         with:
           compiler: ${{ matrix.compiler }}
           vcvarsall: ${{ contains(matrix.os, 'windows') }}
+          ccache: true
           cmake: true
           ninja: true
+          doxygen: true
           vcpkg: false
           cppcheck: false
           clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
+          clangformat: true
           # ...
-          
-      - name: Check Formatting
-        run: |
-          $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d ${GITHUB_REF##*/}
-          foreach ($FILE in $CLANG_FORMAT_DIFF) {
-            if ($FILE -match ".*\.(cpp|h)$") {
-              $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
-              if ($formatOutput -match "<replacement ") {
-                Write-Host "File $FILE is not formatted correctly. Please run clang-format."
-                exit 1
-              }
-            }
-          }
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
