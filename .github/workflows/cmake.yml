@@ -1,50 +1,67 @@
-name: CMake
-
+name: ci
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
-
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  push:
+    branches:
+      - master
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
-    # You can convert this to a matrix build if you need cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: windows-latest
-
+  Test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-22.04
+          - macos-12
+        compiler:
+          - llvm
+          - gcc
+          # you can specify the version after `-` like `llvm-13.0.0`.
+        include:
+          - os: "windows-2022"
+            compiler: "msvc"
     steps:
-    - uses: actions/checkout@v3
-    - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/checkout@v3
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/vcpkg
+            ./build/vcpkg_installed
+            ${{ env.HOME }}/.cache/vcpkg/archives
+            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
+            ${{ env.LOCALAPPDATA }}\vcpkg\archives
+            ${{ env.APPDATA }}\vcpkg\archives
+          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./vcpkg.json')}}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.BUILD_TYPE }}-
 
-    - name: Check Formatting
-      run: |
-        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d ${GITHUB_REF##*/}
-        foreach ($FILE in $CLANG_FORMAT_DIFF) {
-          if ($FILE -match ".*\.(cpp|h)$") {
-            $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
-            if ($formatOutput -match "<replacement ") {
-              Write-Host "File $FILE is not formatted correctly. Please run clang-format."
-              exit 1
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: ${{ matrix.compiler }}
+          vcvarsall: ${{ contains(matrix.os, 'windows') }}
+          cmake: true
+          ninja: true
+          vcpkg: false
+          cppcheck: false
+          clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
+          # ...
+          
+      - name: Check Formatting
+        run: |
+          $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d ${GITHUB_REF##*/}
+          foreach ($FILE in $CLANG_FORMAT_DIFF) {
+            if ($FILE -match ".*\.(cpp|h)$") {
+              $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
+              if ($formatOutput -match "<replacement ") {
+                Write-Host "File $FILE is not formatted correctly. Please run clang-format."
+                exit 1
+              }
             }
           }
-        }
-    
-    - name: Configure CMake
-      shell: cmd
-      run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -GNinja
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
