@@ -23,7 +23,6 @@ jobs:
     
     - name: Check Formatting
       run: |
-        choco install -y llvm
         $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d HEAD~1
         foreach ($FILE in $CLANG_FORMAT_DIFF) {
           if ($FILE -match ".*\.(cpp|h)$") {
