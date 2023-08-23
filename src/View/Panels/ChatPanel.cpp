@@ -29,71 +29,83 @@ void ChatPanel::Update()
 
     ImGui::SameLine();
 
-//    ImGui::BeginDisabled(vm.chatHistory == nullptr);
+    //    ImGui::BeginDisabled(vm.chatHistory == nullptr);
 
-    ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
-
-    console.Draw("Demo chat", &consoleOpen);
-
-    // Command-line
-    bool reclaim_focus = false;
-    ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
-                                           ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-
-    const ChatHistory* chatHistory = vm.chatHistory;
-    if (chatHistory != nullptr && !chatHistory->empty())
+    if (ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize))
     {
-        //if(this->chatBuffers.get(selectedChat) != this->)
-        const ChatMessage* chatMessage = &(*chatHistory)[0];
 
-        auto addedEntryIt = this->chatBuffers.insert({selectedChat, *chatMessage});
-        if(addedEntryIt.second)
+        bool reclaim_focus = false;
+
+        const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+        if (ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false,
+                              ImGuiWindowFlags_HorizontalScrollbar))
         {
-            console.AddLog("[%s][%s] %s", formatMilliseconds(addedEntryIt.first->second.timestamp).c_str(), addedEntryIt.first->second.senderId.c_str(), addedEntryIt.first->second.content.c_str());
+            bool paleBackground = false;
+
+            const ChatHistory* chatHistory = vm.chatHistory;
+
+            if(chatHistory != nullptr)
+            {
+                if (ImGui::BeginTable("Console", 2, ImGuiTableFlags_RowBg))
+                {
+                    ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_WidthFixed);
+                    ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_WidthStretch);
+
+                    for (int i = 0; i < vm.chatHistorySize; ++i)
+                    {
+                        std::string timestamp = formatMilliseconds(chatHistory->at(i).timestamp);
+
+                        ImGui::TableNextRow();
+                        ImGui::TableNextRow();
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImColor(ImGui::GetStyle().Colors[paleBackground ? ImGuiCol_TableRowBg : ImGuiCol_TableRowBgAlt]));
+
+                        ImGui::TableNextColumn();
+                        ImGui::TextDisabled("%s", timestamp.c_str());
+
+                        ImGui::TableNextColumn();
+                        ImGui::PushStyleColor(0, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+                        ImGui::Text("[ %s ]", chatHistory->at(i).senderId.c_str());
+                        ImGui::PopStyleColor();
+
+                        ImGui::TableNextRow();
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImColor(ImGui::GetStyle().Colors[paleBackground ? ImGuiCol_TableRowBg : ImGuiCol_TableRowBgAlt]));
+                        ImGui::TableNextColumn();
+                        ImGui::TableNextColumn();
+                        ImGui::TextWrapped("%s", chatHistory->at(i).content.c_str());
+
+                        paleBackground = !paleBackground;
+                    }
+                    ImGui::EndTable();
+                }
+            }
         }
 
-        ChatMessage lastChatMessage = this->chatBuffers[selectedChat];
+        ImGui::EndChild();
 
-        auto chatHistoryCurrentIt = chatHistory->begin();
-        auto chatHistoryEndIt = chatHistory->end();
 
-        chatHistoryCurrentIt = std::find_if(chatHistoryCurrentIt, chatHistoryEndIt, [&lastChatMessage](const ChatMessage& chatMessage){return chatMessage.content == lastChatMessage.content && chatMessage.timestamp == lastChatMessage.timestamp;});
-
-        for (++chatHistoryCurrentIt; chatHistoryCurrentIt != chatHistoryEndIt; ++chatHistoryCurrentIt)
+        ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
+                                               ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+        if (ImGui::InputText("Input", &inputBuf, input_text_flags))
         {
-            console.AddLog("[%s][%s] %s", formatMilliseconds(chatHistoryCurrentIt->timestamp).c_str(), chatHistoryCurrentIt->senderId.c_str(), chatHistoryCurrentIt->content.c_str());
-            this->chatBuffers[selectedChat] = *chatHistoryCurrentIt;
+            trim(inputBuf);
+
+            if (!inputBuf.empty())
+            {
+                this->controller.SendMessage(inputBuf);
+            }
+
+            inputBuf.clear();
+
+            reclaim_focus = true;
         }
+
+        // Auto-focus on window apparition
+        ImGui::SetItemDefaultFocus();
+        if (reclaim_focus)
+            ImGui::SetKeyboardFocusHere(-1);// Auto focus previous widget
     }
-
-    if (ImGui::InputText("Input", inputBuf, IM_ARRAYSIZE(inputBuf), input_text_flags,
-                         &ExampleAppConsole::TextEditCallbackStub, (void*) &console))
-    {
-        char* s = inputBuf;
-        Strtrim(s);
-        if (s[0])
-        {
-            this->controller.SendMessage(inputBuf);
-            // duplicate code, pls clean up
-//            auto result = historyMap.insert({selectedChat, {}});
-//            result.first->second.history.push_back(Strdup(std::format("[{}] {}", vm.userName, s).c_str()));
-//
-//            console.AddLog("[%s] %s", vm.userName.c_str(), s);
-            //chatClient.SendMessageToPeer(selectedChat, s);
-        }
-        strcpy(s, "");
-        reclaim_focus = true;
-    }
-
-    // Auto-focus on window apparition
-    ImGui::SetItemDefaultFocus();
-    if (reclaim_focus)
-        ImGui::SetKeyboardFocusHere(-1);// Auto focus previous widget
-
     ImGui::EndChild();
-
-//    ImGui::EndDisabled();
-
+    //    ImGui::EndDisabled();
 }
 
 void ChatPanel::Draw()

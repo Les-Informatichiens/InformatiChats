@@ -23,5 +23,5 @@ public:
     ExampleAppConsole console;
     IChannelController& controller;
 
-    std::string UsernameToConnectToBuf;
+    std::string usernameToConnectToBuf;
 };

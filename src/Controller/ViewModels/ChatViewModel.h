@@ -12,4 +12,5 @@
 struct ChatViewModel
 {
     const ChatHistory* chatHistory;
+    const size_t chatHistorySize;
 };

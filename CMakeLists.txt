@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
-        src/View/console.h
         src/Model/Chat.cpp
         src/Model/Chat.h
         src/View/imgui_impl_opengl3_loader.h
@@ -168,3 +167,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
     message(STATUS "Copying res to build directory")
     file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
+
+# Compile definitions ==================================================================================
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __DEBUG__)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __RELEASE__ PRIVATE __NDEBUG__)
+endif()
+# =====================================================================================================

@@ -15,27 +15,27 @@ void UserInfoPanel::Update()
 {
     ChannelViewModel vm = controller.GetViewModel();
 
-    ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true,
-                      ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar);
-
-    ImGui::Text("%s", vm.userName.c_str());
-
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-
-    auto time = glfwGetTime();
-    for (double i = 0; i < 20; ++i)
+    if (ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true,
+                          ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar))
     {
-        ImVec2 p1;
-        p1.x = ImGui::GetCursorScreenPos().x + i * 2,
-        p1.y = ImGui::GetCursorScreenPos().y + 5;
-        ImVec2 p2;
-        p2.x = ImGui::GetCursorScreenPos().x + i * 2,
-        p2.y = ImGui::GetCursorScreenPos().y + 5 * glm::sin(time + i / 3.0) + 5;
-        draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
+        ImGui::Text("%s", vm.userName.c_str());
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        auto time = glfwGetTime();
+        for (double i = 0; i < 20; ++i)
+        {
+            ImVec2 p1;
+            p1.x = ImGui::GetCursorScreenPos().x + i * 2,
+            p1.y = ImGui::GetCursorScreenPos().y + 5;
+            ImVec2 p2;
+            p2.x = ImGui::GetCursorScreenPos().x + i * 2,
+            p2.y = ImGui::GetCursorScreenPos().y + 5 * glm::sin(time + i / 3.0) + 5;
+            draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
+        }
     }
 
     ImGui::EndChild();
-
     ImGui::EndGroup();
 }
 

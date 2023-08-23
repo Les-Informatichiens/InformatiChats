@@ -117,26 +117,29 @@ void ChatApp::UpdateMainPanel()
 #endif
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::Begin("Root panel", (bool*) 0,
+    if(ImGui::Begin("Root panel", (bool*) 0,
                  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                         ImGuiWindowFlags_NoBringToFrontOnFocus);
-
-    // ImGui demo button and panel
-    ImGui::BeginMainMenuBar();
-    ImGui::Checkbox("Demo", &showDemoWindow);
-    ImGui::EndMainMenuBar();
-
-
-    // If the client is not connected to the server yet, ask the user to login.
-    // Show the main application if connected.
-    if (showDemoWindow)
-        ImGui::ShowDemoWindow(&showDemoWindow);
-
-    for (const auto& view: views)
+                         ImGuiWindowFlags_NoBringToFrontOnFocus))
     {
-        view.get().Draw();
+#ifndef __NDEBUG__
+        // ImGui demo button and panel
+        ImGui::BeginMainMenuBar();
+        ImGui::Checkbox("Demo", &showDemoWindow);
+        ImGui::EndMainMenuBar();
+
+        // If the client is not connected to the server yet, ask the user to login.
+        // Show the main application if connected.
+        if (showDemoWindow)
+            ImGui::ShowDemoWindow(&showDemoWindow);
+#endif
+
+        for (const auto& view: views)
+        {
+            view.get().Draw();
+        }
     }
     ImGui::End();
+
     ImGui::PopStyleVar();
 }
 

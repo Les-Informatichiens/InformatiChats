@@ -78,13 +78,7 @@ const std::string& Model::GetSelectedPeerId() const
 
 const ChatHistory* Model::GetSelectedChatHistory()
 {
-    const ChatHistory* const chatHistory = this->user.GetSelectedChatHistory();
-    if (chatHistory != nullptr)
-    {
-        return chatHistory;
-    }
-
-    return nullptr;
+    return this->user.GetSelectedChatHistory();
 }
 
 void Model::SendMessage(const std::string& peerId, const std::string& message) const

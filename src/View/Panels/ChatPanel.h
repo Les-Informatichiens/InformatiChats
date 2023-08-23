@@ -19,12 +19,12 @@ public:
 private:
     ExampleAppConsole console{};
 
-    std::unordered_map<std::string, ChatMessage> chatBuffers;
+    std::unordered_map<std::string, ChatMessage> lastChatMessages;
 
     bool consoleOpen{true};
     std::string selectedChat;
 
     IChatController& controller;
 
-    char inputBuf[256]{};
+    std::string inputBuf;
 };

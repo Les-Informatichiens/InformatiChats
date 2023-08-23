@@ -275,11 +275,11 @@ void ChatClient::SetOnMessageReceived(std::function<void(MessageReceivedEvent)> 
 {
     onMessageReceivedCallback = callback;
 }
+
 void ChatClient::Reset()
 {
     *this = ChatClient();
 }
-
 
 void ChatClient::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
