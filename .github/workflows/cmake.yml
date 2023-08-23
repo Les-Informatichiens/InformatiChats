@@ -21,8 +21,19 @@ jobs:
     - uses: actions/checkout@v3
     - uses: ilammy/msvc-dev-cmd@v1
     
-    - name: clang-format lint
-      uses: DoozyX/clang-format-lint-action@v0.16.2
+    - name: Check Formatting
+      run: |
+        choco install -y llvm
+        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d HEAD~1
+        foreach ($FILE in $CLANG_FORMAT_DIFF) {
+          if ($FILE -match ".*\.(cpp|h)$") {
+            $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
+            if ($formatOutput -match "<replacement ") {
+              Write-Host "File $FILE is not formatted correctly. Please run clang-format."
+              exit 1
+            }
+          }
+        }
     
     - name: Configure CMake
       shell: cmd
