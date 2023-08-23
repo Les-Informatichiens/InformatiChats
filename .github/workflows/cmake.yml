@@ -23,7 +23,7 @@ jobs:
     
     - name: Check Formatting
       run: |
-        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d master~1
+        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d master
         foreach ($FILE in $CLANG_FORMAT_DIFF) {
           if ($FILE -match ".*\.(cpp|h)$") {
             $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
