@@ -6,23 +6,65 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
-        src/console.h
-        src/Chat.cpp
-        src/Chat.h
-        src/imgui_impl_opengl3_loader.h
-        src/imgui_impl_opengl3_pixel.cpp
-        src/imgui_impl_opengl3_pixel.h
-        src/pxlui/BatchRenderer.cpp
-        src/pxlui/BatchRenderer.h
-        src/pxlui/GLShaderUtil.cpp
-        src/pxlui/GLShaderUtil.h
-        src/pxlui/ShaderProgram.cpp
-        src/pxlui/ShaderProgram.h
-        src/imgui_impl_glfw_pixel.cpp
-        src/imgui_impl_glfw_pixel.h
-        src/Shaders.h
-        src/Application.cpp
-        src/Application.h
+        src/View/imgui_impl_opengl3_loader.h
+        src/View/imgui_impl_opengl3_pixel.cpp
+        src/View/imgui_impl_opengl3_pixel.h
+        src/View/pxlui/BatchRenderer.cpp
+        src/View/pxlui/BatchRenderer.h
+        src/View/pxlui/GLShaderUtil.cpp
+        src/View/pxlui/GLShaderUtil.h
+        src/View/pxlui/ShaderProgram.cpp
+        src/View/pxlui/ShaderProgram.h
+        src/View/imgui_impl_glfw_pixel.cpp
+        src/View/imgui_impl_glfw_pixel.h
+        src/View/Shaders.h
+        src/ChatApp.cpp
+        src/ChatApp.h
+        src/View/Views/IView.h
+        src/View/Panels/IPanel.h
+        src/View/Panels/ChatPanel.cpp
+        src/View/Panels/ChatPanel.h
+        src/View/Panels/ChannelPanel.cpp
+        src/View/Panels/ChannelPanel.h
+        src/View/Panels/VideoPanel.cpp
+        src/View/Panels/VideoPanel.h
+        src/Model/Model.cpp
+        src/Model/Model.h
+        src/View/Panels/UserInfoPanel.cpp
+        src/View/Panels/UserInfoPanel.h
+        src/Controller/ChatController.cpp
+        src/Controller/ChatController.h
+        src/View/Views/ChannelView.cpp
+        src/View/Views/ChannelView.h
+        src/View/Views/ChatView.cpp
+        src/View/Views/ChatView.h
+        src/Controller/ChannelController.cpp
+        src/Controller/ChannelController.h
+        src/Controller/ViewModels/ChannelViewModel.h
+        src/Controller/IChannelController.h
+        src/Controller/IChatController.h
+        src/Controller/ViewModels/ChatViewModel.h
+        src/View/Views/LoginView.cpp
+        src/View/Views/LoginView.h
+        src/Controller/LoginController.cpp
+        src/Controller/LoginController.h
+        src/Controller/ILoginController.h
+        src/View/Panels/LoginPanel.cpp
+        src/View/Panels/LoginPanel.h
+        src/Controller/ViewModels/LoginViewModel.h
+        src/Model/ChatClient.cpp
+        src/Model/ChatClient.h
+        src/Model/User.cpp
+        src/Model/User.h
+        src/Model/PeerData.h
+        src/Model/IUser.h
+        src/Model/IChatClient.h
+)
+
+target_include_directories(
+        ${PROJECT_NAME}
+        PRIVATE
+        src
 )
 
 if(MSVC)
@@ -123,3 +165,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
     message(STATUS "Copying res to build directory")
     file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
+
+# Compile definitions ==================================================================================
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __DEBUG__)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __RELEASE__ PRIVATE __NDEBUG__)
+endif()
+# =====================================================================================================
