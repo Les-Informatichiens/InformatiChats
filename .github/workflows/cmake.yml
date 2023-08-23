@@ -9,18 +9,24 @@ env:
   BUILD_TYPE: Release
   
 jobs:
-  Build:
+  Test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os:  
+        os:
           - windows-latest
           - ubuntu-latest
-        compiler: [ {cpp: g++, c: gcc}, {cpp: cl, c: cl} ]
+          # - macos-12
         generator:
-          - Ninja
-
+          - "Ninja"
+        compiler:
+          - llvm
+          - gcc
+          # you can specify the version after `-` like `llvm-13.0.0`.
+        include:
+          - os: "windows-latest"
+            compiler: "msvc"
     steps:
       - uses: actions/checkout@v3
       
@@ -28,30 +34,23 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
+            ~/llvm
             ~/cpm-cache
           key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
           restore-keys: |
             ${{ runner.os }}-cpm-
 
-      - name: Setup Ninja
-        uses: ashutoshvarma/setup-ninja@master
-        with:
-          # ninja version to download. Default: 1.10.0
-          version: 1.11.1
-
-      - name: Build with CMake
-        uses: ashutoshvarma/action-cmake-build@master
-        with:
-          build-dir: ${{ runner.workspace }}/build
-          cc: ${{ matrix.config.cc }}
-          cxx: ${{ matrix.config.cxx }}
-          configure-options: -G Ninja -DCPM_SOURCE_CACHE=~/cpm-cache
-          build-type: Release
-
-
-
-
-
+      - name: Configure CMake
+        env:
+          CC: ${{ matrix.compiler }}
+          CXX: ${{ matrix.compiler }}
+        run: |
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
+          
+      - name: Build CMake
+        # Execute the build.  You can specify a specific target with "--target <NAME>"
+        run: |
+          cmake --build ./build -j 14
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
