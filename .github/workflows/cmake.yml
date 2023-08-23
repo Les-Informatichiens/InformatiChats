@@ -19,6 +19,7 @@ jobs:
           - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
         generator:
           - Ninja
+
     steps:
       - uses: actions/checkout@v3
       
