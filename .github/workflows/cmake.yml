@@ -14,9 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - { os: windows-latest, cc: "cl", cxx: "cl" }
-          - { os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+        os:  
+          - windows-latest
+          - ubuntu-latest
+        compiler: [ {cpp: g++, c: gcc}, {cpp: cl, c: cl} ]
         generator:
           - Ninja
 
