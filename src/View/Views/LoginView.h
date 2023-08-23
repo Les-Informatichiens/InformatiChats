@@ -8,6 +8,7 @@
 #include <Controller/ILoginController.h>
 
 #include <vector>
+#include <functional>
 
 
 class LoginView : public IView
