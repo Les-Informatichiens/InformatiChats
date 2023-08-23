@@ -78,8 +78,6 @@ endif()
 # Dependencies ========================================================================================
 include(cmake/CPM.cmake)
 
-set(CMAKE_MAKE_PROGRAM ninja)
-
 # LibDataChannel ======================================================================================
 if(NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
