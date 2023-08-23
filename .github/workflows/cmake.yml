@@ -43,7 +43,7 @@ jobs:
           ccache: true
           cmake: true
           ninja: true
-          doxygen: true
+          doxygen: false
           vcpkg: false
           cppcheck: false
           clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
@@ -52,7 +52,7 @@ jobs:
           
       - name: Build CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -GNinja	
 
 
     #- name: Test
