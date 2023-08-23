@@ -50,9 +50,14 @@ jobs:
           clangformat: true
           # ...
 
-      - name: Build CMake
+      - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -G "${{matrix.generator}}" -A "${{matrix.arch}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -A "${{matrix.arch}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+      - name: Build CMake
+        # Execute the build.  You can specify a specific target with "--target <NAME>"
+        run: |
+          cmake --build ./build --config ${{matrix.build_type}}
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
