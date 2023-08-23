@@ -52,7 +52,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -A "${{matrix.arch}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
