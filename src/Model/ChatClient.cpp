@@ -173,7 +173,7 @@ std::shared_ptr<rtc::PeerConnection> ChatClient::CreatePeerConnection(const std:
 
     pc->onStateChange([this, peerId, pc](rtc::PeerConnection::State state) {
         std::cout << "State: " << state << std::endl;
-        onPeerConnectionStateChangeCallback(PeerConnectionStateChangeEvent(peerId, static_cast<ConnectionState>(state)));
+        onPeerConnectionStateChangeCallback(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(state)});
         if (state == rtc::PeerConnection::State::Closed ||
             state == rtc::PeerConnection::State::Disconnected ||
             state == rtc::PeerConnection::State::Failed)
