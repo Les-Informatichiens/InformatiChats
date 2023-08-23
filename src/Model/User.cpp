@@ -53,7 +53,7 @@ const std::string& User::GetSelectedPeerId() const
 const ChatHistory* User::GetSelectedChatHistory() const
 {
     const auto chatHistoryIt = this->chatHistories.find(this->selectedChat);
-    if(chatHistoryIt != this->chatHistories.end())
+    if (chatHistoryIt != this->chatHistories.end())
     {
         return &chatHistoryIt->second;
     }
@@ -64,7 +64,7 @@ const ChatHistory* User::GetSelectedChatHistory() const
 ChatHistory* User::GetSelectedChatHistory()
 {
     auto chatHistoryIt = this->chatHistories.find(this->selectedChat);
-    if(chatHistoryIt != this->chatHistories.end())
+    if (chatHistoryIt != this->chatHistories.end())
     {
         return &chatHistoryIt->second;
     }
@@ -74,7 +74,7 @@ ChatHistory* User::GetSelectedChatHistory()
 
 void User::AddChatMessageToSelectedChatHistory(ChatMessage chatMessage_)
 {
-    if(ChatHistory* chatHistory = this->GetSelectedChatHistory())
+    if (ChatHistory* chatHistory = this->GetSelectedChatHistory())
     {
         chatHistory->push_back(std::move(chatMessage_));
     }
@@ -83,7 +83,7 @@ void User::AddChatMessageToSelectedChatHistory(ChatMessage chatMessage_)
 void User::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage)
 {
     const auto chatHistoryIt = this->chatHistories.find(peerId);
-    if(chatHistoryIt != this->chatHistories.end())
+    if (chatHistoryIt != this->chatHistories.end())
     {
         chatHistoryIt->second.push_back(chatMessage);
     }

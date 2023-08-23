@@ -7,7 +7,7 @@
 
 ChatViewModel ChatController::GetViewModel()
 {
-    if(const ChatHistory* chatHistory = this->model.GetSelectedChatHistory())
+    if (const ChatHistory* chatHistory = this->model.GetSelectedChatHistory())
     {
         return {chatHistory, chatHistory->size()};
     }

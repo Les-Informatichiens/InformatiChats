@@ -6,9 +6,9 @@
 
 #include "PeerData.h"
 
-#include <vector>
 #include <chrono>
 #include <unordered_map>
+#include <vector>
 
 struct ChatMessage
 {

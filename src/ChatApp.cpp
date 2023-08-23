@@ -117,9 +117,9 @@ void ChatApp::UpdateMainPanel()
 #endif
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    if(ImGui::Begin("Root panel", (bool*) 0,
-                 ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                         ImGuiWindowFlags_NoBringToFrontOnFocus))
+    if (ImGui::Begin("Root panel", (bool*) 0,
+                     ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                             ImGuiWindowFlags_NoBringToFrontOnFocus))
     {
 #ifndef __NDEBUG__
         // ImGui demo button and panel
