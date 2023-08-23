@@ -39,12 +39,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cpm-
 
-      - name: Setup Cpp
-        uses: aminya/setup-cpp@v1
-        with:
-          compiler: ${{ matrix.compiler }}
-          vcvarsall: ${{ contains(matrix.os, 'windows') }}
-
       - name: Configure CMake
         run: |
           cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dsctp_debug:BOOL=OFF -Dsctp_werror:BOOL=OFF -DTEST_APPS:BOOL=OFF -DNO_TESTS:BOOL=ON -DNO_EXAMPLES:BOOL=ON -DGLFW_BUILD_TESTS:BOOL=OFF -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G "Ninja"
