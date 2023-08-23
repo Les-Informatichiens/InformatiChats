@@ -52,9 +52,7 @@ jobs:
           
       - name: Build CMake
         run: |
-          mkdir build && cd build
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache ..
-          make -j2
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
 
     #- name: Test
