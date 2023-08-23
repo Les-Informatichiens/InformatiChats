@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - master
-
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  
 jobs:
   Test:
     runs-on: ${{ matrix.os }}
@@ -20,8 +23,10 @@ jobs:
         compiler:
           - llvm
           - gcc
-          - msvc
           # you can specify the version after `-` like `llvm-13.0.0`.
+        include:
+          - os: "windows-latest"
+            compiler: "msvc"
     steps:
       - uses: actions/checkout@v3
       
