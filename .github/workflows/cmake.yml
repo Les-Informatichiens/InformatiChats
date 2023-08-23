@@ -40,14 +40,14 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           vcvarsall: ${{ contains(matrix.os, 'windows') }}
-          ccache: true
-          cmake: true
-          ninja: true
+          ccache: false
+          cmake: false
+          ninja: false
           doxygen: false
           vcpkg: false
           cppcheck: false
-          clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
-          clangformat: true
+          clangtidy: false # instead of `true`, which chooses the default version, you can pass a specific version.
+          clangformat: false
           # ...
 
       - name: Configure CMake
