@@ -20,10 +20,8 @@ jobs:
         compiler:
           - llvm
           - gcc
+          - msvc
           # you can specify the version after `-` like `llvm-13.0.0`.
-        include:
-          - os: "windows-2022"
-            compiler: "msvc"
     steps:
       - uses: actions/checkout@v3
       
