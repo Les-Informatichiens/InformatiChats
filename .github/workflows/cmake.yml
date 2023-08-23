@@ -49,11 +49,10 @@ jobs:
           clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
           clangformat: true
           # ...
-          
+
       - name: Build CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -GNinja	
-
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -G "${{matrix.generator}}" -A "${{matrix.arch}}" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
