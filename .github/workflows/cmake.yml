@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { name: "Windows MSVC", os: windows-latest, cc: "cl", cxx: "cl" }
-          - { name: "Ubuntu gcc", os: ubuntu-latest, cc: "gcc", cxx: "g++" }
+          - { os: windows-latest, cc: "cl", cxx: "cl" }
+          - { os: ubuntu-latest, cc: "gcc", cxx: "g++" }
         generator:
           - Ninja
 
