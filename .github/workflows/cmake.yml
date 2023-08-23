@@ -20,13 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: ilammy/msvc-dev-cmd@v1
-     
-    - name: Check Git status
-      run: git status
 
     - name: Check Formatting
       run: |
-        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d master~1
+        $CLANG_FORMAT_DIFF = git diff --name-only --diff-filter=d ${GITHUB_REF##*/}~1
         foreach ($FILE in $CLANG_FORMAT_DIFF) {
           if ($FILE -match ".*\.(cpp|h)$") {
             $formatOutput = clang-format.exe -style=file -output-replacements-xml $FILE
