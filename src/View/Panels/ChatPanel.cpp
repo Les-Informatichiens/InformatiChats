@@ -7,15 +7,14 @@
 
 void trim(std::string& stringToTrim)
 {
-    stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](int ch)
-    {
-        return !std::isspace(ch);
-    }));
+    stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](int ch) {
+                           return !std::isspace(ch);
+                       }));
 
-    stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](int ch)
-    {
-        return !std::isspace(ch);
-    }).base(), stringToTrim.end());
+    stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](int ch) {
+                           return !std::isspace(ch);
+                       }).base(),
+                       stringToTrim.end());
 }
 
 std::string formatMilliseconds(std::chrono::milliseconds ms)
@@ -41,7 +40,6 @@ void ChatPanel::Update()
     ChatViewModel vm = controller.GetViewModel();
 
     ImGui::SameLine();
-
     //    ImGui::BeginDisabled(vm.chatHistory == nullptr);
 
     if (ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize))
@@ -57,7 +55,7 @@ void ChatPanel::Update()
 
             const ChatHistory* chatHistory = vm.chatHistory;
 
-            if(chatHistory != nullptr)
+            if (chatHistory != nullptr)
             {
                 if (ImGui::BeginTable("Console", 2, ImGuiTableFlags_RowBg))
                 {
@@ -90,6 +88,12 @@ void ChatPanel::Update()
                     }
                     ImGui::EndTable();
                 }
+            }
+
+            // Continue scrolling to the bottom if we're at the bottom
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+            {
+                ImGui::SetScrollHereY(1.0f);
             }
         }
 
@@ -135,4 +139,3 @@ bool ChatPanel::IsVisible()
 {
     return false;
 }
-
