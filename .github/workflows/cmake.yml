@@ -37,6 +37,8 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install ninja-build
+          sudo apt-get install libgl1-mesa-dev
+          sudo apt-get install libegl1-mesa-dev
 
       - name: Set up cache
         uses: actions/cache@v3
@@ -49,7 +51,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G ${{ matrix.generator }} -D CMAKE_C_COMPILER=${{ matrix.compiler }} -D CMAKE_CXX_COMPILER=${{ matrix.compiler }}
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja" -D CMAKE_C_COMPILER=${{ matrix.compiler }} -D CMAKE_CXX_COMPILER=${{ matrix.compiler }}
           
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
