@@ -5,6 +5,19 @@
 #include <misc/cpp/imgui_stdlib.h>
 
 
+void trim(std::string& stringToTrim)
+{
+    stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](int ch)
+    {
+        return !std::isspace(ch);
+    }));
+
+    stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](int ch)
+    {
+        return !std::isspace(ch);
+    }).base(), stringToTrim.end());
+}
+
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
     // Convert epoch time to a time_point
@@ -122,3 +135,4 @@ bool ChatPanel::IsVisible()
 {
     return false;
 }
+
