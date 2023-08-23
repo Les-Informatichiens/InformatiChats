@@ -19,7 +19,7 @@ jobs:
           - ubuntu-latest
           # - macos-12
         generator:
-          - "Ninja"
+          - Ninja
         compiler:
           - llvm
           - gcc
@@ -34,7 +34,6 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/llvm
             ~/cpm-cache
           key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
           restore-keys: |
@@ -45,19 +44,10 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           vcvarsall: ${{ contains(matrix.os, 'windows') }}
-          ccache: true
-          cmake: false
-          ninja: true
-          doxygen: false
-          vcpkg: false
-          cppcheck: false
-          clangtidy: false # instead of `true`, which chooses the default version, you can pass a specific version.
-          clangformat: false
-          # ...
 
       - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dsctp_debug:BOOL=OFF -Dsctp_werror:BOOL=OFF -DTEST_APPS:BOOL=OFF -DNO_TESTS:BOOL=ON -DNO_EXAMPLES:BOOL=ON -DGLFW_BUILD_TESTS:BOOL=OFF -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_CCACHE=YES -DCCACHE_OPTIONS="CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store" -G "Ninja"
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -Dsctp_debug:BOOL=OFF -Dsctp_werror:BOOL=OFF -DTEST_APPS:BOOL=OFF -DNO_TESTS:BOOL=ON -DNO_EXAMPLES:BOOL=ON -DGLFW_BUILD_TESTS:BOOL=OFF -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -G "Ninja"
           
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
