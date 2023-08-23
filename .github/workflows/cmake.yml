@@ -49,6 +49,13 @@ jobs:
           clangtidy: true # instead of `true`, which chooses the default version, you can pass a specific version.
           clangformat: true
           # ...
+          
+      - name: Build CMake
+        run: |
+          mkdir build && cd build
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache ..
+          make -j2
+
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
