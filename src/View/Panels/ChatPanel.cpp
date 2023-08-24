@@ -2,8 +2,9 @@
 #include "Model/IUser.h"
 
 #include "imgui.h"
+#include <iomanip>
 #include <misc/cpp/imgui_stdlib.h>
-
+#include <sstream>
 
 void trim(std::string& stringToTrim)
 {
@@ -74,7 +75,7 @@ void ChatPanel::Update()
                         ImGui::TextDisabled("%s", timestamp.c_str());
 
                         ImGui::TableNextColumn();
-                        ImGui::PushStyleColor(0, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+                        ImGui::PushStyleColor(0, ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
                         ImGui::Text("[ %s ]", chatHistory->at(i).senderId.c_str());
                         ImGui::PopStyleColor();
 

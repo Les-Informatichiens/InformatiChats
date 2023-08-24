@@ -27,6 +27,7 @@
 #include "View/Backend/GLFWWindowManager.h"
 #include "View/Shaders.h"
 
+#include <vector>
 #include <cstdio>
 #include <memory>
 #include <unordered_map>
