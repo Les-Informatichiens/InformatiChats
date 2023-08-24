@@ -15,6 +15,8 @@
 #include <View/Views/ChatView.h>
 #include <View/Views/LoginView.h>
 
+#include <View/Backend/GLFWWindowManager.h>
+#include <View/GUI/ImGuiManager.hpp>
 
 // Main code
 int main(int, char**)
@@ -46,8 +48,12 @@ int main(int, char**)
     channelView.AddPanel(userInfoPanel);
     loginView.AddPanel(loginPanel);
 
+    static const constexpr RendererAPI rendererApi = RendererAPI::OpenGL;
+    GLFWWindowManager windowManager(rendererApi);
+    ImGuiManager<GLFWWindowManager, rendererApi> guiManager(windowManager);
+
     //init app
-    ChatApp app;
+    ChatApp app(windowManager, guiManager);
     app.AddView(channelView);
     app.AddView(chatView);
     app.AddView(loginView);

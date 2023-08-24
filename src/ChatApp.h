@@ -4,37 +4,10 @@
 
 #pragma once
 
-// Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-#include <imgui.h>
-//#include <backends/imgui_impl_glfw.h>
-#include "View/imgui_impl_glfw_pixel.h"
-//#include <backends/imgui_impl_opengl3.h>
-#include "View/imgui_impl_opengl3_pixel.h"
-#include "View/Shaders.h"
-
-#include <cstdio>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
-
-#define GL_SILENCE_DEPRECATION
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#else
-
-#include <GL/glew.h>
 #include <View/Views/IView.h>
 #include <View/pxlui/BatchRenderer.h>
 #include <View/pxlui/GLShaderUtil.h>
 #include <View/pxlui/ShaderProgram.h>
-
-#endif
-
-#include <GLFW/glfw3.h>// Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
@@ -49,6 +22,17 @@
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 
+#include <imgui.h>
+#include "View/GUI/ImGuiManager.hpp"
+#include "View/Backend/GLFWWindowManager.h"
+#include "View/Shaders.h"
+
+#include <vector>
+#include <cstdio>
+#include <memory>
+#include <unordered_map>
+
+
 struct DisplaySize
 {
     int width;
@@ -58,7 +42,7 @@ struct DisplaySize
 class ChatApp
 {
 public:
-    ChatApp();
+    ChatApp(IWindow& windowManager_, IGUIManager& guiManager_);
 
     void Run();
 
@@ -75,37 +59,19 @@ private:
     void Update();
     void Uninit();
 
-    bool WindowInit(std::string& outGlslVersion);
-    void CreateUIContext();
-
-    void SetupRendererBackend(const std::string& glslVersion);
+    void SetupRendererBackend();
     void SetupPostProcessing();
 
 private:
-    GLFWwindow* window{};
-
-    std::string selectedChat;
-    bool addNewChatPrompt{};
-
-    struct PeerData
-    {
-        ImVector<char*> history;
-        size_t unreadMessageCount;
-    };
-    // chat histories
-    std::unordered_map<std::string, PeerData> historyMap;
-
-    char InputBuf[256]{};
-    ImVec4 clear_color;
+    IWindow& windowManager;
+    IGUIManager& guiManager;
 
     bool showDemoWindow{};
-    const float resFactor = 0.5f;
-    static constexpr int maxNameLength{32};
+
+    const float displayResolutionFactor = 0.5f;
     PxlUI::ShaderProgram* ShaderProg{};
     GLuint FramebufferTexture{};
     GLuint Framebuffer{};
-
-    char UsernameToConnectBuf[maxNameLength]{};
 
     // rendering
     struct CRTShaderData
