@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 
 #define GL_SILENCE_DEPRECATION
