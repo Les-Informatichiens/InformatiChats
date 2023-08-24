@@ -3,7 +3,8 @@
 
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
-
+#include <sstream>
+#include <iomanip>
 
 void trim(std::string& stringToTrim)
 {
@@ -68,13 +69,13 @@ void ChatPanel::Update()
 
                         ImGui::TableNextRow();
                         ImGui::TableNextRow();
-                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImColor(ImGui::GetStyle().Colors[paleBackground ? ImGuiCol_TableRowBg : ImGuiCol_TableRowBgAlt]));
+                        ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg0, ImColor(ImGui::GetStyle().Colors[paleBackground ? ImGuiCol_TableRowBg  : ImGuiCol_TableRowBgAlt]));
 
                         ImGui::TableNextColumn();
                         ImGui::TextDisabled("%s", timestamp.c_str());
 
                         ImGui::TableNextColumn();
-                        ImGui::PushStyleColor(0, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+                        ImGui::PushStyleColor(0, ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
                         ImGui::Text("[ %s ]", chatHistory->at(i).senderId.c_str());
                         ImGui::PopStyleColor();
 

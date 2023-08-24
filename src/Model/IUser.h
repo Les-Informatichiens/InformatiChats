@@ -6,6 +6,7 @@
 
 #include "PeerData.h"
 
+#include <string>
 #include <chrono>
 #include <unordered_map>
 #include <vector>
