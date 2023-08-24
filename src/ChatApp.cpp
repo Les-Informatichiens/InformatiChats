@@ -2,12 +2,8 @@
 #include "TranslationManager.h"
 
 
-static void glfw_error_callback(int error, const char* description);
-
-void SetImGuiStyles();
-
-ChatApp::ChatApp()
-    : frameDisplaySize()
+ChatApp::ChatApp(IWindow& windowManager_, IGUIManager& guiManager_)
+    : windowManager(windowManager_), guiManager(guiManager_), frameDisplaySize()
 {
 }
 
@@ -22,7 +18,7 @@ void ChatApp::Run()
     io.IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
-    while (!glfwWindowShouldClose(window))
+    while (!windowManager.ShouldClose())
 #endif
     {
         this->Update();
@@ -38,32 +34,16 @@ bool ChatApp::Init()
 {
     // create glfw window and get glsl shader version determined by opengl version
     std::string glslVersion;
-    if (!WindowInit(glslVersion))
+    if (!this->windowManager.Init("InformatiChats GLFW+ImGui+OpenGL3 demo", 1280, 720))
         return false;
 
-    // create ImGui context and setup styles
-    CreateUIContext();
+    guiManager.Init();
 
     // Setup Platform/Renderer backends
-    SetupRendererBackend(glslVersion);
+    SetupRendererBackend();
 
     // setup post processing resources
     SetupPostProcessing();
-
-    // message callback
-    //    chatClient.SetOnMessageRecieved([&](const MessageReceivedEvent &e) {
-    //        auto result = historyMap.insert({e.senderId, {}});
-    //        result.first->second.history.push_back(Strdup(std::format("[{}] {}", e.senderId, e.content).c_str()));
-    //
-    //        if (e.senderId == selectedChat)
-    //        {
-    //            console.AddLog("[%s] %s", e.senderId.c_str(), e.content.c_str());
-    //        }
-    //        else
-    //        {
-    //            ++result.first->second.unreadMessageCount;
-    //        }
-    //    });
 
     return true;
 }
@@ -75,7 +55,7 @@ void ChatApp::Update()
     // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
     // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
     // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-    glfwPollEvents();
+    windowManager.PollEvents();
 
     // Prepare the next opengl frame
     PrepareNextFrame();
@@ -89,18 +69,13 @@ void ChatApp::Update()
     // draw the framebuffer texture onto the screen with the post processing shader
     ApplyPostProcessing();
 
-    glfwSwapBuffers(window);
+    windowManager.SwapBuffers();
 }
 
 void ChatApp::Uninit()
 {
-    // Cleanup
-    ImGui_ImplOpenGL3_Pixel_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    guiManager.Uninit();
+    windowManager.Uninit();
 }
 
 void ChatApp::UpdateMainPanel()
@@ -145,16 +120,16 @@ void ChatApp::UpdateMainPanel()
 
 void ChatApp::PrepareNextFrame()
 {
-    int scaledDisplayWidth, scaledDisplayHeight;
-    glfwGetFramebufferSize(window, &(this->frameDisplaySize.width), &(this->frameDisplaySize.height));
+    this->frameDisplaySize.width = windowManager.GetWidth();
+    this->frameDisplaySize.height = windowManager.GetHeight();
 
-    scaledDisplayWidth = this->frameDisplaySize.width * resFactor;
-    scaledDisplayHeight = this->frameDisplaySize.height * resFactor;
+    int scaledDisplayWidth = this->frameDisplaySize.width * resFactor;
+    int scaledDisplayHeight = this->frameDisplaySize.height * resFactor;
 
     // rendering new frame
     ShaderProg->setInt("uCrtEnabled", false);
     ShaderProg->setFloat2("iResolution", {this->frameDisplaySize.width, this->frameDisplaySize.height});
-    //        ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
+    //ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
 
     glUseProgram(ShaderProg->getProgramId());
 
@@ -167,73 +142,11 @@ void ChatApp::PrepareNextFrame()
 
     glViewport(0, 0, scaledDisplayWidth, scaledDisplayHeight);
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_Pixel_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-
-    ImGui::NewFrame();
+    guiManager.NewFrame();
 }
 
-bool ChatApp::WindowInit(std::string& outGlslVersion)
+void ChatApp::SetupRendererBackend()
 {
-    glfwSetErrorCallback(glfw_error_callback);
-    if (!glfwInit())
-        return false;
-
-        // Decide GL+GLSL versions
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-    // GL ES 2.0 + GLSL 100
-    glslVersion = "#version 100";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-#elif defined(__APPLE__)
-    // GL 3.2 + GLSL 150
-    glslVersion = "#version 150";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);          // Required on Mac
-#else
-    // GL 3.0 + GLSL 130
-    outGlslVersion = "#version 130";
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    //    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    //    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-#endif
-
-    // Create window with graphics context
-    window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
-    if (window == nullptr)
-        return false;
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);// Enable vsync
-
-    return true;
-}
-
-void ChatApp::CreateUIContext()
-{
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void) io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad Controls
-
-    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_Portfolio_6x8.ttf", 8.0f);
-    io.Fonts->AddFontFromFileTTF("res/fonts/Mx437_IBM_CGA.ttf", 8.0f);
-
-    // Setup Dear ImGui style
-    SetImGuiStyles();
-}
-
-void ChatApp::SetupRendererBackend(const std::string& glslVersion)
-{
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Pixel_Init(glslVersion.c_str());
     PxlUI::BatchRenderer::init();
 }
 
@@ -278,14 +191,7 @@ void ChatApp::SetupPostProcessing()
 
 void ChatApp::RenderFrame()
 {
-    ImGui::Render();
-
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w,
-                 clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
-
+    guiManager.RenderFrame();
     // draw the framebuffer texture onto the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, this->frameDisplaySize.width, this->frameDisplaySize.height);
@@ -306,90 +212,4 @@ void ChatApp::ApplyPostProcessing()
 void ChatApp::AddView(IView& view)
 {
     views.emplace_back(view);
-}
-
-static void glfw_error_callback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
-void SetImGuiStyles()
-{
-    ImGuiStyle& style = ImGui::GetStyle();
-
-    ImVec4* colors = style.Colors;
-    colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
-    colors[ImGuiCol_TextDisabled] = ImVec4(0.55f, 0.61f, 0.71f, 1.00f);
-    colors[ImGuiCol_WindowBg] = ImVec4(0.09f, 0.08f, 0.15f, 1.00f);
-    colors[ImGuiCol_ChildBg] = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
-    colors[ImGuiCol_PopupBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.94f);
-    colors[ImGuiCol_Border] = ImVec4(0.23f, 0.27f, 0.40f, 1.00f);
-    colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.17f, 0.27f, 1.00f);
-    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.23f, 0.27f, 0.40f, 1.00f);
-    colors[ImGuiCol_FrameBgActive] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_TitleBg] = ImVec4(0.09f, 0.08f, 0.15f, 1.00f);
-    colors[ImGuiCol_TitleBgActive] = ImVec4(0.23f, 0.27f, 0.40f, 1.00f);
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
-    colors[ImGuiCol_MenuBarBg] = ImVec4(0.15f, 0.17f, 0.27f, 1.00f);
-    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.15f, 0.17f, 0.27f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.55f, 0.61f, 0.71f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.75f, 0.80f, 0.86f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_CheckMark] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_SliderGrab] = ImVec4(0.89f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.89f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_Button] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_ButtonHovered] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_ButtonActive] = ImVec4(0.64f, 0.15f, 0.20f, 1.00f);
-    colors[ImGuiCol_Header] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_HeaderHovered] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_HeaderActive] = ImVec4(0.64f, 0.15f, 0.20f, 1.00f);
-    colors[ImGuiCol_Separator] = ImVec4(0.35f, 0.41f, 0.53f, 0.50f);
-    colors[ImGuiCol_SeparatorHovered] = ImVec4(1.00f, 0.00f, 0.27f, 0.78f);
-    colors[ImGuiCol_SeparatorActive] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_ResizeGrip] = ImVec4(0.23f, 0.27f, 0.40f, 1.00f);
-    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.15f, 0.17f, 0.27f, 1.00f);
-    colors[ImGuiCol_Tab] = ImVec4(0.24f, 0.15f, 0.19f, 1.00f);
-    colors[ImGuiCol_TabHovered] = ImVec4(0.89f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_TabActive] = ImVec4(0.89f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_TabUnfocused] = ImVec4(0.24f, 0.15f, 0.19f, 1.00f);
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.45f, 0.24f, 0.22f, 1.00f);
-    colors[ImGuiCol_DockingPreview] = ImVec4(1.00f, 0.00f, 0.27f, 0.70f);
-    colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.09f, 0.08f, 0.15f, 1.00f);
-    colors[ImGuiCol_PlotLines] = ImVec4(0.55f, 0.61f, 0.71f, 1.00f);
-    colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.97f, 0.46f, 0.13f, 1.00f);
-    colors[ImGuiCol_PlotHistogram] = ImVec4(1.00f, 0.91f, 0.38f, 1.00f);
-    colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.68f, 0.20f, 1.00f);
-    colors[ImGuiCol_TableHeaderBg] = ImVec4(0.23f, 0.27f, 0.40f, 1.00f);
-    colors[ImGuiCol_TableBorderStrong] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_TableBorderLight] = ImVec4(0.35f, 0.41f, 0.53f, 1.00f);
-    colors[ImGuiCol_TableRowBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
-    colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
-    colors[ImGuiCol_TextSelectedBg] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 0.91f, 0.38f, 1.00f);
-    colors[ImGuiCol_NavHighlight] = ImVec4(1.00f, 0.00f, 0.27f, 1.00f);
-    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
-    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.75f, 0.80f, 0.86f, 0.20f);
-    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.75f, 0.80f, 0.86f, 0.35f);
-
-    // Make everything more square
-    style.WindowRounding = 0.0f;
-    style.FrameRounding = 0.0f;
-    style.GrabRounding = 0.0f;
-    style.TabRounding = 0.0f;
-    style.ScrollbarRounding = 0.0f;
-    style.ChildRounding = 0.0f;
-    style.PopupRounding = 0.0f;
-    style.WindowBorderSize = 0.0f;
-    style.FrameBorderSize = 0.0f;
-    style.PopupBorderSize = 0.0f;
-    style.ChildBorderSize = 2.0f;
-    style.TabBorderSize = 0.0f;
-
-    style.ItemSpacing = ImVec2(8.0f, 4.0f);
-    style.FramePadding = ImVec2(6.0f, 4.0f);
-    style.WindowPadding = ImVec2(8.0f, 8.0f);
-    style.ScrollbarSize = 12.0f;
 }

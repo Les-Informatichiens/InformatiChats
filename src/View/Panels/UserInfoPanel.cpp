@@ -3,9 +3,9 @@
 //
 
 #include "UserInfoPanel.h"
+#include <ctime>
 
-#include "GLFW/glfw3.h"
-#include "glm/glm.hpp"
+#include <glm/glm.hpp>
 #include "imgui.h"
 
 
@@ -22,7 +22,7 @@ void UserInfoPanel::Update()
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-        auto time = glfwGetTime();
+        auto time = clock();
         for (double i = 0; i < 20; ++i)
         {
             ImVec2 p1;
