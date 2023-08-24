@@ -43,12 +43,12 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja" -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+          cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja" -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DUSE_CCACHE=YES -DCCACHE_OPTIONS="CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store"
           
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build -j 14 -DUSE_CCACHE=YES -DCCACHE_OPTIONS="CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store"
+          cmake --build ./build -j 14
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
