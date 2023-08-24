@@ -19,14 +19,14 @@ jobs:
           - ubuntu-latest
           # - macos-12
         generator:
-          - "Ninja"
+          - Ninja
         compiler:
           - llvm
           - gcc
           # you can specify the version after `-` like `llvm-13.0.0`.
         include:
           - os: "windows-latest"
-            compiler: "msvc"
+            compiler: msvc
     
     steps:
       - uses: actions/checkout@v3
@@ -46,6 +46,12 @@ jobs:
           key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
           restore-keys: |
             ${{ runner.os }}-cpm-
+
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          compiler: ${{ matrix.compiler }}
+          vcvarsall: ${{ contains(matrix.os, 'windows') }}
 
       - name: Configure CMake
         env:
