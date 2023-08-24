@@ -59,6 +59,11 @@ add_executable(
         src/Model/PeerData.h
         src/Model/IUser.h
         src/Model/IChatClient.h
+        src/View/Backend/IWindow.h
+        src/View/GUI/IGUIManager.h
+        src/View/GUI/ImGuiManager.hpp
+        src/View/Backend/GLFWWindowManager.cpp
+        src/View/Backend/GLFWWindowManager.h
 )
 
 target_include_directories(
