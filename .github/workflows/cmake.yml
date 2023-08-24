@@ -48,6 +48,8 @@ jobs:
             ${{ runner.os }}-cpm-
 
       - name: Configure CMake
+        env:
+          CXX: ${{ matrix.compiler }}
         run: |
           cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
           
