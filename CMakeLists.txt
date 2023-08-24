@@ -78,10 +78,6 @@ endif()
 # Dependencies ========================================================================================
 include(cmake/CPM.cmake)
 
-set(CMAKE_C_COMPILER_LAUNCHER ccache)
-set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
-# =====================================================================================================
-
 # LibDataChannel ======================================================================================
 if(NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
