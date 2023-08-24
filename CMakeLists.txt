@@ -78,6 +78,16 @@ endif()
 # Dependencies ========================================================================================
 include(cmake/CPM.cmake)
 
+# Ccache compiler ======================================================================================
+CPMAddPackage(
+        NAME Ccache.cmake
+        GITHUB_REPOSITORY TheLartians/Ccache.cmake
+        VERSION 1.2
+)
+set(CMAKE_C_COMPILER_LAUNCHER Ccache.cmake)
+set(CMAKE_CXX_COMPILER_LAUNCHER Ccache.cmake)
+# =====================================================================================================
+
 # LibDataChannel ======================================================================================
 if(NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
