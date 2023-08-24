@@ -6,6 +6,7 @@
 
 #include <Controller/ViewModels/ChatViewModel.h>
 
+#include <string>
 
 class IChatController
 {

@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <cstddef>
+
+
 enum ConnectionState
 {
     New,
