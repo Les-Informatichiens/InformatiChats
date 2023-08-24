@@ -48,7 +48,7 @@ jobs:
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build -j 14
+          cmake --build ./build -j 14 -DUSE_CCACHE=YES -DCCACHE_OPTIONS="CCACHE_CPP2=true;CCACHE_SLOPPINESS=clang_index_store"
 
     #- name: Test
     #  working-directory: ${{github.workspace}}/build
