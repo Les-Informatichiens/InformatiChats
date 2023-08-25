@@ -102,7 +102,7 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
         }
     });
 
-    const std::string wsPrefix = "ws://";
+    const std::string wsPrefix = "wss://";
     const std::string url = wsPrefix + signalingServer + ":" +
                             signalingServerPort + "/" + newUsername;
 
