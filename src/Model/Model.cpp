@@ -37,7 +37,7 @@ void Model::LoginWithNewUser(const std::string& username_)
     // re-init the new chat client
     const std::string stunServer = "stun.l.google.com";
     const std::string stunServerPort = "19302";
-    const std::string signalingServer = "51.79.86.30";
+    const std::string signalingServer = "informatichiens.com";
     const std::string signalingServerPort = "51337";
     ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
     this->chatClient.Init(config);
