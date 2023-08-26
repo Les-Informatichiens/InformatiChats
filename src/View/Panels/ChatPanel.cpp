@@ -5,18 +5,8 @@
 #include <iomanip>
 #include <misc/cpp/imgui_stdlib.h>
 #include <sstream>
+#include <util/string_util.h>
 
-void trim(std::string& stringToTrim)
-{
-    stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](int ch) {
-                           return !std::isspace(ch);
-                       }));
-
-    stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](int ch) {
-                           return !std::isspace(ch);
-                       }).base(),
-                       stringToTrim.end());
-}
 
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
@@ -105,7 +95,7 @@ void ChatPanel::Update()
                                                ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
         if (ImGui::InputText("Input", &inputBuf, input_text_flags))
         {
-            trim(inputBuf);
+            util::trim(inputBuf);
 
             if (!inputBuf.empty())
             {
