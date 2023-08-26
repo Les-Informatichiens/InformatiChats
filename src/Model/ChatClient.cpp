@@ -46,6 +46,14 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
 
         auto id = it->get<std::string>();
 
+
+        // Username should never be empty
+        if (id.empty())
+        {
+            std::cout << "User with empty name tried to open a connection. Operation cancelled." << std::endl;
+            return;
+        }
+
         // If the id in the message returned from the server is the same as the user,
         // it means that the server couldn't find the wanted user.
         if (id == username)
