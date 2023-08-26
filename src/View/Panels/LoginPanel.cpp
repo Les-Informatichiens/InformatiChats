@@ -5,6 +5,7 @@
 #include "LoginPanel.h"
 #include "imgui.h"
 #include <misc/cpp/imgui_stdlib.h>
+#include <util/string_util.h>
 
 
 LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
@@ -35,10 +36,18 @@ void LoginPanel::Update()
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        if (ImGui::InputTextWithHint("##username", "username...", &this->UsernameBuf,
+        if (ImGui::InputTextWithHint("##username", "username...", &this->usernameBuf,
                                      ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            controller.LoginAttempt(this->UsernameBuf);
+            util::trim(this->usernameBuf);
+
+            // We do not allow a user to have an empty username or a username that is only spaces
+            if (!this->usernameBuf.empty())
+            {
+                controller.LoginAttempt(this->usernameBuf);
+            }
+
+            this->usernameBuf.clear();
         }
         ImGui::PopStyleVar();
 
