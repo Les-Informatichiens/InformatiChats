@@ -35,7 +35,7 @@ void LoginPanel::Update()
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        if (ImGui::InputTextWithHint("##username", "otisma...", &this->UsernameBuf,
+        if (ImGui::InputTextWithHint("##username", "username...", &this->UsernameBuf,
                                      ImGuiInputTextFlags_EnterReturnsTrue))
         {
             controller.LoginAttempt(this->UsernameBuf);

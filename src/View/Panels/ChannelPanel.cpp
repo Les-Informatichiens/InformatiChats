@@ -32,7 +32,7 @@ void ChannelPanel::Update()
                 ImGui::Separator();
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-                bool enterPressed = ImGui::InputTextWithHint("##username", "otismus prime", &usernameToConnectToBuf, ImGuiInputTextFlags_EnterReturnsTrue);
+                bool enterPressed = ImGui::InputTextWithHint("##username", "username...", &usernameToConnectToBuf, ImGuiInputTextFlags_EnterReturnsTrue);
                 ImGui::PopStyleVar();
 
                 bool addNewChatPressed = ImGui::Button("Add new chat");
