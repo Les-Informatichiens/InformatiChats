@@ -20,5 +20,5 @@ public:
 private:
     ILoginController& controller;
 
-    std::string UsernameBuf;
+    std::string usernameBuf;
 };
