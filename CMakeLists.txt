@@ -64,6 +64,8 @@ add_executable(
         src/View/GUI/ImGuiManager.hpp
         src/View/Backend/GLFWWindowManager.cpp
         src/View/Backend/GLFWWindowManager.h
+        src/util/string_util.cpp
+        src/util/string_util.h
 )
 
 target_include_directories(
