@@ -70,6 +70,9 @@ add_executable(
         src/util/crypto/Keygen.h
         src/util/crypto/AESEncryption.h
         src/util/crypto/AESEncryption.cpp
+        src/util/crypto/RSAEncryption.cpp
+        src/util/crypto/RSAEncryption.h
+        src/util/crypto/CryptoTest.h
 )
 
 target_include_directories(
