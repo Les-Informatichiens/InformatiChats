@@ -19,7 +19,9 @@ public:
 
     LoginViewModel GetViewModel() override;
 
-    void LoginAttempt(const std::string& username) override;
+    void LoginAttempt(const std::string& username, const std::string& password) override;
+    void CreateUser(const std::string& username, const std::string& password) override;
+
     bool IsConnected() override;
 
 private:

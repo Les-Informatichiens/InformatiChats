@@ -13,12 +13,17 @@ LoginController::LoginController(Model& model_)
 
 LoginViewModel LoginController::GetViewModel()
 {
-    return {model.GetMaxNameLength()};
+    return {};
 }
 
-void LoginController::LoginAttempt(const std::string& username_)
+void LoginController::LoginAttempt(const std::string& username_, const std::string& password)
 {
-    model.LoginWithNewUser(username_);
+    model.LoginWithNewUser(username_, password);
+}
+
+void LoginController::CreateUser(const std::string& username, const std::string& password)
+{
+    model.CreateNewUser(username, password);
 }
 
 bool LoginController::IsConnected()

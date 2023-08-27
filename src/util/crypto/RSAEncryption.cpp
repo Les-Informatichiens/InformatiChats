@@ -3,7 +3,16 @@
 //
 
 #include "RSAEncryption.h"
+#include "util/Base64.h"
 
+
+/**
+ * Encrypts a plain text using RSA public key.
+ *
+ * @param plainText The plain text to be encrypted.
+ * @param publicKey The RSA public key used for encryption.
+ * @return The Base64-encoded encrypted message.
+ */
 std::string EncryptRSA(const std::string& plainText, const std::string& publicKey)
 {
     // Load public key from provided string
@@ -43,9 +52,16 @@ std::string EncryptRSA(const std::string& plainText, const std::string& publicKe
     EVP_PKEY_CTX_free(ctx);
     OPENSSL_free(ciphertext);
 
-    return outStr;
+    return macaron::Base64::Encode(outStr);
 }
 
+/**
+ * Decrypts an encrypted message using RSA private key.
+ *
+ * @param encryptedText The Base64-encoded encrypted message.
+ * @param privateKey The RSA private key used for decryption.
+ * @return The decrypted plain text.
+ */
 std::string DecryptRSA(const std::string& encryptedText, const std::string& privateKey)
 {
     // Load public key from provided string
@@ -70,11 +86,14 @@ std::string DecryptRSA(const std::string& encryptedText, const std::string& priv
     EVP_PKEY_decrypt_init(ctx);
 
     // Decryption
+    std::string decodedEncryptedText;
+    macaron::Base64::Decode(encryptedText, decodedEncryptedText);
+
     std::string outStr;
     size_t deciphertextLen;
-    EVP_PKEY_decrypt(ctx, nullptr, &deciphertextLen, (const unsigned char*) encryptedText.c_str(), encryptedText.size());
+    EVP_PKEY_decrypt(ctx, nullptr, &deciphertextLen, (const unsigned char*) decodedEncryptedText.c_str(), decodedEncryptedText.size());
     unsigned char* deciphertext = (unsigned char*) OPENSSL_malloc(deciphertextLen);
-    EVP_PKEY_decrypt(ctx, deciphertext, &deciphertextLen, (const unsigned char*) encryptedText.c_str(), encryptedText.size());
+    EVP_PKEY_decrypt(ctx, deciphertext, &deciphertextLen, (const unsigned char*) decodedEncryptedText.c_str(), decodedEncryptedText.size());
     outStr.assign((char*) deciphertext, deciphertextLen);
 
     // Release memory
@@ -83,4 +102,17 @@ std::string DecryptRSA(const std::string& encryptedText, const std::string& priv
     OPENSSL_free(deciphertext);
 
     return outStr;
+}
+
+/**
+ * Validates the correctness of RSA encryption and decryption keys.
+ *
+ * @param privateKey The RSA private key to validate.
+ * @param publicKey The RSA public key to validate.
+ * @return True if encryption and decryption are successful and match, false otherwise.
+ */
+bool ValidateKeysRSA(const std::string& privateKey, const std::string& publicKey)
+{
+    std::string testStr = "testStr";
+    return testStr == DecryptRSA(EncryptRSA(testStr, publicKey), privateKey);
 }

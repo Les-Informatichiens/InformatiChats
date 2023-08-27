@@ -36,18 +36,22 @@ void LoginPanel::Update()
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        if (ImGui::InputTextWithHint("##username", "username...", &this->usernameBuf,
-                                     ImGuiInputTextFlags_EnterReturnsTrue))
+        bool usernameEnterPressed = ImGui::InputTextWithHint("##username", "username...", &this->usernameBuf, ImGuiInputTextFlags_EnterReturnsTrue);
+        bool passwordEnterPressed = ImGui::InputTextWithHint("##password", "password...", &this->passwordBuf, ImGuiInputTextFlags_EnterReturnsTrue);
+        if (usernameEnterPressed || passwordEnterPressed)
         {
             util::trim(this->usernameBuf);
+            util::trim(this->passwordBuf);
 
             // We do not allow a user to have an empty username or a username that is only spaces
-            if (!this->usernameBuf.empty())
+            if (!this->usernameBuf.empty() && !this->passwordBuf.empty())
             {
-                controller.LoginAttempt(this->usernameBuf);
+                controller.CreateUser(this->usernameBuf, this->passwordBuf);
+                controller.LoginAttempt(this->usernameBuf, this->passwordBuf);
             }
 
             this->usernameBuf.clear();
+            this->passwordBuf.clear();
         }
         ImGui::PopStyleVar();
 

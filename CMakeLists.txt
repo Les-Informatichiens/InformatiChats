@@ -73,6 +73,8 @@ add_executable(
         src/util/crypto/RSAEncryption.cpp
         src/util/crypto/RSAEncryption.h
         src/util/crypto/CryptoTest.h
+        src/Model/UserData.h
+        src/util/Base64.h
 )
 
 target_include_directories(

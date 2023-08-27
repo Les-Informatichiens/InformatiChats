@@ -5,9 +5,10 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 
 struct LoginViewModel
 {
-    int maxNameLength;
+    //    std::vector<IdentityInfo> identityList;
 };

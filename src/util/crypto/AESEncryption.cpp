@@ -3,6 +3,7 @@
 //
 
 #include "AESEncryption.h"
+#include "util/Base64.h"
 
 
 /**
@@ -38,7 +39,7 @@ std::string EncryptAES(const std::string& plainText, const std::string& key)
     EVP_cleanup();
 
     encryptedText.resize(len);
-    return encryptedText;
+    return macaron::Base64::Encode(encryptedText);
 }
 
 /**
@@ -60,9 +61,11 @@ std::string DecryptAES(const std::string& encryptedText, const std::string& key)
     EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), nullptr, (const unsigned char*) key.c_str(), (const unsigned char*) "0123456789012345");
 
     // Provide the ciphertext and get the plaintext
+    std::string decodedEncryptedText;
+    macaron::Base64::Decode(encryptedText, decodedEncryptedText);
     std::string decryptedText(encryptedText.length(), '\0');
     int len;
-    EVP_DecryptUpdate(ctx, (unsigned char*) decryptedText.data(), &len, (const unsigned char*) encryptedText.c_str(), encryptedText.length());
+    EVP_DecryptUpdate(ctx, (unsigned char*) decryptedText.data(), &len, (const unsigned char*) decodedEncryptedText.c_str(), decodedEncryptedText.length());
 
     // Finalize the decryption
     int finalLen;

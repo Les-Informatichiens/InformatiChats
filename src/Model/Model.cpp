@@ -4,8 +4,16 @@
 
 #include "Model.h"
 
+#include "util/crypto/AESEncryption.h"
+#include "util/crypto/Keygen.h"
+#include "util/crypto/RSAEncryption.h"
+
 #include <chrono>
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 Model::Model(IUser& user_, IChatClient& chatClient_)
     : user(user_), chatClient(chatClient_)
@@ -13,8 +21,35 @@ Model::Model(IUser& user_, IChatClient& chatClient_)
 }
 
 
-void Model::LoginWithNewUser(const std::string& username_)
+bool Model::LoginWithNewUser(const std::string& username_, const std::string& password)
 {
+
+    json data;
+    std::ifstream input("users.json");
+    if (input.is_open())
+    {
+        try
+        {
+            data = json::parse(input);
+        } catch (const std::exception& e)
+        {
+            return false;
+        }
+        input.close();
+    }
+
+    std::string decryptedPrivKey = DecryptAES(
+            data[username_].value("encryptedPrivateIdentificationKey", ""),
+            DeriveKeyFromPassword(password, username_, 256 / 8));
+    try
+    {
+        if (!ValidateKeysRSA(decryptedPrivKey, data[username_].value("publicIdentificationKey", "")))
+            return false;
+    } catch (std::exception& e)
+    {
+        return false;
+    }
+
     this->user.Reset(username_);
     this->chatClient.Reset();
     //this->SetUser(user_);
@@ -43,6 +78,8 @@ void Model::LoginWithNewUser(const std::string& username_)
     this->chatClient.Init(config);
 
     this->chatClient.AttemptConnectionWithUsername(this->user.GetUsername());
+
+    return true;
 }
 
 void Model::AddNewChatPeer(const std::string& peerId)
@@ -94,4 +131,42 @@ void Model::SendMessage(const std::string& peerId, const std::string& message) c
 void Model::SetSelectedPeerId(const std::string& peerId_)
 {
     this->user.SetSelectedPeerId(peerId_);
+}
+
+bool Model::CreateNewUser(const std::string& username_, const std::string& password)
+{
+    nlohmann::ordered_json data;
+    std::ifstream input("users.json");
+    if (input.is_open())
+    {
+        try
+        {
+            data = json::parse(input);
+        } catch (const std::exception& e)
+        {
+        }
+        input.close();
+    }
+
+    if (data.contains(username_))
+    {
+        return false;
+    }
+
+    RSAKeyPair keypair = GenerateRSAKeyPair(512);
+
+    std::string derivedEncryptionKey = DeriveKeyFromPassword(password, username_, 256 / 8);
+    std::string encryptedPrivateKey = EncryptAES(keypair.privateKey, derivedEncryptionKey);
+
+    data[username_] = {};
+    data[username_]["publicIdentificationKey"] = keypair.publicKey;
+    data[username_]["encryptedPrivateIdentificationKey"] = encryptedPrivateKey;
+    data[username_]["profile"] = {};
+    data[username_]["profile"]["displayName"] = username_;
+
+    std::ofstream output("users.json");
+
+    output << data.dump(4);
+
+    return true;
 }

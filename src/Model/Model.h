@@ -16,8 +16,10 @@ public:
     Model();
     Model(IUser& user, IChatClient& chatClient);
 
-    void LoginWithNewUser(const std::string& username_);
+    bool LoginWithNewUser(const std::string& username_, const std::string& password);
     void AddNewChatPeer(const std::string& peerId);
+
+    bool CreateNewUser(const std::string& username_, const std::string& password);
 
     std::unordered_map<std::string, PeerData> GetPeerDataMap();
 
