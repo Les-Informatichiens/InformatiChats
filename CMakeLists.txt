@@ -66,6 +66,8 @@ add_executable(
         src/View/Backend/GLFWWindowManager.h
         src/util/string_util.cpp
         src/util/string_util.h
+        src/util/crypto/keygen.cpp
+        src/util/crypto/keygen.h
 )
 
 target_include_directories(
@@ -107,6 +109,14 @@ if(NOT TARGET nlohmann_json::nlohmann_json)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+# =====================================================================================================
+
+# openssl =============================================================================================
+find_package(OpenSSL REQUIRED)
+if (TARGET OpenSSL::Crypto)
+    message(STATUS "Linking OpenSSL::Crypto")
+    target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::Crypto)
+endif ()
 # =====================================================================================================
 
 # glm =================================================================================================
