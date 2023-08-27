@@ -17,7 +17,7 @@
  * @param key the key used to encrypt the message
  * @return the encrypted message
  */
-std::string encryptAES(const std::string& plainText, const std::string& key);
+std::string EncryptAES(const std::string& plainText, const std::string& key);
 
 /**
  * Decrypts the given message which was previously encoded with AES using the given key.
@@ -25,4 +25,4 @@ std::string encryptAES(const std::string& plainText, const std::string& key);
  * @param key the key used to encrypt the message
  * @return the decrypted message
  */
-std::string decryptAES(const std::string& encryptedText, const std::string& key);
+std::string DecryptAES(const std::string& encryptedText, const std::string& key);

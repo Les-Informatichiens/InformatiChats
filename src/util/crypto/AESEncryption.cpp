@@ -11,7 +11,7 @@
  * @param key the key used to encrypt the message
  * @return the encrypted message
  */
-std::string encryptAES(const std::string& plainText, const std::string& key)
+std::string EncryptAES(const std::string& plainText, const std::string& key)
 {
     // Initialize the library
     OpenSSL_add_all_algorithms();
@@ -47,7 +47,7 @@ std::string encryptAES(const std::string& plainText, const std::string& key)
  * @param key the key used to encrypt the message
  * @return the decrypted message
  */
-std::string decryptAES(const std::string& encryptedText, const std::string& key)
+std::string DecryptAES(const std::string& encryptedText, const std::string& key)
 {
     // Initialize the library
     OpenSSL_add_all_algorithms();
