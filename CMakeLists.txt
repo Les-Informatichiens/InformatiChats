@@ -68,6 +68,8 @@ add_executable(
         src/util/string_util.h
         src/util/crypto/keygen.cpp
         src/util/crypto/keygen.h
+        src/util/crypto/AESEncryption.h
+        src/util/crypto/AESEncryption.cpp
 )
 
 target_include_directories(
