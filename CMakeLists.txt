@@ -66,8 +66,8 @@ add_executable(
         src/View/Backend/GLFWWindowManager.h
         src/util/string_util.cpp
         src/util/string_util.h
-        src/util/crypto/RSAKeygen.cpp
-        src/util/crypto/RSAKeygen.h
+        src/util/crypto/Keygen.cpp
+        src/util/crypto/Keygen.h
         src/util/crypto/AESEncryption.h
         src/util/crypto/AESEncryption.cpp
 )

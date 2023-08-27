@@ -5,11 +5,14 @@
 #pragma once
 
 #include <cstring>
+#include <iomanip>
 #include <iostream>
+#include <openssl/crypto.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
+#include <sstream>
 
 
 /**
@@ -27,3 +30,5 @@ struct RSAKeyPair
  * @param keyLength the length of the key to generate
  */
 [[nodiscard]] RSAKeyPair GenerateRSAKeyPair(size_t keyLength);
+
+[[nodiscard]] std::string DeriveKeyFromPassword(const std::string& password, const std::string& salt, int keyLength);

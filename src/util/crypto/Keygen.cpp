@@ -2,7 +2,7 @@
 // Created by fofi1 on 2023-08-27.
 //
 
-#include "RSAKeygen.h"
+#include "Keygen.h"
 
 
 /**
@@ -67,4 +67,32 @@ RSAKeyPair GenerateRSAKeyPair(size_t keyLength)
     EVP_cleanup();
 
     return {private_key, public_key};
+}
+
+/**
+ * Derives a key from a password and added salt with the SHA1 hashing algorithm
+ * @param password the password to hash
+ * @param salt the salt for extra security
+ * @param keyLength the length of the key in bytes
+ * @return the resulting derived key in base16 encoding
+ */
+std::string DeriveKeyFromPassword(const std::string& password, const std::string& salt, int keyLength)
+{
+    auto* outKey = (unsigned char*) malloc(keyLength);// The output key
+    int iterations = 10000;                           // Number of iterations
+
+    PKCS5_PBKDF2_HMAC_SHA1(password.data(), password.length(),
+                           reinterpret_cast<const unsigned char*>(salt.data()), salt.length(),
+                           iterations,
+                           keyLength, outKey);
+
+    // Convert the derived key to a hex-encoded string
+    std::stringstream hexStream;
+    hexStream << std::hex << std::setfill('0');
+    for (int i = 0; i < keyLength; ++i)
+    {
+        hexStream << std::setw(2) << static_cast<unsigned int>(outKey[i]);
+    }
+
+    return hexStream.str();
 }
