@@ -1,8 +1,8 @@
 #include "ChatApp.h"
 
-#include <Model/ChatClient.h>
+#include "Model/Data-Access/LibDataChannelChatAPI.h"
+#include "Model/Models/User.h"
 #include <Model/Model.h>
-#include <Model/User.h>
 
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
@@ -23,9 +23,7 @@ int main(int, char**)
 {
     //init model
     User user{};
-    ChatClient chatClient{};
-
-    Model model = Model(user, chatClient);
+    const IChatAPI& chatAPI = LibDataChannelChatAPI{};
 
     //init controller
     auto chatController = ChatController(model);

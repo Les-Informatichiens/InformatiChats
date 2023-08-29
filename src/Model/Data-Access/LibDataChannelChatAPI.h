@@ -1,15 +1,15 @@
 #pragma once
 
-#include "IChatClient.h"
+#include "IChatAPI.h"
 
-#include "PeerData.h"
+#include "Model/Models/PeerData.h"
+#include "nlohmann/json.hpp"
+#include "rtc/rtc.hpp"
 #include <memory>
-#include <nlohmann/json.hpp>
-#include <rtc/rtc.hpp>
 #include <string>
 
 
-class ChatClient : public IChatClient
+class LibDataChannelChatAPI : public IChatAPI
 {
 public:
     void Reset() override;
@@ -25,7 +25,7 @@ public:
     void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
     void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
 
-    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
+    void const SendMessageToPeer(const std::string& peerId, const std::string& message) override;
 
 private:
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Model/PeerData.h"
+#include "Model/Models/PeerData.h"
 #include <string>
 #include <unordered_map>
 

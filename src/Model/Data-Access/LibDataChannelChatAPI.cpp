@@ -1,13 +1,13 @@
-#include "ChatClient.h"
+#include "LibDataChannelChatAPI.h"
+#include "nlohmann/json.hpp"
 #include <iostream>
-#include <nlohmann/json.hpp>
 
-bool ChatClient::ICEServerExists() const
+bool LibDataChannelChatAPI::ICEServerExists() const
 {
     return rtcConfig.iceServers.capacity() > 0;
 }
 
-void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
+void LibDataChannelChatAPI::AttemptConnectionWithUsername(const std::string& newUsername)
 {
     auto wsFuture = wsPromise.get_future();
 
@@ -121,7 +121,7 @@ void ChatClient::AttemptConnectionWithUsername(const std::string& newUsername)
     wsFuture.get();
 }
 
-void ChatClient::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId)
+void LibDataChannelChatAPI::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId)
 {
     // We are the offerer, so create a data channel to initiate the process
     const std::string label = "test";
@@ -131,7 +131,7 @@ void ChatClient::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, con
     RegisterDataChannel(dc, peerId);
 }
 
-void ChatClient::AttemptToConnectToPeer(const std::string& peerId)
+void LibDataChannelChatAPI::AttemptToConnectToPeer(const std::string& peerId)
 {
     if (peerId == this->username)
     {
@@ -149,7 +149,7 @@ void ChatClient::AttemptToConnectToPeer(const std::string& peerId)
     CreateDataChannel(pc, peerId);
 }
 
-void ChatClient::Init(const ConnectionConfig& config_)
+void LibDataChannelChatAPI::Init(const ConnectionConfig& config_)
 {
     std::string stunServer;
     if (config_.stunServer.empty())
@@ -175,7 +175,7 @@ void ChatClient::Init(const ConnectionConfig& config_)
     this->webSocket = std::make_shared<rtc::WebSocket>();
 }
 
-std::shared_ptr<rtc::PeerConnection> ChatClient::CreatePeerConnection(const std::string& peerId)
+std::shared_ptr<rtc::PeerConnection> LibDataChannelChatAPI::CreatePeerConnection(const std::string& peerId)
 {
     auto pc = std::make_shared<rtc::PeerConnection>(rtcConfig);
 
@@ -227,7 +227,7 @@ std::shared_ptr<rtc::PeerConnection> ChatClient::CreatePeerConnection(const std:
     return pc;
 }
 
-void ChatClient::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId)
+void LibDataChannelChatAPI::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc, const std::string& peerId)
 {
     dc->onOpen([this, peerId, wdc = std::weak_ptr(dc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
@@ -274,22 +274,22 @@ void ChatClient::RegisterDataChannel(const std::shared_ptr<rtc::DataChannel>& dc
     dataChannelMap.emplace(peerId, dc);
 }
 
-void ChatClient::SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
+void LibDataChannelChatAPI::SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
 {
     onPeerConnectionStateChangeCallback = callback;
 }
 
-void ChatClient::SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback)
+void LibDataChannelChatAPI::SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback)
 {
     onMessageReceivedCallback = callback;
 }
 
-void ChatClient::Reset()
+void LibDataChannelChatAPI::Reset()
 {
-    *this = ChatClient();
+    *this = LibDataChannelChatAPI();
 }
 
-void ChatClient::SendMessageToPeer(const std::string& peerId, const std::string& message)
+void const LibDataChannelChatAPI::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
     auto dcIt = this->dataChannelMap.find(peerId);
     if (dcIt == this->dataChannelMap.end())

@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "ChatClient.h"
-#include "PeerData.h"
+#include "LibDataChannelChatAPI.h"
+#include "Model/Models/PeerData.h"
 
 #include <functional>
 #include <string>
@@ -31,7 +31,7 @@ struct ConnectionConfig
 };
 
 
-class IChatClient
+class IChatAPI
 {
 public:
     virtual void Reset() = 0;
@@ -47,5 +47,5 @@ public:
     virtual void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
     virtual void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) = 0;
 
-    virtual void SendMessageToPeer(const std::string& peerId, const std::string& message) = 0;
+    virtual const void SendMessageToPeer(const std::string& peerId, const std::string& message) = 0;
 };

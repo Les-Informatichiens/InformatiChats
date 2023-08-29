@@ -1,5 +1,5 @@
 #include "ChatPanel.h"
-#include "Model/IUser.h"
+#include "Model/Models/User.h"
 
 #include "imgui.h"
 #include <iomanip>

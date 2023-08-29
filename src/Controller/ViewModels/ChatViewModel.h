@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <Model/IUser.h>
+#include "Model/Models/User.h"
 
 #include <string>
 
