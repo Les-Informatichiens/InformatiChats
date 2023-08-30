@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "LibDataChannelChatAPI.h"
 #include "Model/Models/PeerData.h"
 
 #include <functional>

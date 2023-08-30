@@ -12,12 +12,14 @@
 class LibDataChannelChatAPI : public IChatAPI
 {
 public:
+    LibDataChannelChatAPI() = default;
+
     void Reset() override;
 
     void Init(const ConnectionConfig& config) override;
 
-    bool ICEServerExists() const override;
-    bool IsConnected() const override { return this->connected; };
+    [[nodiscard]] bool ICEServerExists() const override;
+    [[nodiscard]] bool IsConnected() const override { return this->connected; };
 
     void AttemptConnectionWithUsername(const std::string& newUsername) override;
     void AttemptToConnectToPeer(const std::string& peerId) override;

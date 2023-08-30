@@ -5,8 +5,7 @@
 #pragma once
 
 #include "IChatController.h"
-#include "Model/Application-Logic/UserLogic.h"
-#include "Model/Model.h"
+#include "Model/ApplicationLogic/UserLogic.h"
 
 #include <string>
 
@@ -14,7 +13,7 @@
 class ChatController : public IChatController
 {
 public:
-    explicit ChatController(UserLogic& userLogic);
+    explicit ChatController(UserLogic& userLogic) : userLogic(userLogic){};
 
     ChatViewModel GetViewModel() override;
 

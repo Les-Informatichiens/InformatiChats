@@ -28,8 +28,6 @@ add_executable(
         src/View/Panels/ChannelPanel.h
         src/View/Panels/VideoPanel.cpp
         src/View/Panels/VideoPanel.h
-        src/Model/Model.cpp
-        src/Model/Model.h
         src/View/Panels/UserInfoPanel.cpp
         src/View/Panels/UserInfoPanel.h
         src/Controller/ChatController.cpp
@@ -52,12 +50,11 @@ add_executable(
         src/View/Panels/LoginPanel.cpp
         src/View/Panels/LoginPanel.h
         src/Controller/ViewModels/LoginViewModel.h
-        src/Model/Data-Access/LibDataChannelChatAPI.cpp
-        src/Model/Data-Access/LibDataChannelChatAPI.h
-        src/Model/Models/User.cpp
+        src/Model/DataAccess/LibDataChannelChatAPI.cpp
+        src/Model/DataAccess/LibDataChannelChatAPI.h
         src/Model/Models/User.h
         src/Model/Models/PeerData.h
-        src/Model/Data-Access/IChatAPI.h
+        src/Model/DataAccess/IChatAPI.h
         src/View/Backend/IWindow.h
         src/View/GUI/IGUIManager.h
         src/View/GUI/ImGuiManager.hpp
@@ -66,11 +63,10 @@ add_executable(
         src/util/string_util.cpp
         src/util/string_util.h
         src/Model/BinarySerializer.h
-        src/Model/Application-Logic/UserLogic.cpp
-        src/Model/Application-Logic/UserLogic.h
-        src/Model/Application-Logic/ChatClientLogic.cpp
-        src/Model/Application-Logic/ChatClientLogic.h
+        src/Model/ApplicationLogic/UserLogic.cpp
+        src/Model/ApplicationLogic/UserLogic.h
         src/Model/Models/ChatMessage.h
+
 )
 
 target_include_directories(

@@ -1,8 +1,8 @@
 #include "ChatApp.h"
 
-#include "Model/Data-Access/LibDataChannelChatAPI.h"
-#include "Model/Models/User.h"
-#include <Model/Model.h>
+#include "Model/ApplicationLogic/UserLogic.h"
+#include "Model/DataAccess/IChatAPI.h"
+#include "Model/DataAccess/LibDataChannelChatAPI.h"
 
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
@@ -21,16 +21,17 @@
 // Main code
 int main(int, char**)
 {
-    //init model
+    //init model layer
     User user{};
-    const IChatAPI& chatAPI = LibDataChannelChatAPI{};
+    auto chatAPI = LibDataChannelChatAPI();
+    UserLogic userLogic{user, chatAPI};
 
-    //init controller
-    auto chatController = ChatController(model);
-    auto channelController = ChannelController(model);
-    auto loginController = LoginController(model);
+    //init controller layer
+    auto chatController = ChatController(userLogic);
+    auto channelController = ChannelController(userLogic);
+    auto loginController = LoginController(userLogic);
 
-    //init view
+    //init view layer
     auto chatView = ChatView(chatController);
     auto channelView = ChannelView(channelController);
     auto loginView = LoginView(loginController);
@@ -46,6 +47,7 @@ int main(int, char**)
     channelView.AddPanel(userInfoPanel);
     loginView.AddPanel(loginPanel);
 
+    //init renderer, window
     static const constexpr RendererAPI rendererApi = RendererAPI::OpenGL;
     GLFWWindowManager windowManager(rendererApi);
     ImGuiManager<GLFWWindowManager, rendererApi> guiManager(windowManager);

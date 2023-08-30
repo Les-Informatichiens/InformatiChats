@@ -7,20 +7,15 @@
 
 ChannelViewModel ChannelController::GetViewModel()
 {
-    return {this->model.GetPeerDataMap(), this->model.GetOwnUsername()};
-}
-
-ChannelController::ChannelController(Model& model_)
-    : model(model_)
-{
+    return {userLogic.GetPeerDataMap(), userLogic.GetUserName()};
 }
 
 void ChannelController::AddNewChatPeer(const std::string& peerName_)
 {
-    this->model.AddNewChatPeer(peerName_);
+    userLogic.AddNewChatPeer(peerName_);
 }
 
 void ChannelController::SetSelectedPeerId(const std::string& peerId_)
 {
-    this->model.SetSelectedPeerId(peerId_);
+    userLogic.SetSelectedPeerId(peerId_);
 }

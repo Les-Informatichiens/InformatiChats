@@ -26,7 +26,7 @@ void LoginPanel::Draw()
 void LoginPanel::Update()
 {
 
-    LoginViewModel vm = controller.GetViewModel();
+    //LoginViewModel vm = controller.GetViewModel();
 
 
     ImGui::OpenPopup("Login");

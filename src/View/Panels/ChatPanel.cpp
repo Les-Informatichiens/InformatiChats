@@ -44,9 +44,9 @@ void ChatPanel::Update()
         {
             bool paleBackground = false;
 
-            const ChatHistory* chatHistory = vm.chatHistory;
+            auto chatHistory = vm.chatHistory;
 
-            if (chatHistory != nullptr)
+            if (chatHistory)
             {
                 if (ImGui::BeginTable("Console", 2, ImGuiTableFlags_RowBg))
                 {

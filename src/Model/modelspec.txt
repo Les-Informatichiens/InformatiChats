@@ -3,11 +3,11 @@ For example:
 User.h/cpp: Contains the User model class.
 ChatClient.h/cpp: Contains the ChatClient model class.
 
-Data-Access/: This folder contains the logic responsible for interacting with data sources, such as databases or APIs.
+DataAccess/: This folder contains the logic responsible for interacting with data sources, such as databases or APIs.
 For example:
 NetworkAPI.h/cpp: Contains functions/classes for network interactions (with libdatachannel as of now).
 
-Application-Logic/: This folder houses the business logic specific to each model. Business logic involves data validation, calculations, and other rules that pertain to the model's behavior.
+ApplicationLogic/: This folder houses the business logic specific to each model. Business logic involves data validation, calculations, and other rules that pertain to the model's behavior.
 For example:
 ChatClientLogic.h/cpp: Contains functions/classes for ChatClient-related business logic.
 UserLogic.h/cpp: Contains functions/classes for UserLogic-related business logic.

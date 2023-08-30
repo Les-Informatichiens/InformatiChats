@@ -9,5 +9,5 @@
 
 struct LoginViewModel
 {
-    int maxNameLength;
+    size_t maxNameLength;
 };

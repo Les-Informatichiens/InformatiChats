@@ -236,7 +236,7 @@ void LibDataChannelChatAPI::RegisterDataChannel(const std::shared_ptr<rtc::DataC
     });
 
     dc->onClosed([this, peerId]() {
-        auto dcIt = dataChannelMap.find(peerId);
+        const auto& dcIt = dataChannelMap.find(peerId);
         if (dcIt != dataChannelMap.end())
         {
             dataChannelMap.erase(peerId);
@@ -291,7 +291,7 @@ void LibDataChannelChatAPI::Reset()
 
 void const LibDataChannelChatAPI::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
-    auto dcIt = this->dataChannelMap.find(peerId);
+    auto dcIt = dataChannelMap.find(peerId);
     if (dcIt == this->dataChannelMap.end())
     {
         return;
