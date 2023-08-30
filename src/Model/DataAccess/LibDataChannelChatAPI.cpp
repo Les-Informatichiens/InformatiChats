@@ -1,6 +1,4 @@
 #include "LibDataChannelChatAPI.h"
-#include "nlohmann/json.hpp"
-#include <iostream>
 
 bool LibDataChannelChatAPI::ICEServerExists() const
 {

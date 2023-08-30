@@ -1,11 +1,10 @@
 #pragma once
 
-#include "Model/Models/User.h"
-#include "PeerData.h"
+#include "Model/Models/PeerData.h"
 #include <chrono>
 #include <string>
 #include <unordered_map>
-#include <utility>
+#include <vector>
 
 struct ChatMessage
 {
@@ -14,8 +13,8 @@ struct ChatMessage
     std::string senderId;
 };
 
-using ChatHistory = std::vector<ChatMessage>;
 
+using ChatHistory = std::vector<ChatMessage>;
 
 class User
 {

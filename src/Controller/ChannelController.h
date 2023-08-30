@@ -7,10 +7,6 @@
 #include "IChannelController.h"
 
 #include "Model/ApplicationLogic/UserLogic.h"
-#include "nlohmann/json.hpp"
-#include "rtc/rtc.hpp"
-#include <cstdio>
-#include <utility>
 
 
 class ChannelController : public IChannelController

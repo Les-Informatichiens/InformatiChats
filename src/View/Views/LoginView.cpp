@@ -5,7 +5,6 @@
 #include "LoginView.h"
 #include <Controller/ILoginController.h>
 
-
 /**
  * @brief Builds a view with no panels
  */

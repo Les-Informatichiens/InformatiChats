@@ -1,10 +1,5 @@
 #include "ChannelPanel.h"
 
-#include "imgui.h"
-#include <misc/cpp/imgui_stdlib.h>
-#include <string>
-
-
 ChannelPanel::ChannelPanel(IChannelController& controller_) : controller(controller_)
 {
 }
@@ -26,7 +21,7 @@ void ChannelPanel::Update()
         if (addNewChatPrompt)
         {
             ImGui::OpenPopup("New chat");
-            if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal("New chat", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::Text("Enter a username");
                 ImGui::Separator();

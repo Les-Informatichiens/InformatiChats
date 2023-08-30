@@ -1,11 +1,9 @@
 #pragma once
 
 #include "IPanel.h"
-#include <Controller/IChannelController.h>
-
 #include "imgui.h"
-#include <unordered_map>
-
+#include <Controller/IChannelController.h>
+#include <misc/cpp/imgui_stdlib.h>
 
 class ChannelPanel : public IPanel
 {

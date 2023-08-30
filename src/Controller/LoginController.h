@@ -6,10 +6,6 @@
 
 #include "ILoginController.h"
 #include "Model/ApplicationLogic/UserLogic.h"
-#include "nlohmann/json.hpp"
-#include "rtc/rtc.hpp"
-#include <Controller/ViewModels/LoginViewModel.h>
-
 
 class LoginController : public ILoginController
 {

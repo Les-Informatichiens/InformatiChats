@@ -1,8 +1,11 @@
 #pragma once
 
 #include "IPanel.h"
+#include "imgui.h"
 #include <Controller/IChatController.h>
-
+#include <iomanip>
+#include <misc/cpp/imgui_stdlib.h>
+#include <util/string_util.h>
 
 class ChatPanel : public IPanel
 {

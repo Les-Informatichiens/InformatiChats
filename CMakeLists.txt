@@ -49,12 +49,14 @@ add_executable(
         src/Controller/ILoginController.h
         src/View/Panels/LoginPanel.cpp
         src/View/Panels/LoginPanel.h
+        src/Model/ApplicationLogic/UserLogic.cpp
+        src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
+        src/Model/DataAccess/IChatAPI.h
         src/Model/DataAccess/LibDataChannelChatAPI.cpp
         src/Model/DataAccess/LibDataChannelChatAPI.h
         src/Model/Models/User.h
         src/Model/Models/PeerData.h
-        src/Model/DataAccess/IChatAPI.h
         src/View/Backend/IWindow.h
         src/View/GUI/IGUIManager.h
         src/View/GUI/ImGuiManager.hpp
@@ -63,10 +65,7 @@ add_executable(
         src/util/string_util.cpp
         src/util/string_util.h
         src/Model/BinarySerializer.h
-        src/Model/ApplicationLogic/UserLogic.cpp
-        src/Model/ApplicationLogic/UserLogic.h
         src/Model/Models/ChatMessage.h
-
 )
 
 target_include_directories(

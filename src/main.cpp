@@ -1,22 +1,20 @@
 #include "ChatApp.h"
-
+#include "Controller/ChannelController.h"
+#include "Controller/ChatController.h"
+#include "Controller/LoginController.h"
 #include "Model/ApplicationLogic/UserLogic.h"
-#include "Model/DataAccess/IChatAPI.h"
 #include "Model/DataAccess/LibDataChannelChatAPI.h"
-
-#include <Controller/ChannelController.h>
-#include <Controller/ChatController.h>
-#include <Controller/LoginController.h>
-#include <View/Panels/ChannelPanel.h>
-#include <View/Panels/ChatPanel.h>
-#include <View/Panels/LoginPanel.h>
-#include <View/Panels/UserInfoPanel.h>
-#include <View/Views/ChannelView.h>
-#include <View/Views/ChatView.h>
-#include <View/Views/LoginView.h>
-
-#include <View/Backend/GLFWWindowManager.h>
-#include <View/GUI/ImGuiManager.hpp>
+#include "Model/Models/User.h"
+#include "View/Backend/GLFWWindowManager.h"
+#include "View/Backend/IWindow.h"
+#include "View/GUI/ImGuiManager.hpp"
+#include "View/Panels/ChannelPanel.h"
+#include "View/Panels/ChatPanel.h"
+#include "View/Panels/LoginPanel.h"
+#include "View/Panels/UserInfoPanel.h"
+#include "View/Views/ChannelView.h"
+#include "View/Views/ChatView.h"
+#include "View/Views/LoginView.h"
 
 // Main code
 int main(int, char**)

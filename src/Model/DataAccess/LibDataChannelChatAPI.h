@@ -1,13 +1,11 @@
 #pragma once
 
 #include "IChatAPI.h"
-
-#include "Model/Models/PeerData.h"
 #include "nlohmann/json.hpp"
-#include "rtc/rtc.hpp"
-#include <memory>
+#include "rtc/peerconnection.hpp"
+#include "rtc/websocket.hpp"
+#include <future>
 #include <string>
-
 
 class LibDataChannelChatAPI : public IChatAPI
 {

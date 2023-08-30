@@ -3,11 +3,6 @@
 //
 
 #include "UserInfoPanel.h"
-#include <ctime>
-
-#include <glm/glm.hpp>
-#include "imgui.h"
-
 
 UserInfoPanel::UserInfoPanel(IChannelController& controller_) : controller(controller_) {}
 

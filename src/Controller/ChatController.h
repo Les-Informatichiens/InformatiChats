@@ -7,9 +7,6 @@
 #include "IChatController.h"
 #include "Model/ApplicationLogic/UserLogic.h"
 
-#include <string>
-
-
 class ChatController : public IChatController
 {
 public:

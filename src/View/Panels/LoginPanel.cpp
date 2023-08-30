@@ -3,9 +3,6 @@
 //
 
 #include "LoginPanel.h"
-#include "imgui.h"
-#include <misc/cpp/imgui_stdlib.h>
-#include <util/string_util.h>
 
 
 LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
@@ -30,7 +27,7 @@ void LoginPanel::Update()
 
 
     ImGui::OpenPopup("Login");
-    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("Login", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("Enter your username");
         ImGui::Separator();

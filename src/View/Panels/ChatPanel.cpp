@@ -1,12 +1,4 @@
 #include "ChatPanel.h"
-#include "Model/Models/User.h"
-
-#include "imgui.h"
-#include <iomanip>
-#include <misc/cpp/imgui_stdlib.h>
-#include <sstream>
-#include <util/string_util.h>
-
 
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
