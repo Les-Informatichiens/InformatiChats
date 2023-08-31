@@ -19,10 +19,12 @@ void UserLogic::AppendSelectedChatHistory(const std::string& message)
     auto chatHistory = this->user.chatHistories.find(this->user.selectedChat);
 
     if (chatHistory != this->user.chatHistories.end())
+    {
         chatHistory->second.emplace_back(
                 message,
                 duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
                 this->user.username);
+    }
 }
 
 void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage)
@@ -34,8 +36,7 @@ void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const
 
 void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 {
-    auto& chatHistories = this->user.chatHistories;
-    chatHistories.emplace(peerId_, ChatHistory{});
+    this->user.chatHistories.emplace(peerId_, ChatHistory{});
 }
 
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
