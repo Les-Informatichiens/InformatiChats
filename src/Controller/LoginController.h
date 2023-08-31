@@ -5,7 +5,7 @@
 #pragma once
 
 #include "ILoginController.h"
-#include "Model/ApplicationLogic/UserLogic.h"
+#include <Model/ApplicationLogic/UserLogic.h>
 
 class LoginController : public ILoginController
 {

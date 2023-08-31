@@ -6,7 +6,7 @@
 
 #include "IChannelController.h"
 
-#include "Model/ApplicationLogic/UserLogic.h"
+#include <Model/ApplicationLogic/UserLogic.h>
 
 
 class ChannelController : public IChannelController

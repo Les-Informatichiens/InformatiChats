@@ -5,7 +5,7 @@
 #pragma once
 
 #include "IChatController.h"
-#include "Model/ApplicationLogic/UserLogic.h"
+#include <Model/ApplicationLogic/UserLogic.h>
 
 class ChatController : public IChatController
 {
