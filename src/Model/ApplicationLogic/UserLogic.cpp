@@ -3,6 +3,12 @@
 //
 
 #include "UserLogic.h"
+#include <util/crypto/AESEncryption.h>
+#include <util/crypto/Keygen.h>
+#include <util/crypto/RSAEncryption.h>
+
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 
 const ChatHistory* UserLogic::GetSelectedChatHistory() const
@@ -91,25 +97,51 @@ const size_t& UserLogic::GetMaxNameLength()
     return User::maxNameLength;
 }
 
-void UserLogic::LoginWithNewUser(const std::string& username_)
+bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string& password_)
 {
-    Reset(username_);
+    nlohmann::json data;
+    std::ifstream input("users.json");
+    if (input.is_open())
+    {
+        try
+        {
+            data = nlohmann::json::parse(input);
+        } catch (const std::exception& e)
+        {
+            return false;
+        }
+        input.close();
+    }
+
+    std::string decryptedPrivKey = DecryptAES(
+            data[username_].value("encryptedPrivateIdentificationKey", ""),
+            DeriveKeyFromPassword(password_, username_, 256 / 8));
+    try
+    {
+        if (!ValidateKeysRSA(decryptedPrivKey, data[username_].value("publicIdentificationKey", "")))
+            return false;
+    } catch (std::exception& e)
+    {
+        return false;
+    }
+
+    this->Reset(username_);
     this->chatAPI.Reset();
     //this->SetUser(user_);
+    //this->SetchatAPI(chatAPI());
 
     this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
-        UpdatePeerState(e.peerId, e.connectionState);
+        this->UpdatePeerState(e.peerId, e.connectionState);
         if (e.connectionState == ConnectionState::Connected)
         {
-            CreateNewChatHistory(e.peerId);
+            this->CreateNewChatHistory(e.peerId);
         }
     });
     this->chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
-        IncrementPeerUnreadMessageCount(e.senderId);
-        AddChatMessageToPeerChatHistory(e.senderId,
-                                        {e.content,
-                                         duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                                         e.senderId});
+        this->IncrementPeerUnreadMessageCount(e.senderId);
+        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
+                                                           duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
+                                                           e.senderId});
     });
 
     // re-init the new chat client
@@ -120,10 +152,50 @@ void UserLogic::LoginWithNewUser(const std::string& username_)
     ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
     this->chatAPI.Init(config);
 
-    this->chatAPI.AttemptConnectionWithUsername(username_);
+    this->chatAPI.AttemptConnectionWithUsername(this->GetUserName());
+
+    return true;
 }
 
 bool UserLogic::IsClientConnected() const
 {
     return this->chatAPI.IsConnected();
+}
+
+bool UserLogic::CreateNewUser(const std::string& username_, const std::string& password_)
+{
+    nlohmann::ordered_json data;
+    std::ifstream input("users.json");
+    if (input.is_open())
+    {
+        try
+        {
+            data = nlohmann::json::parse(input);
+        } catch (const std::exception& e)
+        {
+        }
+        input.close();
+    }
+
+    if (data.contains(username_))
+    {
+        return false;
+    }
+
+    RSAKeyPair keypair = GenerateRSAKeyPair(512);
+
+    std::string derivedEncryptionKey = DeriveKeyFromPassword(password_, username_, 256 / 8);
+    std::string encryptedPrivateKey = EncryptAES(keypair.privateKey, derivedEncryptionKey);
+
+    data[username_] = {};
+    data[username_]["publicIdentificationKey"] = keypair.publicKey;
+    data[username_]["encryptedPrivateIdentificationKey"] = encryptedPrivateKey;
+    data[username_]["profile"] = {};
+    data[username_]["profile"]["displayName"] = username_;
+
+    std::ofstream output("users.json");
+
+    output << data.dump(4);
+
+    return true;
 }

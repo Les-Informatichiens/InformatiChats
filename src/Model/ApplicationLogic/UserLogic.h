@@ -11,7 +11,8 @@ class UserLogic
 public:
     UserLogic(User& user, IChatAPI& chatAPI) : user(user), chatAPI(chatAPI){};
 
-    void LoginWithNewUser(const std::string& username_);
+    bool LoginWithNewUser(const std::string& username, const std::string& password);
+    static bool CreateNewUser(const std::string& username, const std::string& password);
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
 

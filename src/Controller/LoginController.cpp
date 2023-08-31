@@ -10,14 +10,14 @@ LoginViewModel LoginController::GetViewModel()
     return {userLogic.GetMaxNameLength()};
 }
 
-void LoginController::LoginAttempt(const std::string& username_, const std::string& password)
+void LoginController::LoginAttempt(const std::string& username_, const std::string& password_)
 {
-    userLogic.LoginWithNewUser(username_, password);
+    this->userLogic.LoginWithNewUser(username_, password_);
 }
 
-void LoginController::CreateUser(const std::string& username, const std::string& password)
+void LoginController::CreateUser(const std::string& username_, const std::string& password_)
 {
-    model.CreateNewUser(username, password);
+    this->userLogic.CreateNewUser(username_, password_);
 }
 
 bool LoginController::IsConnected()
