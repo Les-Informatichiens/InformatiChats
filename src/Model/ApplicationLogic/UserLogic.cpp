@@ -100,11 +100,12 @@ void UserLogic::LoginWithNewUser(const std::string& username_)
             CreateNewChatHistory(e.peerId);
         }
     });
-    chatAPI.SetOnMessageReceived([this](const MessageReceivedEvent& e) {
+    chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
         IncrementPeerUnreadMessageCount(e.senderId);
-        AddChatMessageToPeerChatHistory(e.senderId, {e.content,
-                                                     duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                                                     e.senderId});
+        AddChatMessageToPeerChatHistory(e.senderId,
+                                        {e.content,
+                                         duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
+                                         e.senderId});
     });
 
     // re-init the new chat client

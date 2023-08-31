@@ -4,16 +4,11 @@
 
 #pragma once
 
-#include "Model/Models/PeerData.h"
+#include <Model/Models/PeerData.h>
+#include <Model/Models/User.h>
 
 #include <functional>
 #include <string>
-
-struct MessageReceivedEvent
-{
-    std::string senderId;
-    std::string content;
-};
 
 struct PeerConnectionStateChangeEvent
 {
@@ -44,7 +39,7 @@ public:
     virtual void AttemptToConnectToPeer(const std::string& peerId) = 0;
 
     virtual void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
-    virtual void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) = 0;
+    virtual void SetOnMessageReceived(std::function<void(ChatMessage)> callback) = 0;
 
     virtual const void SendMessageToPeer(const std::string& peerId, const std::string& message) = 0;
 };

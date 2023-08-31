@@ -254,7 +254,7 @@ void LibDataChannelChatAPI::RegisterDataChannel(const std::shared_ptr<rtc::DataC
         // data holds either std::string or rtc::binary
         if (std::holds_alternative<std::string>(data))
         {
-            onMessageReceivedCallback(MessageReceivedEvent{peerId, std::get<std::string>(data)});
+            onMessageReceivedCallback(ChatMessage{peerId, duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()), std::get<std::string>(data)});
             std::cout << "Message from " << peerId << " received: " << std::get<std::string>(data)
                       << std::endl;
         }
@@ -277,7 +277,7 @@ void LibDataChannelChatAPI::SetOnPeerConnectionStateChange(std::function<void(Pe
     onPeerConnectionStateChangeCallback = callback;
 }
 
-void LibDataChannelChatAPI::SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback)
+void LibDataChannelChatAPI::SetOnMessageReceived(std::function<void(ChatMessage)> callback)
 {
     onMessageReceivedCallback = callback;
 }

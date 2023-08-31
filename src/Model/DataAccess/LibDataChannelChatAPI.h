@@ -23,7 +23,7 @@ public:
     void AttemptToConnectToPeer(const std::string& peerId) override;
 
     void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
-    void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
+    void SetOnMessageReceived(std::function<void(ChatMessage)> callback) override;
 
     void const SendMessageToPeer(const std::string& peerId, const std::string& message) override;
 
@@ -39,7 +39,7 @@ private:
     std::string signalingServerPort;
 
     std::function<void(PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCallback;
-    std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
+    std::function<void(ChatMessage)> onMessageReceivedCallback;
 
     std::string username;
     std::shared_ptr<rtc::WebSocket> webSocket;
