@@ -20,7 +20,7 @@ ChatPanel::ChatPanel(IChatController& controller_) : controller(controller_) {}
 
 void ChatPanel::Update()
 {
-    ChatViewModel vm = controller.GetViewModel();
+    ChatViewModel vm = this->controller.GetViewModel();
 
     ImGui::SameLine();
     //    ImGui::BeginDisabled(vm.chatHistory == nullptr);
@@ -85,16 +85,16 @@ void ChatPanel::Update()
 
         ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
                                                ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", &inputBuf, input_text_flags))
+        if (ImGui::InputText("Input", &this->inputBuf, input_text_flags))
         {
-            util::trim(inputBuf);
+            util::trim(this->inputBuf);
 
-            if (!inputBuf.empty())
+            if (!this->inputBuf.empty())
             {
-                this->controller.SendMessage(inputBuf);
+                this->controller.SendMessage(this->inputBuf);
             }
 
-            inputBuf.clear();
+            this->inputBuf.clear();
 
             reclaim_focus = true;
         }

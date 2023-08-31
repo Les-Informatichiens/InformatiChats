@@ -7,40 +7,43 @@
 
 const ChatHistory* UserLogic::GetSelectedChatHistory() const
 {
-    if (!user.selectedChat.empty() && !user.chatHistories.empty())
+    if (!this->user.selectedChat.empty() && !this->user.chatHistories.empty())
     {
-        return &user.chatHistories.at(user.selectedChat);
+        return &this->user.chatHistories.at(this->user.selectedChat);
     }
     return nullptr;
 }
 
 void UserLogic::AppendSelectedChatHistory(const std::string& message)
 {
-    auto chatHistory = user.chatHistories.find(user.selectedChat);
+    auto chatHistory = this->user.chatHistories.find(this->user.selectedChat);
 
-    if (chatHistory != user.chatHistories.end())
-        chatHistory->second.emplace_back(message, duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()), user.username);
+    if (chatHistory != this->user.chatHistories.end())
+        chatHistory->second.emplace_back(
+                message,
+                duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
+                this->user.username);
 }
 
 void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage)
 {
-    auto chatHistory = user.chatHistories.find(peerId);
-    if (chatHistory != user.chatHistories.end())
+    auto chatHistory = this->user.chatHistories.find(peerId);
+    if (chatHistory != this->user.chatHistories.end())
         chatHistory->second.emplace_back(chatMessage);
 }
 
 void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 {
-    auto& chatHistories = user.chatHistories;
+    auto& chatHistories = this->user.chatHistories;
     chatHistories.emplace(peerId_, ChatHistory{});
 }
 
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
 {
-    auto result = user.peerDataMap.insert({peerId, {}});
+    auto result = this->user.peerDataMap.insert({peerId, {}});
     if (state == ConnectionState::Failed || state == ConnectionState::Closed || state == ConnectionState::Disconnected)
     {
-        user.peerDataMap.erase(result.first->first);
+        this->user.peerDataMap.erase(result.first->first);
         return;
     }
     result.first->second.connectionState = state;
@@ -48,59 +51,59 @@ void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState
 
 void UserLogic::IncrementPeerUnreadMessageCount(const std::string& peerId)
 {
-    ++user.peerDataMap.at(peerId).unreadMessageCount;
+    ++(this->user.peerDataMap.at(peerId).unreadMessageCount);
 }
 
 void UserLogic::Reset(const std::string& username)
 {
-    user = User{username};
+    this->user = User{username};
 }
 
 const std::string& UserLogic::GetUserName() const
 {
-    return user.username;
+    return this->user.username;
 }
 
-const void UserLogic::SendTextMessage(const std::string& message)
+void UserLogic::SendTextMessage(const std::string& message)
 {
-    chatAPI.SendMessageToPeer(user.selectedChat, message);
+    this->chatAPI.SendMessageToPeer(this->user.selectedChat, message);
 }
 
 const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() const
 {
-    return user.peerDataMap;
+    return this->user.peerDataMap;
 }
 
 void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
-    chatAPI.AttemptToConnectToPeer(peerId);
+    this->chatAPI.AttemptToConnectToPeer(peerId);
     CreateNewChatHistory(peerId);
 }
 
 void UserLogic::SetSelectedPeerId(const std::string& peerId)
 {
-    user.selectedChat = peerId;
+    this->user.selectedChat = peerId;
 }
 
-const size_t& UserLogic::GetMaxNameLength() const
+const size_t& UserLogic::GetMaxNameLength()
 {
-    return user.maxNameLength;
+    return User::maxNameLength;
 }
 
 void UserLogic::LoginWithNewUser(const std::string& username_)
 {
     Reset(username_);
-    chatAPI.Reset();
+    this->chatAPI.Reset();
     //this->SetUser(user_);
 
-    chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
+    this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
         UpdatePeerState(e.peerId, e.connectionState);
         if (e.connectionState == ConnectionState::Connected)
         {
             CreateNewChatHistory(e.peerId);
         }
     });
-    chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
+    this->chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
         IncrementPeerUnreadMessageCount(e.senderId);
         AddChatMessageToPeerChatHistory(e.senderId,
                                         {e.content,
@@ -114,12 +117,12 @@ void UserLogic::LoginWithNewUser(const std::string& username_)
     const std::string signalingServer = "informatichiens.com";
     const std::string signalingServerPort = "51337";
     ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
-    chatAPI.Init(config);
+    this->chatAPI.Init(config);
 
-    chatAPI.AttemptConnectionWithUsername(username_);
+    this->chatAPI.AttemptConnectionWithUsername(username_);
 }
 
 bool UserLogic::IsClientConnected() const
 {
-    return chatAPI.IsConnected();
+    return this->chatAPI.IsConnected();
 }

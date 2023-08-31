@@ -15,7 +15,7 @@ public:
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
 
-    const void SendTextMessage(const std::string& message);
+    void SendTextMessage(const std::string& message);
     void AddNewChatPeer(const std::string& peerId);
     void SetSelectedPeerId(const std::string& peerId);
     void UpdatePeerState(const std::string& peerId, const ConnectionState& state);
@@ -24,11 +24,11 @@ public:
     void CreateNewChatHistory(const std::string& peerId);
     void AppendSelectedChatHistory(const std::string& message);
     void AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage);
-    
+
     [[nodiscard]] const std::unordered_map<std::string, PeerData>& GetPeerDataMap() const;
     [[nodiscard]] const ChatHistory* GetSelectedChatHistory() const;
     [[nodiscard]] const std::string& GetUserName() const;
-    [[nodiscard]] const size_t& GetMaxNameLength() const;
+    [[nodiscard]] static const size_t& GetMaxNameLength();
 
 private:
     User& user;

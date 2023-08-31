@@ -13,7 +13,7 @@ LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
 void LoginPanel::Draw()
 {
 
-    if (!controller.IsConnected())
+    if (!this->controller.IsConnected())
     {
         Update();
         // Draw the chat panel
@@ -23,7 +23,7 @@ void LoginPanel::Draw()
 void LoginPanel::Update()
 {
 
-    //LoginViewModel vm = controller.GetViewModel();
+    //LoginViewModel vm = this->controller.GetViewModel();
 
 
     ImGui::OpenPopup("Login");
@@ -41,7 +41,7 @@ void LoginPanel::Update()
             // We do not allow a user to have an empty username or a username that is only spaces
             if (!this->usernameBuf.empty())
             {
-                controller.LoginAttempt(this->usernameBuf);
+                this->controller.LoginAttempt(this->usernameBuf);
             }
 
             this->usernameBuf.clear();

@@ -34,9 +34,10 @@ bool ChatApp::Init()
 {
     // create glfw window and get glsl shader version determined by opengl version
     if (!this->windowManager.Init("InformatiChats GLFW+ImGui+OpenGL3 demo", 1280, 720))
+    {
         return false;
-
-    guiManager.Init();
+    }
+    this->guiManager.Init();
 
     // Setup Platform/Renderer backends
     SetupRendererBackend();
@@ -54,7 +55,7 @@ void ChatApp::Update()
     // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
     // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
     // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-    windowManager.PollEvents();
+    this->windowManager.PollEvents();
 
     // Prepare the next opengl frame
     PrepareNextFrame();
@@ -68,13 +69,13 @@ void ChatApp::Update()
     // draw the framebuffer texture onto the screen with the post processing shader
     ApplyPostProcessing();
 
-    windowManager.SwapBuffers();
+    this->windowManager.SwapBuffers();
 }
 
 void ChatApp::Uninit()
 {
-    guiManager.Uninit();
-    windowManager.Uninit();
+    this->guiManager.Uninit();
+    this->windowManager.Uninit();
 }
 
 void ChatApp::UpdateMainPanel()
@@ -98,16 +99,16 @@ void ChatApp::UpdateMainPanel()
 #ifndef __NDEBUG__
         // ImGui demo button and panel
         ImGui::BeginMainMenuBar();
-        ImGui::Checkbox("Demo", &showDemoWindow);
+        ImGui::Checkbox("Demo", &this->showDemoWindow);
         ImGui::EndMainMenuBar();
 
         // If the client is not connected to the server yet, ask the user to login.
         // Show the main application if connected.
-        if (showDemoWindow)
-            ImGui::ShowDemoWindow(&showDemoWindow);
+        if (this->showDemoWindow)
+            ImGui::ShowDemoWindow(&this->showDemoWindow);
 #endif
 
-        for (const auto& view: views)
+        for (const auto& view: this->views)
         {
             view.get().Draw();
         }
@@ -119,29 +120,29 @@ void ChatApp::UpdateMainPanel()
 
 void ChatApp::PrepareNextFrame()
 {
-    this->frameDisplaySize.width = windowManager.GetWidth();
-    this->frameDisplaySize.height = windowManager.GetHeight();
+    this->frameDisplaySize.width = this->windowManager.GetWidth();
+    this->frameDisplaySize.height = this->windowManager.GetHeight();
 
-    int scaledDisplayWidth = this->frameDisplaySize.width * displayResolutionFactor;
-    int scaledDisplayHeight = this->frameDisplaySize.height * displayResolutionFactor;
+    int scaledDisplayWidth = this->frameDisplaySize.width * this->displayResolutionFactor;
+    int scaledDisplayHeight = this->frameDisplaySize.height * this->displayResolutionFactor;
 
     // rendering new frame
-    ShaderProg->setInt("uCrtEnabled", false);
-    ShaderProg->setFloat2("iResolution", {this->frameDisplaySize.width, this->frameDisplaySize.height});
+    this->ShaderProg->setInt("uCrtEnabled", false);
+    this->ShaderProg->setFloat2("iResolution", {this->frameDisplaySize.width, this->frameDisplaySize.height});
     //ShaderProg->setFloat("iTime", glfwGetTime()*100.0);
 
-    glUseProgram(ShaderProg->getProgramId());
+    glUseProgram(this->ShaderProg->getProgramId());
 
-    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+    glBindTexture(GL_TEXTURE_2D, this->FramebufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scaledDisplayWidth, scaledDisplayHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->Framebuffer);
     glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
 
     glViewport(0, 0, scaledDisplayWidth, scaledDisplayHeight);
 
-    guiManager.NewFrame();
+    this->guiManager.NewFrame();
 }
 
 void ChatApp::SetupRendererBackend()
@@ -151,12 +152,12 @@ void ChatApp::SetupRendererBackend()
 
 void ChatApp::SetupPostProcessing()
 {
-    guiManager.SetDisplayResolutionFactor(displayResolutionFactor);
+    this->guiManager.SetDisplayResolutionFactor(this->displayResolutionFactor);
 
-    ShaderProg = new PxlUI::ShaderProgram(VERT_SHADER, FRAG_SHADER);
-    glUseProgram(ShaderProg->getProgramId());
-    ShaderProg->bind();
-    auto wLocation = glGetUniformLocation(ShaderProg->getProgramId(), "uTextures");
+    this->ShaderProg = new PxlUI::ShaderProgram(VERT_SHADER, FRAG_SHADER);
+    glUseProgram(this->ShaderProg->getProgramId());
+    this->ShaderProg->bind();
+    auto wLocation = glGetUniformLocation(this->ShaderProg->getProgramId(), "uTextures");
     int32_t wSamplers[32];
     for (int32_t i = 0; i < 32; i++)
     {
@@ -164,17 +165,17 @@ void ChatApp::SetupPostProcessing()
     }
     glUniform1iv(wLocation, 32, wSamplers);
 
-    ShaderProg->setFloat("uBlur", mCrtShaderData.mBlur);
-    ShaderProg->setFloat("uCurvature", mCrtShaderData.mCurvature);
-    ShaderProg->setFloat("uChroma", mCrtShaderData.mChroma);
-    ShaderProg->setFloat("uScanlineWidth", mCrtShaderData.mScanlineWidth);
-    ShaderProg->setFloat("uScanlineIntensity", mCrtShaderData.mScanlineIntensity);
-    ShaderProg->setFloat("uVignette", mCrtShaderData.mVignette);
-    ShaderProg->setInt("uCrtEnabled", false);
-    ShaderProg->setFloat("iResFactor", displayResolutionFactor);
+    this->ShaderProg->setFloat("uBlur", this->mCrtShaderData.mBlur);
+    this->ShaderProg->setFloat("uCurvature", this->mCrtShaderData.mCurvature);
+    this->ShaderProg->setFloat("uChroma", this->mCrtShaderData.mChroma);
+    this->ShaderProg->setFloat("uScanlineWidth", this->mCrtShaderData.mScanlineWidth);
+    this->ShaderProg->setFloat("uScanlineIntensity", this->mCrtShaderData.mScanlineIntensity);
+    this->ShaderProg->setFloat("uVignette", this->mCrtShaderData.mVignette);
+    this->ShaderProg->setInt("uCrtEnabled", false);
+    this->ShaderProg->setFloat("iResFactor", this->displayResolutionFactor);
 
-    glCreateTextures(GL_TEXTURE_2D, 1, &FramebufferTexture);
-    glBindTexture(GL_TEXTURE_2D, FramebufferTexture);
+    glCreateTextures(GL_TEXTURE_2D, 1, &this->FramebufferTexture);
+    glBindTexture(GL_TEXTURE_2D, this->FramebufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 100, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -182,8 +183,8 @@ void ChatApp::SetupPostProcessing()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glGenFramebuffers(1, &Framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, Framebuffer);
+    glGenFramebuffers(1, &this->Framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->Framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FramebufferTexture, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -199,16 +200,16 @@ void ChatApp::RenderFrame()
 
 void ChatApp::ApplyPostProcessing()
 {
-    ShaderProg->setInt("uCrtEnabled", true);
+    this->ShaderProg->setInt("uCrtEnabled", true);
 
     PxlUI::BatchRenderer::beginBatch();
 
-    PxlUI::BatchRenderer::drawScreenTex(FramebufferTexture);
+    PxlUI::BatchRenderer::drawScreenTex(this->FramebufferTexture);
     PxlUI::BatchRenderer::endBatch();
     PxlUI::BatchRenderer::flush();
 }
 
 void ChatApp::AddView(IView& view)
 {
-    views.emplace_back(view);
+    this->views.emplace_back(view);
 }
