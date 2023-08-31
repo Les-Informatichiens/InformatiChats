@@ -14,12 +14,11 @@ class BinarySerializer
 public:
     const std::byte* Serialize(const T& object) const
     {
-        return const_cast<std::byte*>(reinterpret_cast<const std::byte*>(&object));
+        return reinterpret_cast<std::byte const* const>(&object);
     }
 
     T DeSerialize(const std::byte*& serializedData)
     {
-
         T deserializedObj;
         if (sizeof(serializedData) != sizeof(T))
         {
