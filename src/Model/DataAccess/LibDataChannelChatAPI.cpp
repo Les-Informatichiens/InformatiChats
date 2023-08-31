@@ -293,7 +293,7 @@ void LibDataChannelChatAPI::Reset()
 void const LibDataChannelChatAPI::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
     auto dcIt = this->dataChannelMap.find(peerId);
-    if (dcIt == this->dataChannelMap.end())
+    if (dcIt == this->dataChannelMap.end() || !dcIt->second->isOpen())
     {
         return;
     }
