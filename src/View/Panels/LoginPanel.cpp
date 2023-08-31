@@ -48,10 +48,10 @@ void LoginPanel::Update()
             {
                 controller.CreateUser(this->usernameBuf, this->passwordBuf);
                 controller.LoginAttempt(this->usernameBuf, this->passwordBuf);
-            }
 
-            this->usernameBuf.clear();
-            this->passwordBuf.clear();
+                this->usernameBuf.clear();
+                this->passwordBuf.clear();
+            }
         }
         ImGui::PopStyleVar();
 
