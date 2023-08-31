@@ -164,22 +164,12 @@ bool UserLogic::IsClientConnected() const
 
 bool UserLogic::CreateNewUser(const std::string& username_, const std::string& password_)
 {
-    nlohmann::ordered_json data;
-    std::ifstream input("users.json");
-    if (input.is_open())
+    for (const auto& userInfo: this->localUsersAPI.GetLocalUserInfos())
     {
-        try
+        if (userInfo.permanentUsername == username_)
         {
-            data = nlohmann::json::parse(input);
-        } catch (const std::exception& e)
-        {
+            return false;
         }
-        input.close();
-    }
-
-    if (data.contains(username_))
-    {
-        return false;
     }
 
     RSAKeyPair keypair = GenerateRSAKeyPair(512);
@@ -187,15 +177,23 @@ bool UserLogic::CreateNewUser(const std::string& username_, const std::string& p
     std::string derivedEncryptionKey = DeriveKeyFromPassword(password_, username_, 256 / 8);
     std::string encryptedPrivateKey = EncryptAES(keypair.privateKey, derivedEncryptionKey);
 
-    data[username_] = {};
-    data[username_]["publicIdentificationKey"] = keypair.publicKey;
-    data[username_]["encryptedPrivateIdentificationKey"] = encryptedPrivateKey;
-    data[username_]["profile"] = {};
-    data[username_]["profile"]["displayName"] = username_;
+    UserData data{};
+    data.permanentUsername = username_;
+    data.encryptedPassword = EncryptAES(password_, derivedEncryptionKey);
+    data.publicIdentificationKey = keypair.publicKey;
+    data.encryptedPrivateIdentificationKey = encryptedPrivateKey;
 
-    std::ofstream output("users.json");
-
-    output << data.dump(4);
+    this->localUsersAPI.AddNewLocalUser(data);
 
     return true;
+}
+
+void UserLogic::LoadLocalUsers() const
+{
+    this->localUsersAPI.LoadLocalUserInfos();
+}
+
+const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
+{
+    return this->localUsersAPI.GetLocalUserInfos();
 }

@@ -9,7 +9,7 @@
 
 // TODO: not used yet
 
-class UserProfile
+struct UserProfile
 {
     std::string displayName;
     std::string description;
@@ -17,9 +17,11 @@ class UserProfile
     std::array<uint8_t, 3> nameColor;
 };
 
-class UserData
+struct UserData
 {
-    std::string username;
-    std::string identificationKey;
-    UserProfile profile;
+    std::string permanentUsername;
+    std::string encryptedPassword;
+    std::string publicIdentificationKey;
+    std::string encryptedPrivateIdentificationKey;
+    //UserProfile profile;
 };

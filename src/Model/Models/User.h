@@ -1,18 +1,11 @@
 #pragma once
 
+#include "ChatMessage.h"
 #include <Model/Models/PeerData.h>
 #include <chrono>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-struct ChatMessage
-{
-    std::string content;
-    std::chrono::milliseconds timestamp;
-    std::string senderId;
-};
-
 
 using ChatHistory = std::vector<ChatMessage>;
 

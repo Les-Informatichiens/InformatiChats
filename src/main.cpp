@@ -4,12 +4,14 @@
 #include <Controller/LoginController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
+#include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
 #include <View/Backend/IWindow.h>
 #include <View/GUI/ImGuiManager.hpp>
 #include <View/Panels/ChannelPanel.h>
 #include <View/Panels/ChatPanel.h>
+#include <View/Panels/CreateNewUserPanel.h>
 #include <View/Panels/LoginPanel.h>
 #include <View/Panels/UserInfoPanel.h>
 #include <View/Views/ChannelView.h>
@@ -22,7 +24,8 @@ int main(int, char**)
     //init model layer
     User user{};
     auto chatAPI = LibDataChannelChatAPI();
-    UserLogic userLogic{user, chatAPI};
+    auto localUsersAPI = NlohmannJsonLocalUsersAPI();
+    UserLogic userLogic{user, chatAPI, localUsersAPI};
 
     //init controller layer
     auto chatController = ChatController(userLogic);
@@ -39,11 +42,13 @@ int main(int, char**)
     auto userInfoPanel = UserInfoPanel(channelController);
     auto chatPanel = ChatPanel(chatController);
     auto loginPanel = LoginPanel(loginController);
+    auto createNewUserPanel = CreateNewUserPanel(loginController);
 
     chatView.AddPanel(chatPanel);
     channelView.AddPanel(channelPanel);
     channelView.AddPanel(userInfoPanel);
     loginView.AddPanel(loginPanel);
+    loginView.AddPanel(createNewUserPanel);
 
     //init renderer, window
     static const constexpr RendererAPI rendererApi = RendererAPI::OpenGL;

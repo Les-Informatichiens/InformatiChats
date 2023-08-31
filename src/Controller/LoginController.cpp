@@ -7,7 +7,7 @@
 
 LoginViewModel LoginController::GetViewModel()
 {
-    return {userLogic.GetMaxNameLength()};
+    return {this->userLogic.GetMaxNameLength(), this->userLogic.GetLocalUserInfos()};
 }
 
 void LoginController::LoginAttempt(const std::string& username_, const std::string& password_)
@@ -20,7 +20,22 @@ void LoginController::CreateUser(const std::string& username_, const std::string
     this->userLogic.CreateNewUser(username_, password_);
 }
 
-bool LoginController::IsConnected()
+bool LoginController::IsConnected() const
 {
     return userLogic.IsClientConnected();
+}
+
+bool LoginController::IsCreatingNewUser() const
+{
+    return this->createNewUser;
+}
+
+void LoginController::SetCreatingNewUser(bool createNewUser_)
+{
+    this->createNewUser = createNewUser_;
+}
+
+void LoginController::LoadLocalUsers() const
+{
+    this->userLogic.LoadLocalUsers();
 }

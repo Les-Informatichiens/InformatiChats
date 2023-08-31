@@ -16,9 +16,14 @@ public:
 
     void LoginAttempt(const std::string& username, const std::string& password) override;
     void CreateUser(const std::string& username, const std::string& password) override;
+    void LoadLocalUsers() const override;
 
-    bool IsConnected() override;
+    [[nodiscard]] bool IsConnected() const override;
+    [[nodiscard]] bool IsCreatingNewUser() const override;
+    void SetCreatingNewUser(bool createNewUser) override;
 
 private:
     UserLogic& userLogic;
+
+    bool createNewUser = false;
 };

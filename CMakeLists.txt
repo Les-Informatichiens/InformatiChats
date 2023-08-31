@@ -73,8 +73,14 @@ add_executable(
         src/util/crypto/RSAEncryption.cpp
         src/util/crypto/RSAEncryption.h
         src/util/crypto/CryptoTest.h
-        src/Model/UserData.h
+        src/Model/Models/UserData.h
         src/util/Base64.h
+        src/View/Panels/CreateNewUserPanel.cpp
+        src/View/Panels/CreateNewUserPanel.h
+        src/Model/DataAccess/ILocalUsersAPI.h
+        src/Model/Models/LocalUsers.h
+        src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
+        src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
 )
 
 target_include_directories(
@@ -83,37 +89,37 @@ target_include_directories(
         src
 )
 
-if(MSVC)
+if (MSVC)
     # Set the app as solution startup project
-    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
     # Parallel c++ compilation
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP" )
-endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+endif ()
 
 # Dependencies ========================================================================================
 include(cmake/CPM.cmake)
 
 # LibDataChannel ======================================================================================
-if(NOT TARGET LibDataChannel::LibDataChannelStatic)
+if (NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
-        NAME "LibDataChannel"
-        VERSION "0.18.5"
-        GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
+            NAME "LibDataChannel"
+            VERSION "0.18.5"
+            GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
     )
-endif()
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStatic)
 # =====================================================================================================
 
 # nlohmann-json =======================================================================================
-if(NOT TARGET nlohmann_json::nlohmann_json)
+if (NOT TARGET nlohmann_json::nlohmann_json)
     CPMFindPackage(
-            NAME          "nlohmann_json"
-            VERSION       "3.11.2"
+            NAME "nlohmann_json"
+            VERSION "3.11.2"
             GITHUB_REPOSITORY "nlohmann/json"
     )
-endif()
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 # =====================================================================================================
@@ -128,53 +134,53 @@ endif ()
 
 # glm =================================================================================================
 CPMAddPackage(
-    NAME "glm"
-    GITHUB_REPOSITORY "g-truc/glm"
-    GIT_TAG "0.9.9.8"
+        NAME "glm"
+        GITHUB_REPOSITORY "g-truc/glm"
+        GIT_TAG "0.9.9.8"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 # =====================================================================================================
 
 # glew ================================================================================================
-if(NOT TARGET libglew_static)
+if (NOT TARGET libglew_static)
     CPMAddPackage(
-        NAME "GLEW"
-        GITHUB_REPOSITORY "Perlmint/glew-cmake"
-        GIT_TAG "glew-cmake-2.2.0"
+            NAME "GLEW"
+            GITHUB_REPOSITORY "Perlmint/glew-cmake"
+            GIT_TAG "glew-cmake-2.2.0"
     )
-endif()
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE libglew_static)
 # =====================================================================================================
 
 # imgui ===============================================================================================
-if(NOT TARGET imgui::imgui)
+if (NOT TARGET imgui::imgui)
     CPMFindPackage(
-        NAME "imgui"
-        GITHUB_REPOSITORY "Les-Informatichiens/imgui-cmake"
-        GIT_TAG "docking-cmake-experimental"
-        OPTIONS
+            NAME "imgui"
+            GITHUB_REPOSITORY "Les-Informatichiens/imgui-cmake"
+            GIT_TAG "docking-cmake-experimental"
+            OPTIONS
             "IMGUI_BUILD_OPENGL3_BINDING ON"
             "IMGUI_BUILD_GLFW_BINDING ON"
     )
-endif()
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 # =====================================================================================================
 
 # tr-and-slate-or =====================================================================================
-if(NOT TARGET trandslateor)
+if (NOT TARGET trandslateor)
     CPMFindPackage(
-        NAME "trandslateor"
-        GITHUB_REPOSITORY "ThierryCantin-Demers/tr-and-slate-or"
-        GIT_TAG "v0.1.1"
+            NAME "trandslateor"
+            GITHUB_REPOSITORY "ThierryCantin-Demers/tr-and-slate-or"
+            GIT_TAG "v0.1.1"
     )
-endif()
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE trandslateor)
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
     message(STATUS "Copying translations to build directory")
 
     # The translations directory is copied to the build directory so that the application can find them since it needs
@@ -182,19 +188,19 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/translations")
     # That means that to add translations, you need to modify the translations directory that is directly in the repo
     # and not the one in the build directory. Otherwise, the changes will be overwritten and lost on cmake build.
     file(COPY translations DESTINATION "${CMAKE_BINARY_DIR}")
-endif()
+endif ()
 # =====================================================================================================
 
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
     message(STATUS "Copying res to build directory")
     file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
-endif()
+endif ()
 
 # Compile definitions ==================================================================================
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(${PROJECT_NAME} PRIVATE __DEBUG__)
-endif()
+endif ()
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(${PROJECT_NAME} PRIVATE __RELEASE__ PRIVATE __NDEBUG__)
-endif()
+endif ()
 # =====================================================================================================
