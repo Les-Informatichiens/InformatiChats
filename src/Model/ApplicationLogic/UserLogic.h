@@ -3,8 +3,8 @@
 //
 #pragma once
 
-#include "Model/DataAccess/IChatAPI.h"
-#include "Model/Models/User.h"
+#include <Model/DataAccess/IChatAPI.h>
+#include <Model/Models/User.h>
 
 class UserLogic
 {

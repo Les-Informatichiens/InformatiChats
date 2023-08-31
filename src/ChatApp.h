@@ -22,9 +22,9 @@
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 
-#include "View/Backend/GLFWWindowManager.h"
-#include "View/GUI/ImGuiManager.hpp"
-#include "View/Shaders.h"
+#include <View/Backend/GLFWWindowManager.h>
+#include <View/GUI/ImGuiManager.hpp>
+#include <View/Shaders.h>
 #include <vector>
 
 
