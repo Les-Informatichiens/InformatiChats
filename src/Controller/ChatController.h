@@ -5,20 +5,17 @@
 #pragma once
 
 #include "IChatController.h"
-#include "Model/Model.h"
-
-#include <string>
-
+#include <Model/ApplicationLogic/UserLogic.h>
 
 class ChatController : public IChatController
 {
 public:
-    explicit ChatController(Model& model);
+    explicit ChatController(UserLogic& userLogic) : userLogic(userLogic){};
 
     ChatViewModel GetViewModel() override;
 
     void SendMessage(const std::string& message) override;
 
 private:
-    Model& model;
+    UserLogic& userLogic;
 };

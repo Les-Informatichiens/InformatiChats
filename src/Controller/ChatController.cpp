@@ -7,20 +7,18 @@
 
 ChatViewModel ChatController::GetViewModel()
 {
-    if (const ChatHistory* chatHistory = this->model.GetSelectedChatHistory())
+    auto chatHistory = userLogic.GetSelectedChatHistory();
+
+    if (chatHistory)
     {
         return {chatHistory, chatHistory->size()};
     }
-
-    return {this->model.GetSelectedChatHistory(), 0};
-}
-
-ChatController::ChatController(Model& model_)
-    : model(model_)
-{
+    return {nullptr, 0};
 }
 
 void ChatController::SendMessage(const std::string& message)
 {
-    this->model.SendMessage(this->model.GetSelectedPeerId(), message);
+    this->userLogic.SendTextMessage(message);
+
+    this->userLogic.AppendSelectedChatHistory(message);
 }

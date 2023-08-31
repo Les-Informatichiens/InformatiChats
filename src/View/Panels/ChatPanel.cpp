@@ -1,12 +1,4 @@
 #include "ChatPanel.h"
-#include "Model/IUser.h"
-
-#include "imgui.h"
-#include <iomanip>
-#include <misc/cpp/imgui_stdlib.h>
-#include <sstream>
-#include <util/string_util.h>
-
 
 std::string formatMilliseconds(std::chrono::milliseconds ms)
 {
@@ -28,7 +20,7 @@ ChatPanel::ChatPanel(IChatController& controller_) : controller(controller_) {}
 
 void ChatPanel::Update()
 {
-    ChatViewModel vm = controller.GetViewModel();
+    ChatViewModel vm = this->controller.GetViewModel();
 
     ImGui::SameLine();
     //    ImGui::BeginDisabled(vm.chatHistory == nullptr);
@@ -44,9 +36,9 @@ void ChatPanel::Update()
         {
             bool paleBackground = false;
 
-            const ChatHistory* chatHistory = vm.chatHistory;
+            auto chatHistory = vm.chatHistory;
 
-            if (chatHistory != nullptr)
+            if (chatHistory)
             {
                 if (ImGui::BeginTable("Console", 2, ImGuiTableFlags_RowBg))
                 {
@@ -93,16 +85,16 @@ void ChatPanel::Update()
 
         ImGuiInputTextFlags input_text_flags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll |
                                                ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-        if (ImGui::InputText("Input", &inputBuf, input_text_flags))
+        if (ImGui::InputText("Input", &this->inputBuf, input_text_flags))
         {
-            util::trim(inputBuf);
+            util::trim(this->inputBuf);
 
-            if (!inputBuf.empty())
+            if (!this->inputBuf.empty())
             {
-                this->controller.SendMessage(inputBuf);
+                this->controller.SendMessage(this->inputBuf);
             }
 
-            inputBuf.clear();
+            this->inputBuf.clear();
 
             reclaim_focus = true;
         }
