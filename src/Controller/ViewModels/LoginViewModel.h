@@ -10,5 +10,5 @@
 
 struct LoginViewModel
 {
-    //    std::vector<IdentityInfo> identityList;
+    size_t maxNameLength;
 };

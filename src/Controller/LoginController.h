@@ -5,17 +5,12 @@
 #pragma once
 
 #include "ILoginController.h"
-#include <Controller/ViewModels/LoginViewModel.h>
-
-#include "Model/Model.h"
-#include "nlohmann/json.hpp"
-#include "rtc/rtc.hpp"
-
+#include <Model/ApplicationLogic/UserLogic.h>
 
 class LoginController : public ILoginController
 {
 public:
-    explicit LoginController(Model& model);
+    explicit LoginController(UserLogic& userLogic) : userLogic(userLogic){};
 
     LoginViewModel GetViewModel() override;
 
@@ -25,5 +20,5 @@ public:
     bool IsConnected() override;
 
 private:
-    Model& model;
+    UserLogic& userLogic;
 };

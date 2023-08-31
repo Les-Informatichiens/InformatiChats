@@ -3,22 +3,16 @@
 //
 
 #include "LoginController.h"
-#include "Model/User.h"
 
-
-LoginController::LoginController(Model& model_)
-    : model(model_)
-{
-}
 
 LoginViewModel LoginController::GetViewModel()
 {
-    return {};
+    return {userLogic.GetMaxNameLength()};
 }
 
 void LoginController::LoginAttempt(const std::string& username_, const std::string& password)
 {
-    model.LoginWithNewUser(username_, password);
+    userLogic.LoginWithNewUser(username_, password);
 }
 
 void LoginController::CreateUser(const std::string& username, const std::string& password)
@@ -28,5 +22,5 @@ void LoginController::CreateUser(const std::string& username, const std::string&
 
 bool LoginController::IsConnected()
 {
-    return model.IsClientConnected();
+    return userLogic.IsClientConnected();
 }

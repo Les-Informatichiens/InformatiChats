@@ -1,10 +1,5 @@
 #include "ChannelPanel.h"
 
-#include "imgui.h"
-#include <misc/cpp/imgui_stdlib.h>
-#include <string>
-
-
 ChannelPanel::ChannelPanel(IChannelController& controller_) : controller(controller_)
 {
 }
@@ -12,7 +7,7 @@ ChannelPanel::ChannelPanel(IChannelController& controller_) : controller(control
 void ChannelPanel::Update()
 {
 
-    ChannelViewModel vm = controller.GetViewModel();
+    ChannelViewModel vm = this->controller.GetViewModel();
 
     ImGui::BeginGroup();
 
@@ -21,18 +16,18 @@ void ChannelPanel::Update()
     {
         if (ImGui::Button("Add new user"))
         {
-            addNewChatPrompt = true;
+            this->addNewChatPrompt = true;
         }
-        if (addNewChatPrompt)
+        if (this->addNewChatPrompt)
         {
             ImGui::OpenPopup("New chat");
-            if (ImGui::BeginPopupModal("New chat", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+            if (ImGui::BeginPopupModal("New chat", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
             {
                 ImGui::Text("Enter a username");
                 ImGui::Separator();
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-                bool enterPressed = ImGui::InputTextWithHint("##username", "username...", &usernameToConnectToBuf, ImGuiInputTextFlags_EnterReturnsTrue);
+                bool enterPressed = ImGui::InputTextWithHint("##username", "username...", &this->usernameToConnectToBuf, ImGuiInputTextFlags_EnterReturnsTrue);
                 ImGui::PopStyleVar();
 
                 bool addNewChatPressed = ImGui::Button("Add new chat");
@@ -41,9 +36,9 @@ void ChannelPanel::Update()
                 {
                     if (this->usernameToConnectToBuf[0] != '\0')
                     {
-                        controller.AddNewChatPeer(this->usernameToConnectToBuf);
+                        this->controller.AddNewChatPeer(this->usernameToConnectToBuf);
                         this->usernameToConnectToBuf.clear();
-                        addNewChatPrompt = false;
+                        this->addNewChatPrompt = false;
                     }
                 }
 
@@ -51,7 +46,7 @@ void ChannelPanel::Update()
 
                 if (ImGui::Button("Cancel"))
                 {
-                    addNewChatPrompt = false;
+                    this->addNewChatPrompt = false;
                 }
 
                 ImGui::EndPopup();
@@ -66,7 +61,7 @@ void ChannelPanel::Update()
         {
             // TODO: what the hell is going on
             std::string peerId = peerConnection.first;
-            bool isSelected = selectedChat == peerId;
+            bool isSelected = this->selectedChat == peerId;
 
             ConnectionState state = peerConnection.second.connectionState;
 
@@ -136,8 +131,8 @@ void ChannelPanel::Update()
             {
                 //            if (pPeerData != nullptr)
                 //                console.SetLogHistory(pPeerData->history);
-                selectedChat = peerId;
-                controller.SetSelectedPeerId(peerId);
+                this->selectedChat = peerId;
+                this->controller.SetSelectedPeerId(peerId);
             }
             if (hasColor) ImGui::PopStyleColor();
         }

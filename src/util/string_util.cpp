@@ -7,14 +7,14 @@
 namespace util {
     void ltrim(std::string& stringToTrim)
     {
-        stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](int ch) {
+        stringToTrim.erase(stringToTrim.begin(), std::find_if(stringToTrim.begin(), stringToTrim.end(), [](unsigned char ch) {
                                return !std::isspace(ch);
                            }));
     }
 
     void rtrim(std::string& stringToTrim)
     {
-        stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](int ch) {
+        stringToTrim.erase(std::find_if(stringToTrim.rbegin(), stringToTrim.rend(), [](unsigned char ch) {
                                return !std::isspace(ch);
                            }).base(),
                            stringToTrim.end());
