@@ -34,20 +34,24 @@ void LoginPanel::Update()
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
         bool usernameEnterPressed = ImGui::InputTextWithHint("##username", "username...", &this->usernameBuf, ImGuiInputTextFlags_EnterReturnsTrue);
-        bool passwordEnterPressed = ImGui::InputTextWithHint("##password", "password...", &this->passwordBuf, ImGuiInputTextFlags_EnterReturnsTrue);
-        if (usernameEnterPressed || passwordEnterPressed)
+        bool passwordEnterPressed = ImGui::InputTextWithHint("##password", "password...", &this->passwordBuf, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_Password);
+        bool passwordConfirmationEnterPressed = ImGui::InputTextWithHint("##passwordConfirmation", "confirm password...", &this->passwordConfirmationBuf, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_Password);
+
+        if (usernameEnterPressed || passwordEnterPressed || passwordConfirmationEnterPressed)
         {
             util::trim(this->usernameBuf);
             util::trim(this->passwordBuf);
+            util::trim(this->passwordConfirmationBuf);
 
             // We do not allow a user to have an empty username or a username that is only spaces
-            if (!this->usernameBuf.empty() && !this->passwordBuf.empty())
+            if (!this->usernameBuf.empty() && !this->passwordBuf.empty() && !this->passwordConfirmationBuf.empty() && this->passwordBuf == this->passwordConfirmationBuf)
             {
                 controller.CreateUser(this->usernameBuf, this->passwordBuf);
                 controller.LoginAttempt(this->usernameBuf, this->passwordBuf);
 
                 this->usernameBuf.clear();
                 this->passwordBuf.clear();
+                this->passwordConfirmationBuf.clear();
             }
         }
         ImGui::PopStyleVar();

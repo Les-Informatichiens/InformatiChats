@@ -24,4 +24,5 @@ private:
 
     std::string usernameBuf;
     std::string passwordBuf;
+    std::string passwordConfirmationBuf;
 };
