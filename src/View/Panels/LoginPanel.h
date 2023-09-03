@@ -6,6 +6,7 @@
 
 #include "IPanel.h"
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include <Controller/ILoginController.h>
 #include <util/string_util.h>
 
@@ -19,5 +20,12 @@ public:
     bool IsVisible() override;
 
 private:
-    ILoginController& controller;
+    ILoginController &controller;
+
+    std::string selectedUsername;
+    bool isLoggingIn = false;
+
+    std::string usernameBuf;
+    std::string passwordBuf;
+    std::string passwordConfirmationBuf;
 };

@@ -99,36 +99,23 @@ const size_t& UserLogic::GetMaxNameLength()
 
 bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string& password_)
 {
-    nlohmann::json data;
-    std::ifstream input("users.json");
-    if (input.is_open())
-    {
-        try
-        {
-            data = nlohmann::json::parse(input);
-        } catch (const std::exception& e)
-        {
-            return false;
-        }
-        input.close();
-    }
-
-    std::string decryptedPrivKey = DecryptAES(
-            data[username_].value("encryptedPrivateIdentificationKey", ""),
-            DeriveKeyFromPassword(password_, username_, 256 / 8));
-    try
-    {
-        if (!ValidateKeysRSA(decryptedPrivKey, data[username_].value("publicIdentificationKey", "")))
-            return false;
-    } catch (std::exception& e)
+    const auto& userInfos = this->localUsersAPI.GetLocalUserInfos();
+    const auto& userInfoIt = std::find_if(userInfos.begin(), userInfos.end(), [&username_](const UserData& userInfo) { return userInfo.permanentUsername == username_; });
+    if (userInfoIt == userInfos.end())
     {
         return false;
     }
+    const auto& userInfo = *userInfoIt;
+
+    std::string decryptedPrivateKey = DecryptAES(
+            userInfo.encryptedPrivateIdentificationKey,
+            DeriveKeyFromPassword(password_, username_, 256 / 8));
+
+    if (!ValidateKeysRSA(decryptedPrivateKey, userInfo.publicIdentificationKey))
+        return false;
 
     this->Reset(username_);
     this->chatAPI.Reset();
-    //this->SetUser(user_);
-    //this->SetchatAPI(chatAPI());
 
     this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
         this->UpdatePeerState(e.peerId, e.connectionState);
