@@ -33,6 +33,7 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
         userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
         users.push_back(userData);
     }
+    this->localUserInfos = std::move(users);
 }
 
 void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const

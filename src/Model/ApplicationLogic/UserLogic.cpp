@@ -172,6 +172,7 @@ bool UserLogic::CreateNewUser(const std::string& username_, const std::string& p
 
     this->localUsersAPI.AddNewLocalUser(data);
 
+    this->localUsersAPI.SaveLocalUserInfos();
     return true;
 }
 
