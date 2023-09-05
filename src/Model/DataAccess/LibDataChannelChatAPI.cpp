@@ -68,7 +68,7 @@ void LibDataChannelChatAPI::AttemptConnectionWithUsername(const std::string& new
             auto badPcIt = this->peerConnectionMap.find(destIt->get<std::string>());
             if (badPcIt != this->peerConnectionMap.end())
             {
-                badPcIt->second->close();
+//                badPcIt->second->close();
             }
             return;
         }
@@ -116,7 +116,7 @@ void LibDataChannelChatAPI::AttemptConnectionWithUsername(const std::string& new
     this->webSocket->open(url);
 
     std::cout << "Waiting for signaling to be connected..." << std::endl;
-    wsFuture.get();
+//    wsFuture.get();
 }
 
 void LibDataChannelChatAPI::CreateDataChannel(std::shared_ptr<rtc::PeerConnection>& pc, const std::string& peerId)
@@ -178,7 +178,7 @@ std::shared_ptr<rtc::PeerConnection> LibDataChannelChatAPI::CreatePeerConnection
     auto pc = std::make_shared<rtc::PeerConnection>(this->rtcConfig);
 
     pc->onStateChange([this, peerId, pc](rtc::PeerConnection::State state) {
-        std::cout << "State: " << state << std::endl;
+//        std::cout << "State: " << state << std::endl;
         this->onPeerConnectionStateChangeCallback(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(state)});
         if (state == rtc::PeerConnection::State::Closed ||
             state == rtc::PeerConnection::State::Disconnected ||
@@ -193,7 +193,7 @@ std::shared_ptr<rtc::PeerConnection> LibDataChannelChatAPI::CreatePeerConnection
     });
 
     pc->onGatheringStateChange([](rtc::PeerConnection::GatheringState state) {
-        std::cout << "Gathering State: " << state << std::endl;
+//        std::cout << "Gathering State: " << state << std::endl;
     });
 
     pc->onLocalDescription([wss = std::weak_ptr(this->webSocket), peerId](const rtc::Description& description) {

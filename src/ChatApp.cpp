@@ -1,5 +1,6 @@
 #include "ChatApp.h"
 #include "TranslationManager.h"
+#include <emscripten/html5_webgl.h>
 
 
 ChatApp::ChatApp(IWindow& windowManager_, IGUIManager& guiManager_)
@@ -15,7 +16,7 @@ void ChatApp::Run()
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
     // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
-    io.IniFilename = nullptr;
+    ImGui::GetIO().IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
     while (!windowManager.ShouldClose())
@@ -30,6 +31,20 @@ void ChatApp::Run()
     this->Uninit();
 }
 
+EM_BOOL emscripten_window_resized_callback(int eventType, const void *reserved, void *userData){
+    GLFWwindow* window = static_cast<GLFWwindow*>(userData);
+
+    double width, height;
+    emscripten_get_element_css_size("canvas", &width, &height);
+
+    int w = (int)width, h = (int)height;
+
+    // resize SDL window
+    glfwSetWindowSize(window, w, h);
+    return true;
+}
+
+
 bool ChatApp::Init()
 {
     // create glfw window and get glsl shader version determined by opengl version
@@ -37,6 +52,15 @@ bool ChatApp::Init()
     {
         return false;
     }
+#ifdef __EMSCRIPTEN__
+    EmscriptenFullscreenStrategy strategy;
+    strategy.scaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_STDDEF;
+    strategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT;
+    strategy.canvasResizedCallback = emscripten_window_resized_callback;
+    strategy.canvasResizedCallbackUserData = this->windowManager.GetNativeWindow();   // pointer to user data
+    emscripten_enter_soft_fullscreen("canvas", &strategy);
+#endif
+
     this->guiManager.Init();
 
     // Setup Platform/Renderer backends
@@ -138,6 +162,7 @@ void ChatApp::PrepareNextFrame()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, this->Framebuffer);
+    glClearColor(1.,1.,1.,1.);
     glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT);
 
     glViewport(0, 0, scaledDisplayWidth, scaledDisplayHeight);
@@ -174,7 +199,7 @@ void ChatApp::SetupPostProcessing()
     this->ShaderProg->setInt("uCrtEnabled", false);
     this->ShaderProg->setFloat("iResFactor", this->displayResolutionFactor);
 
-    glCreateTextures(GL_TEXTURE_2D, 1, &this->FramebufferTexture);
+    glGenTextures(1, &this->FramebufferTexture);
     glBindTexture(GL_TEXTURE_2D, this->FramebufferTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 100, 100, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -192,6 +217,7 @@ void ChatApp::SetupPostProcessing()
 void ChatApp::RenderFrame()
 {
     guiManager.RenderFrame();
+
     // draw the framebuffer texture onto the screen
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, this->frameDisplaySize.width, this->frameDisplaySize.height);
@@ -207,6 +233,7 @@ void ChatApp::ApplyPostProcessing()
     PxlUI::BatchRenderer::drawScreenTex(this->FramebufferTexture);
     PxlUI::BatchRenderer::endBatch();
     PxlUI::BatchRenderer::flush();
+
 }
 
 void ChatApp::AddView(IView& view)

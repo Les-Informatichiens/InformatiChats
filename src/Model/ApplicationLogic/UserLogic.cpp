@@ -20,10 +20,10 @@ void UserLogic::AppendSelectedChatHistory(const std::string& message)
 
     if (chatHistory != this->user.chatHistories.end())
     {
-        chatHistory->second.emplace_back(
+        chatHistory->second.push_back({
                 message,
                 duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                this->user.username);
+                this->user.username});
     }
 }
 

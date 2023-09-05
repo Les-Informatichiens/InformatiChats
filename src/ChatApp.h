@@ -18,7 +18,7 @@
 
 // This example can also compile and run with Emscripten! See 'Makefile.emscripten' for details.
 #ifdef __EMSCRIPTEN__
-#include "../libs/emscripten/emscripten_mainloop_stub.h"
+#include "View/emscripten_mainloop_stub.h"
 #endif
 #define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS
 

@@ -8,9 +8,11 @@
 #include "View/Backend/GLFWWindowManager.h"
 #include "View/imgui_impl_glfw_pixel.h"
 #include "View/imgui_impl_opengl3_pixel.h"
+#include "backends/imgui_impl_opengl3.h"
 
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
+
 #include <GLES2/gl2.h>
 #else
 
@@ -155,7 +157,7 @@ public:
         SetImGuiStyles();
 
         ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(windowManager.GetNativeWindow()), true);
-        ImGui_ImplOpenGL3_Pixel_Init("#version 130");
+        ImGui_ImplOpenGL3_Init("#version 300 es");
         return false;
     }
 
@@ -167,7 +169,7 @@ public:
     void NewFrame() override
     {
         // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_Pixel_NewFrame();
+        ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
 
         ImGui::NewFrame();
@@ -176,13 +178,13 @@ public:
     void RenderFrame() override
     {
         ImGui::Render();
-        ImGui_ImplOpenGL3_Pixel_RenderDrawData(ImGui::GetDrawData());
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
     void Uninit() override
     {
         // Cleanup
-        ImGui_ImplOpenGL3_Pixel_Shutdown();
+        ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
     }
