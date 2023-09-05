@@ -6,11 +6,12 @@
 
 #include <Controller/ViewModels/ChatViewModel.h>
 
+#include <string>
 
 class IChatController
 {
 public:
     virtual ChatViewModel GetViewModel() = 0;
-    
+
     virtual void SendMessage(const std::string& message) = 0;
 };

@@ -1,7 +1,6 @@
 #include "ChannelView.h"
 #include <Controller/IChannelController.h>
 
-
 /**
  * @brief Builds a view with no panels
  */

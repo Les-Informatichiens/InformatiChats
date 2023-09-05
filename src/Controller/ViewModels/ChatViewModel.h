@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <Model/IUser.h>
+#include "Model/Models/User.h"
 
 #include <string>
 
@@ -12,4 +12,5 @@
 struct ChatViewModel
 {
     const ChatHistory* chatHistory;
+    const size_t chatHistorySize;
 };

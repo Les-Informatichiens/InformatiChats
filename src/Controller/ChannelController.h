@@ -6,17 +6,13 @@
 
 #include "IChannelController.h"
 
-#include "Model/Model.h"
-#include "nlohmann/json.hpp"
-#include "rtc/rtc.hpp"
-#include <cstdio>
-#include <utility>
+#include <Model/ApplicationLogic/UserLogic.h>
 
 
 class ChannelController : public IChannelController
 {
 public:
-    explicit ChannelController(Model& model);
+    explicit ChannelController(UserLogic& userLogic) : userLogic(userLogic){};
 
     ChannelViewModel GetViewModel() override;
 
@@ -24,5 +20,5 @@ public:
     void SetSelectedPeerId(const std::string& peerId) override;
 
 private:
-    Model& model;
+    UserLogic& userLogic;
 };

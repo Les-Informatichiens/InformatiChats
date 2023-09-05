@@ -1,33 +1,31 @@
 #pragma once
 
-#include "IChatClient.h"
-
-#include "PeerData.h"
-#include <memory>
+#include "IChatAPI.h"
+#include <future>
 #include <nlohmann/json.hpp>
-#include <rtc/rtc.hpp>
+#include <rtc/peerconnection.hpp>
+#include <rtc/websocket.hpp>
 #include <string>
 
-#include <future>
-
-
-class ChatClient : public IChatClient
+class LibDataChannelChatAPI : public IChatAPI
 {
 public:
+    LibDataChannelChatAPI() = default;
+
     void Reset() override;
 
     void Init(const ConnectionConfig& config) override;
 
-    bool ICEServerExists() const override;
-    bool IsConnected() const override { return this->connected; };
+    [[nodiscard]] bool ICEServerExists() const override;
+    [[nodiscard]] bool IsConnected() const override { return this->connected; };
 
     void AttemptConnectionWithUsername(const std::string& newUsername) override;
     void AttemptToConnectToPeer(const std::string& peerId) override;
 
     void SetOnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) override;
-    void SetOnMessageReceived(std::function<void(MessageReceivedEvent)> callback) override;
+    void SetOnMessageReceived(std::function<void(ChatMessage)> callback) override;
 
-    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
+    void const SendMessageToPeer(const std::string& peerId, const std::string& message) override;
 
 private:
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
@@ -41,7 +39,7 @@ private:
     std::string signalingServerPort;
 
     std::function<void(PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCallback;
-    std::function<void(MessageReceivedEvent)> onMessageReceivedCallback;
+    std::function<void(ChatMessage)> onMessageReceivedCallback;
 
     std::string username;
     std::shared_ptr<rtc::WebSocket> webSocket;

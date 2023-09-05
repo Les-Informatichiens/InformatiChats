@@ -1,11 +1,11 @@
 #pragma once
 
 #include "IPanel.h"
+#include "imgui.h"
 #include <Controller/IChatController.h>
-#include <Model/Chat.h>
-
-#include "../console.h"
-
+#include <iomanip>
+#include <misc/cpp/imgui_stdlib.h>
+#include <util/string_util.h>
 
 class ChatPanel : public IPanel
 {
@@ -17,14 +17,12 @@ public:
     bool IsVisible() override;
 
 private:
-    ExampleAppConsole console{};
-
-    std::unordered_map<std::string, ChatMessage> chatBuffers;
+    std::unordered_map<std::string, ChatMessage> lastChatMessages;
 
     bool consoleOpen{true};
     std::string selectedChat;
 
     IChatController& controller;
 
-    char inputBuf[256]{};
+    std::string inputBuf;
 };

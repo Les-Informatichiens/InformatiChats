@@ -6,9 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
-        src/View/console.h
-        src/Model/Chat.cpp
-        src/Model/Chat.h
         src/View/imgui_impl_opengl3_loader.h
         src/View/imgui_impl_opengl3_pixel.cpp
         src/View/imgui_impl_opengl3_pixel.h
@@ -31,8 +28,6 @@ add_executable(
         src/View/Panels/ChannelPanel.h
         src/View/Panels/VideoPanel.cpp
         src/View/Panels/VideoPanel.h
-        src/Model/Model.cpp
-        src/Model/Model.h
         src/View/Panels/UserInfoPanel.cpp
         src/View/Panels/UserInfoPanel.h
         src/Controller/ChatController.cpp
@@ -54,14 +49,23 @@ add_executable(
         src/Controller/ILoginController.h
         src/View/Panels/LoginPanel.cpp
         src/View/Panels/LoginPanel.h
+        src/Model/ApplicationLogic/UserLogic.cpp
+        src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
-        src/Model/ChatClient.cpp
-        src/Model/ChatClient.h
-        src/Model/User.cpp
-        src/Model/User.h
-        src/Model/PeerData.h
-        src/Model/IUser.h
-        src/Model/IChatClient.h
+        src/Model/DataAccess/IChatAPI.h
+        src/Model/DataAccess/LibDataChannelChatAPI.cpp
+        src/Model/DataAccess/LibDataChannelChatAPI.h
+        src/Model/Models/User.h
+        src/Model/Models/PeerData.h
+        src/View/Backend/IWindow.h
+        src/View/GUI/IGUIManager.h
+        src/View/GUI/ImGuiManager.hpp
+        src/View/Backend/GLFWWindowManager.cpp
+        src/View/Backend/GLFWWindowManager.h
+        src/util/string_util.cpp
+        src/util/string_util.h
+        src/Model/BinarySerializer.h
+        src/Model/Models/ChatMessage.h
 )
 
 target_include_directories(
@@ -196,3 +200,12 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res")
     message(STATUS "Copying res to build directory")
     file(COPY res DESTINATION "${CMAKE_BINARY_DIR}")
 endif()
+
+# Compile definitions ==================================================================================
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __DEBUG__)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __RELEASE__ PRIVATE __NDEBUG__)
+endif()
+# =====================================================================================================

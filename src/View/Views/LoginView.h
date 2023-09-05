@@ -7,6 +7,7 @@
 #include "IView.h"
 #include <Controller/ILoginController.h>
 
+#include <functional>
 #include <vector>
 #include <functional>
 

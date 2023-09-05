@@ -4,7 +4,6 @@
 
 #include "LoginView.h"
 
-
 /**
  * @brief Builds a view with no panels
  */

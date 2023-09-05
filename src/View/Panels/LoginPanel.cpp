@@ -3,8 +3,6 @@
 //
 
 #include "LoginPanel.h"
-#include "imgui.h"
-#include <misc/cpp/imgui_stdlib.h>
 
 
 LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
@@ -15,7 +13,7 @@ LoginPanel::LoginPanel(ILoginController& controller_) : controller(controller_)
 void LoginPanel::Draw()
 {
 
-    if (!controller.IsConnected())
+    if (!this->controller.IsConnected())
     {
         Update();
         // Draw the chat panel
@@ -25,20 +23,28 @@ void LoginPanel::Draw()
 void LoginPanel::Update()
 {
 
-    LoginViewModel vm = controller.GetViewModel();
+    //LoginViewModel vm = this->controller.GetViewModel();
 
 
     ImGui::OpenPopup("Login");
-    if (ImGui::BeginPopupModal("Login", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginPopupModal("Login", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
     {
         ImGui::Text("Enter your username");
         ImGui::Separator();
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
-        if (ImGui::InputTextWithHint("##username", "otisma...", &this->UsernameBuf,
+        if (ImGui::InputTextWithHint("##username", "username...", &this->usernameBuf,
                                      ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            controller.LoginAttempt(this->UsernameBuf);
+            util::trim(this->usernameBuf);
+
+            // We do not allow a user to have an empty username or a username that is only spaces
+            if (!this->usernameBuf.empty())
+            {
+                this->controller.LoginAttempt(this->usernameBuf);
+            }
+
+            this->usernameBuf.clear();
         }
         ImGui::PopStyleVar();
 
