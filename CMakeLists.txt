@@ -75,8 +75,6 @@ add_executable(
         src/util/crypto/CryptoTest.h
         src/Model/Models/UserData.h
         src/util/Base64.h
-        src/View/Panels/CreateNewUserPanel.cpp
-        src/View/Panels/CreateNewUserPanel.h
         src/Model/DataAccess/ILocalUsersAPI.h
         src/Model/Models/LocalUsers.h
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
