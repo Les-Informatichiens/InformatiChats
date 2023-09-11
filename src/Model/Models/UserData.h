@@ -23,5 +23,5 @@ struct UserData
     std::string encryptedPassword;
     std::string publicIdentificationKey;
     std::string encryptedPrivateIdentificationKey;
-    //UserProfile profile;
+    UserProfile profile;
 };

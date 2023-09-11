@@ -164,11 +164,20 @@ bool UserLogic::CreateNewUser(const std::string& username_, const std::string& p
     std::string derivedEncryptionKey = DeriveKeyFromPassword(password_, username_, 256 / 8);
     std::string encryptedPrivateKey = EncryptAES(keypair.privateKey, derivedEncryptionKey);
 
+
+    // Default profile
+    UserProfile profile{};
+    profile.displayName = username_;
+    profile.description = "This is " + username_ + "'s description";
+    profile.status = "This is " + username_ + "'s status";
+    profile.nameColor = {0, 0, 0};
+
     UserData data{};
     data.permanentUsername = username_;
     data.encryptedPassword = EncryptAES(password_, derivedEncryptionKey);
     data.publicIdentificationKey = keypair.publicKey;
     data.encryptedPrivateIdentificationKey = encryptedPrivateKey;
+    data.profile = profile;
 
     this->localUsersAPI.AddNewLocalUser(data);
 

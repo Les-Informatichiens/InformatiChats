@@ -31,6 +31,10 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
         userData.encryptedPassword = user["encryptedPassword"];
         userData.publicIdentificationKey = user["publicIdentificationKey"];
         userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
+        userData.profile.displayName = user["profile"]["displayName"];
+        userData.profile.description = user["profile"]["description"];
+        userData.profile.status = user["profile"]["status"];
+        userData.profile.nameColor = user["profile"]["nameColor"];
         users.push_back(userData);
     }
     this->localUserInfos = std::move(users);
@@ -46,6 +50,12 @@ void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const
         userJson["encryptedPassword"] = user.encryptedPassword;
         userJson["publicIdentificationKey"] = user.publicIdentificationKey;
         userJson["encryptedPrivateIdentificationKey"] = user.encryptedPrivateIdentificationKey;
+
+        userJson["profile"]["displayName"] = user.profile.displayName;
+        userJson["profile"]["description"] = user.profile.description;
+        userJson["profile"]["status"] = user.profile.status;
+        userJson["profile"]["nameColor"] = user.profile.nameColor;
+
         data[user.permanentUsername] = userJson;
     }
 
