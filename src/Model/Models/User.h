@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+
 using ChatHistory = std::vector<ChatMessage>;
 
 class User

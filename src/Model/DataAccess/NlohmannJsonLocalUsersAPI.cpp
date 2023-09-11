@@ -8,6 +8,9 @@
 #include <nlohmann/json.hpp>
 
 
+/**
+ * Load the local user infos from the users.json file
+ */
 void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
 {
     nlohmann::ordered_json data;
@@ -40,6 +43,9 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
     this->localUserInfos = std::move(users);
 }
 
+/**
+ * Save the local user infos to the users.json file
+ */
 void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const
 {
     nlohmann::ordered_json data;
@@ -67,10 +73,19 @@ void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const
     }
 }
 
+/**
+ * Get the local user infos
+ * @return The local user infos
+ */
 const std::vector<UserData>& NlohmannJsonLocalUsersAPI::GetLocalUserInfos() const
 {
     return this->localUserInfos;
 }
+
+/**
+ * Add a new local user to the list
+ * @param userData The user data to add
+ */
 void NlohmannJsonLocalUsersAPI::AddNewLocalUser(const UserData& userData)
 {
     this->localUserInfos.push_back(userData);

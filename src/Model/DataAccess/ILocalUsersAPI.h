@@ -7,6 +7,11 @@
 #include <Model/Models/LocalUsers.h>
 
 
+/**
+ * Interface for the local users API
+ * This API is used to manage the local users infos
+ * It is used to load, save and add new local users
+ */
 class ILocalUsersAPI
 {
 public:

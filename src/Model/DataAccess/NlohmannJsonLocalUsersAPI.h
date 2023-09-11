@@ -9,6 +9,9 @@
 #include <vector>
 
 
+/**
+ * Implementation of the ILocalUsersAPI using nlohmann::json
+ */
 class NlohmannJsonLocalUsersAPI : public ILocalUsersAPI
 {
 public:

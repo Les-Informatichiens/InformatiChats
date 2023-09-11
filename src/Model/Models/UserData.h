@@ -7,8 +7,10 @@
 #include <array>
 #include <string>
 
-// TODO: not used yet
 
+/**
+ * Represents the profile of a user, which is the info that will be sent to other users.
+ */
 struct UserProfile
 {
     std::string displayName;
@@ -17,6 +19,9 @@ struct UserProfile
     std::array<uint8_t, 3> nameColor;
 };
 
+/**
+ * Represents the data of a user, which is the info that will be stored locally.
+ */
 struct UserData
 {
     std::string permanentUsername;
