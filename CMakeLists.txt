@@ -66,6 +66,8 @@ add_executable(
         src/util/string_util.h
         src/Model/BinarySerializer.h
         src/Model/Models/ChatMessage.h
+        src/Model/IBinarySerializerAPI.h
+        src/Model/ZppSerializerAPI.h
 )
 
 target_include_directories(
@@ -144,6 +146,17 @@ if(NOT TARGET imgui::imgui)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+# =====================================================================================================
+
+# zpp_bits ============================================================================================
+CPMAddPackage(
+        NAME "zpp_bits"
+        GITHUB_REPOSITORY "eyalz800/zpp_bits"
+        VERSION "4.4.19"
+)
+if (zpp_bits_ADDED)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
+endif ()
 # =====================================================================================================
 
 # tr-and-slate-or =====================================================================================
