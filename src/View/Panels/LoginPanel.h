@@ -20,7 +20,7 @@ public:
     bool IsVisible() override;
 
 private:
-    ILoginController &controller;
+    ILoginController& controller;
 
     std::string selectedUsername;
     bool isLoggingIn = false;

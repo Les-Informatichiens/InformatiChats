@@ -28,7 +28,7 @@ void LoginPanel::Update()
     {
         for (const auto& user: this->controller.GetViewModel().localUserInfos)
         {
-            if (ImGui::Selectable(user.permanentUsername.c_str(), selectedUsername == user.permanentUsername.c_str(),ImGuiSelectableFlags_DontClosePopups))
+            if (ImGui::Selectable(user.permanentUsername.c_str(), this->selectedUsername == user.permanentUsername, ImGuiSelectableFlags_DontClosePopups))
             {
                 this->selectedUsername = user.permanentUsername;
                 this->isLoggingIn = true;
@@ -50,7 +50,7 @@ void LoginPanel::Update()
 
         if (ImGui::BeginPopup("Login", ImGuiWindowFlags_AlwaysAutoResize))
         {
-            ImGui::Text("Enter your password for %s", selectedUsername.c_str());
+            ImGui::Text("Enter your password for %s", this->selectedUsername.c_str());
             ImGui::Separator();
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
 
@@ -63,7 +63,7 @@ void LoginPanel::Update()
                 // We do not allow a user to have an empty username or a username that is only spaces
                 if (!this->passwordBuf.empty())
                 {
-                    this->controller.LoginAttempt(selectedUsername, this->passwordBuf);
+                    this->controller.LoginAttempt(this->selectedUsername, this->passwordBuf);
                     this->passwordBuf.clear();
                     this->isLoggingIn = false;
                     this->selectedUsername.clear();
@@ -93,7 +93,7 @@ void LoginPanel::Update()
                 if (!this->usernameBuf.empty() && !this->passwordBuf.empty() && !this->passwordConfirmationBuf.empty() && this->passwordBuf == this->passwordConfirmationBuf)
                 {
                     this->controller.CreateUser(this->usernameBuf, this->passwordBuf);
-//                        this->controller.LoginAttempt(this->usernameBuf, this->passwordBuf);
+                    //                        this->controller.LoginAttempt(this->usernameBuf, this->passwordBuf);
 
                     this->usernameBuf.clear();
                     this->passwordBuf.clear();

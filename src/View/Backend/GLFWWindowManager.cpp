@@ -23,8 +23,7 @@ bool GLFWWindowManager::Init(const std::string& title, int width, int height)
     // set gl versions
     switch (rendererApi)
     {
-        case RendererAPI::OpenGL:
-        {
+        case RendererAPI::OpenGL: {
             break;
         }
     }

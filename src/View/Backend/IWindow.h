@@ -9,8 +9,8 @@
 enum class RendererAPI
 {
     OpenGL
-//    WebGL,
-//    Vulkan
+    //    WebGL,
+    //    Vulkan
     /* ... */
 };
 
@@ -28,6 +28,6 @@ public:
     virtual void SwapBuffers() = 0;
 
     virtual void* GetNativeWindow() = 0;
-    
+
     virtual void Uninit() = 0;
 };
