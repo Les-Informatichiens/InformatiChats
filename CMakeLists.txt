@@ -66,8 +66,6 @@ add_executable(
         src/util/string_util.h
         src/Model/BinarySerializer.h
         src/Model/Models/ChatMessage.h
-        src/Model/IBinarySerializerAPI.h
-        src/Model/ZppSerializerAPI.h
 )
 
 target_include_directories(
