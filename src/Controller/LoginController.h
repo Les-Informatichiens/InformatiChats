@@ -5,12 +5,15 @@
 #pragma once
 
 #include "ILoginController.h"
+#include <Model/ApplicationLogic/Command/CommandManager.h>
 #include <Model/ApplicationLogic/UserLogic.h>
+
 
 class LoginController : public ILoginController
 {
 public:
-    explicit LoginController(UserLogic& userLogic) : userLogic(userLogic){};
+    explicit LoginController(UserLogic& userLogic, CommandManager& commandManager)
+        : userLogic(userLogic), commandManager(commandManager){};
 
     LoginViewModel GetViewModel() override;
 
@@ -24,6 +27,7 @@ public:
 
 private:
     UserLogic& userLogic;
+    CommandManager& commandManager;
 
     bool createNewUser = false;
 };
