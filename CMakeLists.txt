@@ -79,6 +79,7 @@ add_executable(
         src/Model/Models/LocalUsers.h
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
+        src/Model/ApplicationLogic/Command/ICommand.h
 )
 
 target_include_directories(
