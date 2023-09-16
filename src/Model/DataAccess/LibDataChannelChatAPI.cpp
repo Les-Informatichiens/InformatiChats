@@ -255,9 +255,9 @@ void LibDataChannelChatAPI::RegisterDataChannel(const std::shared_ptr<rtc::DataC
         if (std::holds_alternative<std::string>(data))
         {
             this->onMessageReceivedCallback(ChatMessage{
-                    peerId,
+                    std::get<std::string>(data),
                     duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                    std::get<std::string>(data)});
+                    peerId});
             std::cout << "Message from " << peerId << " received: " << std::get<std::string>(data)
                       << std::endl;
         }
