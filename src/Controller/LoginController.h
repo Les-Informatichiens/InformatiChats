@@ -13,9 +13,17 @@ public:
     explicit LoginController(UserLogic& userLogic) : userLogic(userLogic){};
 
     LoginViewModel GetViewModel() override;
-    void LoginAttempt(const std::string& username) override;
-    bool IsConnected() override;
+
+    void LoginAttempt(const std::string& username, const std::string& password) override;
+    void CreateUser(const std::string& username, const std::string& password) override;
+    void LoadLocalUsers() const override;
+
+    [[nodiscard]] bool IsConnected() const override;
+    [[nodiscard]] bool IsCreatingNewUser() const override;
+    void SetCreatingNewUser(bool createNewUser) override;
 
 private:
     UserLogic& userLogic;
+
+    bool createNewUser = false;
 };

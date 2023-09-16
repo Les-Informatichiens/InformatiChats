@@ -6,8 +6,8 @@
 
 #include "IPanel.h"
 #include "imgui.h"
+#include "misc/cpp/imgui_stdlib.h"
 #include <Controller/ILoginController.h>
-#include <misc/cpp/imgui_stdlib.h>
 #include <util/string_util.h>
 
 class LoginPanel : public IPanel
@@ -22,5 +22,10 @@ public:
 private:
     ILoginController& controller;
 
+    std::string selectedUsername;
+    bool isLoggingIn = false;
+
     std::string usernameBuf;
+    std::string passwordBuf;
+    std::string passwordConfirmationBuf;
 };

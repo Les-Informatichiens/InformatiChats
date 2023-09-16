@@ -3,6 +3,12 @@
 //
 
 #include "UserLogic.h"
+#include <util/crypto/AESEncryption.h>
+#include <util/crypto/Keygen.h>
+#include <util/crypto/RSAEncryption.h>
+
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 
 const ChatHistory* UserLogic::GetSelectedChatHistory() const
@@ -91,25 +97,38 @@ const size_t& UserLogic::GetMaxNameLength()
     return User::maxNameLength;
 }
 
-void UserLogic::LoginWithNewUser(const std::string& username_)
+bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string& password_)
 {
-    Reset(username_);
+    const auto& userInfos = this->localUsersAPI.GetLocalUserInfos();
+    const auto& userInfoIt = std::find_if(userInfos.begin(), userInfos.end(), [&username_](const UserData& userInfo) { return userInfo.permanentUsername == username_; });
+    if (userInfoIt == userInfos.end())
+    {
+        return false;
+    }
+    const auto& userInfo = *userInfoIt;
+
+    std::string decryptedPrivateKey = DecryptAES(
+            userInfo.encryptedPrivateIdentificationKey,
+            DeriveKeyFromPassword(password_, username_, 256 / 8));
+
+    if (!ValidateKeysRSA(decryptedPrivateKey, userInfo.publicIdentificationKey))
+        return false;
+
+    this->Reset(username_);
     this->chatAPI.Reset();
-    //this->SetUser(user_);
 
     this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
-        UpdatePeerState(e.peerId, e.connectionState);
+        this->UpdatePeerState(e.peerId, e.connectionState);
         if (e.connectionState == ConnectionState::Connected)
         {
-            CreateNewChatHistory(e.peerId);
+            this->CreateNewChatHistory(e.peerId);
         }
     });
     this->chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
-        IncrementPeerUnreadMessageCount(e.senderId);
-        AddChatMessageToPeerChatHistory(e.senderId,
-                                        {e.content,
-                                         duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                                         e.senderId});
+        this->IncrementPeerUnreadMessageCount(e.senderId);
+        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
+                                                           duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
+                                                           e.senderId});
     });
 
     // re-init the new chat client
@@ -120,10 +139,58 @@ void UserLogic::LoginWithNewUser(const std::string& username_)
     ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
     this->chatAPI.Init(config);
 
-    this->chatAPI.AttemptConnectionWithUsername(username_);
+    this->chatAPI.AttemptConnectionWithUsername(this->GetUserName());
+
+    return true;
 }
 
 bool UserLogic::IsClientConnected() const
 {
     return this->chatAPI.IsConnected();
+}
+
+bool UserLogic::CreateNewUser(const std::string& username_, const std::string& password_)
+{
+    for (const auto& userInfo: this->localUsersAPI.GetLocalUserInfos())
+    {
+        if (userInfo.permanentUsername == username_)
+        {
+            return false;
+        }
+    }
+
+    RSAKeyPair keypair = GenerateRSAKeyPair(512);
+
+    std::string derivedEncryptionKey = DeriveKeyFromPassword(password_, username_, 256 / 8);
+    std::string encryptedPrivateKey = EncryptAES(keypair.privateKey, derivedEncryptionKey);
+
+
+    // Default profile
+    UserProfile profile{};
+    profile.displayName = username_;
+    profile.description = "This is " + username_ + "'s description";
+    profile.status = "This is " + username_ + "'s status";
+    profile.nameColor = {0, 0, 0};
+
+    UserData data{};
+    data.permanentUsername = username_;
+    data.encryptedPassword = EncryptAES(password_, derivedEncryptionKey);
+    data.publicIdentificationKey = keypair.publicKey;
+    data.encryptedPrivateIdentificationKey = encryptedPrivateKey;
+    data.profile = profile;
+
+    this->localUsersAPI.AddNewLocalUser(data);
+
+    this->localUsersAPI.SaveLocalUserInfos();
+    return true;
+}
+
+void UserLogic::LoadLocalUsers() const
+{
+    this->localUsersAPI.LoadLocalUserInfos();
+}
+
+const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
+{
+    return this->localUsersAPI.GetLocalUserInfos();
 }

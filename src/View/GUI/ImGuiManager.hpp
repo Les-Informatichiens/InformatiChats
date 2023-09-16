@@ -115,13 +115,14 @@ namespace {
         style.WindowPadding = ImVec2(8.0f, 8.0f);
         style.ScrollbarSize = 12.0f;
     }
-}
+}// namespace
 
 template<typename TWindowManager, RendererAPI RendererAPI>
 class ImGuiManager : public IGUIManager
 {
     static_assert(std::is_base_of<IWindow, TWindowManager>::value,
                   "WindowManagerType must inherit from WindowManager");
+
 public:
     explicit ImGuiManager(TWindowManager& windowManager_)
         : windowManager(windowManager_)
@@ -190,4 +191,3 @@ public:
 private:
     GLFWWindowManager& windowManager;
 };
-
