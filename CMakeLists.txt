@@ -80,6 +80,8 @@ add_executable(
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
         src/Model/ApplicationLogic/Command/ICommand.h
+        src/Model/ApplicationLogic/Command/CommandManager.cpp
+        src/Model/ApplicationLogic/Command/CommandManager.h
 )
 
 target_include_directories(
