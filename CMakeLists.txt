@@ -79,6 +79,11 @@ add_executable(
         src/Model/Models/LocalUsers.h
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
+        src/Model/ApplicationLogic/Command/ICommand.h
+        src/Model/ApplicationLogic/Command/CommandManager.cpp
+        src/Model/ApplicationLogic/Command/CommandManager.h
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
 )
 
 target_include_directories(
