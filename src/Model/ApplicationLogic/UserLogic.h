@@ -4,13 +4,15 @@
 #pragma once
 
 #include <Model/DataAccess/IChatAPI.h>
+#include <Model/DataAccess/IConfigAPI.h>
 #include <Model/DataAccess/ILocalUsersAPI.h>
 #include <Model/Models/User.h>
 
 class UserLogic
 {
 public:
-    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI) : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI){};
+    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI, IConfigAPI& configAPI)
+        : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI), configAPI(configAPI){};
 
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
@@ -34,9 +36,11 @@ public:
     [[nodiscard]] const std::vector<UserData>& GetLocalUserInfos() const;
     [[nodiscard]] const std::string& GetUserName() const;
     [[nodiscard]] static const size_t& GetMaxNameLength();
+    [[nodiscard]] const std::unordered_map<std::string, std::string>& GetConfig() const;
 
 private:
     User& user;
     IChatAPI& chatAPI;
     ILocalUsersAPI& localUsersAPI;
+    IConfigAPI& configAPI;
 };

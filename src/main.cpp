@@ -4,6 +4,7 @@
 #include <Controller/LoginController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
+#include <Model/DataAccess/NlohmannJsonConfigAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
@@ -24,7 +25,8 @@ int main(int, char**)
     User user{};
     auto chatAPI = LibDataChannelChatAPI();
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
-    UserLogic userLogic{user, chatAPI, localUsersAPI};
+    auto configAPI = NlohmannJsonConfigAPI();
+    UserLogic userLogic{user, chatAPI, localUsersAPI, configAPI};
 
     //init controller layer
     auto chatController = ChatController(userLogic);

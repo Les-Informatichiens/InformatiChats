@@ -194,3 +194,8 @@ const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
 {
     return this->localUsersAPI.GetLocalUserInfos();
 }
+
+const std::unordered_map<std::string, std::string>& UserLogic::GetConfig() const
+{
+    return this->configAPI.GetConfig();
+}
