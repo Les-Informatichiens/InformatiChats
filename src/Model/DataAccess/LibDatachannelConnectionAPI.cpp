@@ -3,36 +3,38 @@
 //
 
 #include "LibDatachannelConnectionAPI.h"
+#include "LibDatachannelAPIEvents.h"
 
-LibDatachannelConnectionAPI::LibDatachannelConnectionAPI(LibDatachannelState& state)
-    : state(state)
+LibDatachannelConnectionAPI::LibDatachannelConnectionAPI(LibDatachannelState& state, EventBus& networkAPIEventBus)
+    : state(state), networkAPIEventBus(networkAPIEventBus)
 {
 }
 
-void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& username)
+void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& username_)
 {
+    auto webSocket = this->state.GetSignalingSocket();
     auto wsFuture = this->wsPromise.get_future();
 
-    this->webSocket->onOpen([this, username]() {
+    webSocket->onOpen([this, username_]() {
         std::cout << "WebSocket connected, signaling ready" << std::endl;
         this->wsPromise.set_value();
 
-        this->username = username;
+//        this->username = username_;
         this->connected = true;
     });
 
-    this->webSocket->onError([this](const std::string& s) {
+    webSocket->onError([this](const std::string& s) {
         std::cout << "WebSocket error" << std::endl;
         this->wsPromise.set_exception(std::make_exception_ptr(std::runtime_error(s)));
     });
 
-    this->webSocket->onClosed([this]() {
+    webSocket->onClosed([this]() {
         std::cout << "WebSocket closed" << std::endl;
 
         connected = false;
     });
 
-    this->webSocket->onMessage([wws = std::weak_ptr(this->webSocket), this](auto data) {
+    webSocket->onMessage([wws = std::weak_ptr(webSocket), this, username_](auto data) {
         // data holds either std::string or rtc::binary
         if (!std::holds_alternative<std::string>(data))
             return;
@@ -56,25 +58,25 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
             return;
         }
 
-        // If the id in the message returned from the server is the same as the user,
-        // it means that the server couldn't find the wanted user.
-        if (id == this->username)
-        {
-            auto destIt = message.find("destination_id");
-
-            if (destIt == message.end())
-            {
-                std::cout << "Could not find user, destination ID is invalid" << std::endl;
-                return;
-            }
-            std::cout << "Could not find user: " << destIt->get<std::string>() << ". Operation cancelled." << std::endl;
-
-            if (auto badPc = this->state.GetPeerConnection(destIt->get<std::string>()))
-            {
-                badPc->close();
-            }
-            return;
-        }
+//        // If the id in the message returned from the server is the same as the user,
+//        // it means that the server couldn't find the wanted user.
+//        if (id == username_)
+//        {
+//            auto destIt = message.find("destination_id");
+//
+//            if (destIt == message.end())
+//            {
+//                std::cout << "Could not find user, destination ID is invalid" << std::endl;
+//                return;
+//            }
+//            std::cout << "Could not find user: " << destIt->get<std::string>() << ". Operation cancelled." << std::endl;
+//
+//            if (auto badPc = this->state.GetPeerConnection(destIt->get<std::string>()))
+//            {
+//                badPc->close();
+//            }
+//            return;
+//        }
 
         it = message.find("type");
         if (it == message.end())
@@ -82,16 +84,13 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
 
         auto type = it->get<std::string>();
 
-        std::shared_ptr<rtc::PeerConnection> pc;
-
         if (auto jt = this->state.GetPeerConnection(id))
         {
-            pc = jt;
         }
         else if (type == "offer")
         {
             std::cout << "Answering to " + id << std::endl;
-            pc = this->CreatePeerConnection(id);
+            networkAPIEventBus.Publish(PeerRequestEvent(id));
         }
         else
         {
@@ -102,63 +101,28 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
         if (type == "offer" || type == "answer")
         {
             auto sdp = message["description"].get<std::string>();
-            pc->setRemoteDescription(rtc::Description(sdp, type));
+            networkAPIEventBus.Publish(RemoteDescriptionEvent(id, rtc::Description(sdp, type)));
         }
         else if (type == "candidate")
         {
             auto sdp = message["candidate"].get<std::string>();
             auto mid = message["mid"].get<std::string>();
-            pc->addRemoteCandidate(rtc::Candidate(sdp, mid));
+            networkAPIEventBus.Publish(RemoteCandidateEvent(id, rtc::Candidate(sdp, mid)));
         }
     });
 
     const std::string wsPrefix = "wss://";
     const std::string url = wsPrefix + this->signalingServer + ":" +
-                            this->signalingServerPort + "/" + username;
+                            this->signalingServerPort + "/" + username_;
 
     std::cout << "WebSocket URL is " << url << std::endl;
-    this->webSocket->open(url);
+    webSocket->open(url);
 
     std::cout << "Waiting for signaling to be connected..." << std::endl;
     wsFuture.get();
 }
 
-void LibDatachannelConnectionAPI::AttemptToConnectToPeer(const std::string& peerId)
+void LibDatachannelConnectionAPI::OnConnected(std::function<void()> callback)
 {
-    if (peerId == this->username)
-    {
-        std::cout << "Cannot connect to own id" << std::endl;
-        return;
-    }
-    if (this->state.GetPeerConnection(peerId))
-    {
-        std::cout << "Already connected with user: " + peerId << std::endl;
-        return;
-    }
-
-    std::cout << "Offering to " + peerId << std::endl;
-    this->state.CreatePeerConnection(peerId);
-}
-
-std::shared_ptr<rtc::PeerConnection> LibDatachannelConnectionAPI::CreatePeerConnection(const std::string& peerId)
-{
-    auto pc = this->state.CreatePeerConnection(peerId);
-    pc->onLocalDescription([wss = std::weak_ptr(this->webSocket), peerId](const rtc::Description& description) {
-        nlohmann::json message = {{"id", peerId},
-                                  {"type", description.typeString()},
-                                  {"description", std::string(description)}};
-        if (auto ws = wss.lock())
-            ws->send(message.dump());
-    });
-
-    pc->onLocalCandidate([wss = std::weak_ptr(this->webSocket), peerId](const rtc::Candidate& candidate) {
-        nlohmann::json message = {{"id", peerId},
-                                  {"type", "candidate"},
-                                  {"candidate", std::string(candidate)},
-                                  {"mid", candidate.mid()}};
-
-        if (auto ws = wss.lock())
-            ws->send(message.dump());
-    });
-    return pc;
+    this->onConnectedCb = callback;
 }

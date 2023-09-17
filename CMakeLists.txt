@@ -90,6 +90,9 @@ add_executable(
         src/Model/Models/ChatEntry.h
         src/Model/IBinarySerializerAPI.h
         src/Model/ZppSerializerAPI.h
+        src/Model/DataAccess/LibDatachannelPeeringAPI.h
+        src/Model/DataAccess/LibDatachannelPeeringAPI.cpp
+        src/Model/DataAccess/LibDatachannelAPIEvents.h
 )
 
 target_include_directories(

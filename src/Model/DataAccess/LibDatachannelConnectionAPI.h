@@ -6,6 +6,7 @@
 
 #include "IConnectionAPI.h"
 #include "LibDatachannelState.h"
+#include "Model/EventBus.h"
 
 #include <rtc/peerconnection.hpp>
 #include <rtc/websocket.hpp>
@@ -18,25 +19,22 @@
 class LibDatachannelConnectionAPI : public IConnectionAPI
 {
 public:
-    explicit LibDatachannelConnectionAPI(LibDatachannelState& state);
+    explicit LibDatachannelConnectionAPI(LibDatachannelState& state, EventBus& networkAPIEventBus);
 
-    void ConnectWithUsername(const std::string& username) override;
-    void AttemptToConnectToPeer(const std::string& peerId) override;
-
-
-private:
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
+    void ConnectWithUsername(const std::string& username_) override;
+    void OnConnected(std::function<void ()> callback) override;
 
 private:
     LibDatachannelState& state;
+    EventBus& networkAPIEventBus;
 
     rtc::Configuration rtcConfig;
 
     std::string signalingServer;
     std::string signalingServerPort;
 
-    std::shared_ptr<rtc::WebSocket> webSocket;
     std::promise<void> wsPromise;
     bool connected{};
-    std::string username;
+
+    std::function<void(void)> onConnectedCb;
 };
