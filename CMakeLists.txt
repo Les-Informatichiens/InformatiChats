@@ -79,6 +79,15 @@ add_executable(
         src/Model/Models/LocalUsers.h
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
+        src/Model/DataAccess/IConnectionAPI.h
+        src/Model/DataAccess/LibDatachannelConnectionAPI.cpp
+        src/Model/DataAccess/LibDatachannelConnectionAPI.h
+        src/Model/DataAccess/LibDatachannelState.cpp
+        src/Model/DataAccess/LibDatachannelState.h
+        src/Model/DataAccess/ITextChatAPI.h
+        src/Model/DataAccess/LibDatachannelTextChatAPI.cpp
+        src/Model/DataAccess/LibDatachannelTextChatAPI.h
+        src/Model/Models/ChatEntry.h
         src/Model/IBinarySerializerAPI.h
         src/Model/ZppSerializerAPI.h
 )
@@ -167,17 +176,6 @@ if (NOT TARGET imgui::imgui)
 endif ()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
-# =====================================================================================================
-
-# zpp_bits ============================================================================================
-CPMAddPackage(
-        NAME "zpp_bits"
-        GITHUB_REPOSITORY "eyalz800/zpp_bits"
-        VERSION "4.4.19"
-)
-if (zpp_bits_ADDED)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
-endif ()
 # =====================================================================================================
 
 # tr-and-slate-or =====================================================================================

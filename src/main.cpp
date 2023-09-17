@@ -1,9 +1,12 @@
+#include "Model/DataAccess/LibDatachannelTextChatAPI.h"
 #include <ChatApp.h>
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/LoginController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
+#include <Model/DataAccess/LibDatachannelConnectionAPI.h>
+#include <Model/DataAccess/LibDatachannelState.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
@@ -22,7 +25,11 @@ int main(int, char**)
 {
     //init model layer
     User user{};
+    auto libdatachannelState = LibDatachannelState();
+    auto connectionAPI = LibDatachannelConnectionAPI(libdatachannelState);
+    auto textChatAPI = LibDatachannelTextChatAPI(libdatachannelState);
     auto chatAPI = LibDataChannelChatAPI();
+
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
     UserLogic userLogic{user, chatAPI, localUsersAPI};
 

@@ -3,6 +3,8 @@
 //
 #pragma once
 
+#include "Model/DataAccess/IConnectionAPI.h"
+#include "Model/DataAccess/ITextChatAPI.h"
 #include <Model/DataAccess/IChatAPI.h>
 #include <Model/DataAccess/ILocalUsersAPI.h>
 #include <Model/Models/User.h>
@@ -10,7 +12,8 @@
 class UserLogic
 {
 public:
-    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI) : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI){};
+    UserLogic(User& user, IConnectionAPI& connectionAPI, ITextChatAPI& textChatAPI, ILocalUsersAPI& localUsersAPI)
+        : user(user), connectionAPI(connectionAPI), textChatAPI(textChatAPI), localUsersAPI(localUsersAPI){};
 
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
@@ -27,7 +30,7 @@ public:
 
     void CreateNewChatHistory(const std::string& peerId);
     void AppendSelectedChatHistory(const std::string& message);
-    void AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage);
+    void AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatEntry& chatMessage);
 
     [[nodiscard]] const std::unordered_map<std::string, PeerData>& GetPeerDataMap() const;
     [[nodiscard]] const ChatHistory* GetSelectedChatHistory() const;
@@ -37,6 +40,7 @@ public:
 
 private:
     User& user;
-    IChatAPI& chatAPI;
+    IConnectionAPI& connectionAPI;
+    ITextChatAPI& textChatAPI;
     ILocalUsersAPI& localUsersAPI;
 };

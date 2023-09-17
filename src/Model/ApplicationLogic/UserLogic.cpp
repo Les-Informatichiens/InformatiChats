@@ -33,7 +33,7 @@ void UserLogic::AppendSelectedChatHistory(const std::string& message)
     }
 }
 
-void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage)
+void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatEntry& chatMessage)
 {
     auto chatHistory = this->user.chatHistories.find(peerId);
     if (chatHistory != this->user.chatHistories.end())
@@ -73,7 +73,7 @@ const std::string& UserLogic::GetUserName() const
 
 void UserLogic::SendTextMessage(const std::string& message)
 {
-    this->chatAPI.SendMessageToPeer(this->user.selectedChat, message);
+    this->textChatAPI.SendMessageToPeer(this->user.selectedChat, message);
 }
 
 const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() const
@@ -83,7 +83,8 @@ const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() con
 
 void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
-    this->chatAPI.AttemptToConnectToPeer(peerId);
+    this->connectionAPI.AttemptToConnectToPeer(peerId);
+    this->textChatAPI.InitiateTextChat(peerId);
     CreateNewChatHistory(peerId);
 }
 
@@ -124,10 +125,10 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
             this->CreateNewChatHistory(e.peerId);
         }
     });
-    this->chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
+    this->textChatAPI.OnChatMessage([this](const ChatEntry& e) {
         this->IncrementPeerUnreadMessageCount(e.senderId);
         this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
-                                                           duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
+                                                           e.timestamp,
                                                            e.senderId});
     });
 
