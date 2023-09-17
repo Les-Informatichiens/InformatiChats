@@ -82,6 +82,8 @@ add_executable(
         src/Model/ApplicationLogic/Command/ICommand.h
         src/Model/ApplicationLogic/Command/CommandManager.cpp
         src/Model/ApplicationLogic/Command/CommandManager.h
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
 )
 
 target_include_directories(

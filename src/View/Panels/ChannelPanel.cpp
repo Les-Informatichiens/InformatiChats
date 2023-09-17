@@ -61,7 +61,7 @@ void ChannelPanel::Update()
         {
             // TODO: what the hell is going on
             std::string peerId = peerConnection.first;
-            bool isSelected = this->selectedChat == peerId;
+            bool isSelected = vm.selectedPeerId == peerId;
 
             ConnectionState state = peerConnection.second.connectionState;
 
@@ -129,9 +129,6 @@ void ChannelPanel::Update()
             if (hasColor) ImGui::PushStyleColor(ImGuiCol_Text, color);
             if (ImGui::Selectable(displayText.c_str(), isSelected))
             {
-                //            if (pPeerData != nullptr)
-                //                console.SetLogHistory(pPeerData->history);
-                this->selectedChat = peerId;
                 this->controller.SetSelectedPeerId(peerId);
             }
             if (hasColor) ImGui::PopStyleColor();

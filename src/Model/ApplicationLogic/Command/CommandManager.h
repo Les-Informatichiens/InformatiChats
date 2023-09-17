@@ -9,10 +9,14 @@
 #include <stack>
 
 
+/**
+ * @brief Command manager for command pattern,
+ *       it is responsible for executing, undoing and redoing commands
+ */
 class CommandManager
 {
 public:
-    void ExecuteCommand(std::shared_ptr<ICommand> command);
+    void ExecuteCommand(std::shared_ptr<ICommand>&& command);
     void UndoCommand();
     void RedoCommand();
 

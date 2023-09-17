@@ -5,11 +5,14 @@
 #pragma once
 
 
+/**
+ * @brief Interface for command pattern
+ */
 class ICommand
 {
 public:
     virtual ~ICommand() = default;
 
-    virtual void Undo() = 0;
     virtual void Execute() = 0;
+    virtual void Undo() = 0;
 };
