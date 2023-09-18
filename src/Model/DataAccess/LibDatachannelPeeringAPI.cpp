@@ -58,7 +58,7 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
     this->rtcConfig = config;
 }
 
-void LibDatachannelPeeringAPI::AttemptToConnectToPeer(const std::string& peerId)
+void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId)
 {
     // TODO: should this be the task of the API's caller?
 //    std::string username = this->state.GetSignalingSocket()->path().value();
@@ -81,6 +81,11 @@ void LibDatachannelPeeringAPI::AttemptToConnectToPeer(const std::string& peerId)
         if (auto dc = wdc.lock())
             dc->send("Ping from " + username);
     });
+}
+
+void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
+{
+    // TODO: allow closing a connection with a peer. This includes: closing all datachannels and removing the peerConnection from the State.
 }
 
 void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)

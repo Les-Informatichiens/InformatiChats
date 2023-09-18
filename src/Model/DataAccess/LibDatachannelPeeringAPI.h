@@ -18,7 +18,9 @@ public:
 
     void Init(const PeeringConfig& peeringConfig) override;
 
-    void AttemptToConnectToPeer(const std::string &peerId) override;
+    void OpenPeerConnection(const std::string& peerId) override;
+    void ClosePeerConnection(const std::string& peerId) override;
+
     void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
     void OnPeerRequest(std::function<bool (std::string)> callback) override;
 
