@@ -60,7 +60,7 @@ void LibDatachannelTextChatAPI::OnChatMessage(std::function<void(ChatMessageInfo
     this->onMessageReceivedCallback = callback;
 }
 
-void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, std::shared_ptr<rtc::Channel> tc)
+void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc)
 {
 
     tc->onOpen([peerId, wtc = std::weak_ptr(tc)]() {

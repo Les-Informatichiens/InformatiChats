@@ -127,9 +127,7 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
     });
     this->textChatAPI.OnChatMessage([this](const ChatMessageInfo& e) {
         this->IncrementPeerUnreadMessageCount(e.senderId);
-        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
-                                                           e.timestamp,
-                                                           e.senderId});
+        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content, e.timestamp, e.senderId});
     });
 
     // re-init the new chat client
@@ -143,7 +141,7 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
     this->peeringAPI.Init(peeringConfig);
 
     this->connectionAPI.ConnectWithUsername(this->GetUserName());
-    this->peeringAPI.OnPeerRequest([](std::string peerId) {
+    this->peeringAPI.OnPeerRequest([](const std::string& peerId) {
         std::cout << "Peer request received from " << peerId << std::endl;
         return true;
     });

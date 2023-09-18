@@ -28,7 +28,7 @@ public:
     void OnChatMessage(std::function<void(ChatMessageInfo)> callback) override;
 
 private:
-    void RegisterTextChannel(const std::string& peerId, std::shared_ptr<rtc::Channel> tc);
+    void RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc);
 
 private:
     LibDatachannelState& state;
