@@ -22,7 +22,7 @@ void LibDatachannelTextChatAPI::SendMessageToPeer(const std::string& peerId, con
     {
         return;
     }
-    uint64_t timestamp = 69;// calculate timestamp here
+    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     dcIt->second->send(ChatMessage::Serialize(ChatMessage{message, timestamp}));
 }
 
@@ -67,7 +67,7 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, s
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
         if (auto dc = wtc.lock())
         {
-            uint64_t timestamp = 69;// TODO: calculate timestamp here
+            uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             dc->send(ChatMessage::Serialize(ChatMessage{"Hello from other peer", timestamp}));
         }
     });
@@ -76,7 +76,7 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, s
         const auto& dcIt = this->textChannelMap.find(peerId);
         if (dcIt != this->textChannelMap.end())
         {
-            this->textChannelMap.erase(peerId);
+            this->textChannelMap.erase(dcIt);
         }
         std::cout << "DataChannel from " << peerId << " closed" << std::endl;
     });
