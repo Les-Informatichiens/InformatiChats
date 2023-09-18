@@ -83,7 +83,7 @@ const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() con
 
 void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
-    this->connectionAPI.AttemptToConnectToPeer(peerId);
+    this->peeringAPI.AttemptToConnectToPeer(peerId);
     this->textChatAPI.InitiateTextChat(peerId);
     CreateNewChatHistory(peerId);
 }
@@ -116,9 +116,9 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
         return false;
 
     this->Reset(username_);
-    this->chatAPI.Reset();
+    this->connectionAPI.Disconnect();
 
-    this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
+    this->peeringAPI.OnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
         this->UpdatePeerState(e.peerId, e.connectionState);
         if (e.connectionState == ConnectionState::Connected)
         {
@@ -137,17 +137,22 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
     const std::string stunServerPort = "19302";
     const std::string signalingServer = "informatichiens.com";
     const std::string signalingServerPort = "51337";
-    ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
-    this->chatAPI.Init(config);
+    ConnectionConfig connectionConfig = {signalingServer, signalingServerPort};
+    PeeringConfig peeringConfig = {stunServer, stunServerPort};
+    this->connectionAPI.Init(connectionConfig);
+    this->peeringAPI.Init(peeringConfig);
 
-    this->chatAPI.AttemptConnectionWithUsername(this->GetUserName());
-
+    this->connectionAPI.ConnectWithUsername(this->GetUserName());
+    this->peeringAPI.OnPeerRequest([](std::string peerId) {
+        std::cout << "Peer request received from " << peerId << std::endl;
+        return true;
+    });
     return true;
 }
 
 bool UserLogic::IsClientConnected() const
 {
-    return this->chatAPI.IsConnected();
+    return this->connectionAPI.IsConnected();
 }
 
 bool UserLogic::CreateNewUser(const std::string& username_, const std::string& password_)

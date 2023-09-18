@@ -3,16 +3,14 @@
 //
 
 #pragma once
+
+
+#include "ChatMessage.h"
 #include <chrono>
 #include <string>
 
 struct ChatMessageInfo
 {
-    ChatMessageInfo(ChatMessage&& chatMessage, const std::string& senderId)
-        : content(std::move(chatMessage.content))
-    {
-    }
-
     std::string content;
     std::chrono::milliseconds timestamp;
     std::string senderId;

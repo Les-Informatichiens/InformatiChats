@@ -20,10 +20,10 @@ struct ChatMessage
     {
         zpp::bits::in in(serializedData);
         ChatMessage chatMessage;
-        in(chatMessage);
+        in(chatMessage).or_throw();
         return chatMessage;
     }
 
     std::string content;
-    uint64_t timestamp;
+    uint64_t timestamp{};
 };

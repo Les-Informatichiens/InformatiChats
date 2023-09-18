@@ -14,7 +14,7 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
         bool requestAccepted = this->onPeerRequestCb(eventData.peerId);
         if (requestAccepted)
         {
-            auto pc = this->CreatePeerConnection(eventData.peerId);
+            this->CreatePeerConnection(eventData.peerId);
         }
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteDescriptionEvent", [this](const EventData& e) {
@@ -104,12 +104,12 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
         this->networkAPIEventBus.Publish(SendLocalCandidateEvent(peerId, std::string(candidate), candidate.mid()));
     });
 
-    pc->onStateChange([this, peerId](rtc::PeerConnection::State state) {
-        std::cout << "State: " << state << std::endl;
-        this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(state)});
-        if (state == rtc::PeerConnection::State::Closed ||
-            state == rtc::PeerConnection::State::Disconnected ||
-            state == rtc::PeerConnection::State::Failed)
+    pc->onStateChange([this, peerId](rtc::PeerConnection::State connectionState) {
+        std::cout << "State: " << connectionState << std::endl;
+        this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
+        if (connectionState == rtc::PeerConnection::State::Closed ||
+            connectionState == rtc::PeerConnection::State::Disconnected ||
+            connectionState == rtc::PeerConnection::State::Failed)
         {
             if (auto pc = this->state.GetPeerConnection(peerId))
             {

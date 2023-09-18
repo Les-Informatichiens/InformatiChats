@@ -15,7 +15,7 @@
 
 #include <unordered_map>
 
-class LibDatachannelTextChatAPI : ITextChatAPI
+class LibDatachannelTextChatAPI : public ITextChatAPI
 {
 public:
     explicit LibDatachannelTextChatAPI(LibDatachannelState& state, EventBus& networkAPIEventBus);

@@ -4,16 +4,16 @@
 #pragma once
 
 #include "Model/DataAccess/IConnectionAPI.h"
+#include "Model/DataAccess/IPeeringAPI.h"
 #include "Model/DataAccess/ITextChatAPI.h"
-#include <Model/DataAccess/IChatAPI.h>
 #include <Model/DataAccess/ILocalUsersAPI.h>
 #include <Model/Models/User.h>
 
 class UserLogic
 {
 public:
-    UserLogic(User& user, IConnectionAPI& connectionAPI, ITextChatAPI& textChatAPI, ILocalUsersAPI& localUsersAPI)
-        : user(user), connectionAPI(connectionAPI), textChatAPI(textChatAPI), localUsersAPI(localUsersAPI){};
+    UserLogic(User& user, IConnectionAPI& connectionAPI, IPeeringAPI& peeringAPI, ITextChatAPI& textChatAPI, ILocalUsersAPI& localUsersAPI)
+        : user(user), connectionAPI(connectionAPI), peeringAPI(peeringAPI), textChatAPI(textChatAPI), localUsersAPI(localUsersAPI){};
 
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
@@ -41,6 +41,7 @@ public:
 private:
     User& user;
     IConnectionAPI& connectionAPI;
+    IPeeringAPI& peeringAPI;
     ITextChatAPI& textChatAPI;
     ILocalUsersAPI& localUsersAPI;
 };

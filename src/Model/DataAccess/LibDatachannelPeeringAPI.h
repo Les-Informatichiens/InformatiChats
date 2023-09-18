@@ -16,7 +16,7 @@ class LibDatachannelPeeringAPI : public IPeeringAPI
 public:
     explicit LibDatachannelPeeringAPI(LibDatachannelState& state, EventBus& networkAPIEventBus);
 
-    void Init(const PeeringConfig& peeringConfig);
+    void Init(const PeeringConfig& peeringConfig) override;
 
     void AttemptToConnectToPeer(const std::string &peerId) override;
     void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
@@ -24,7 +24,7 @@ public:
 
 private:
 
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& peerId);
+    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& connectionState);
 
 private:
     LibDatachannelState& state;

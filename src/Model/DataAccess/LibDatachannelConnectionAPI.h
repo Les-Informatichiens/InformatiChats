@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "IChatAPI.h"
 #include "IConnectionAPI.h"
 #include "LibDatachannelState.h"
 #include "Model/EventBus.h"

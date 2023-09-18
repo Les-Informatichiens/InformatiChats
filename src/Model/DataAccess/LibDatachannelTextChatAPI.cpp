@@ -35,6 +35,11 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
         std::cout << "Can't initiate a text chat from inexistant peer connection" << std::endl;
         return;
     }
+    if (this->textChannelMap.contains(peerId))
+    {
+        std::cout << "Text chat has already been initiated with \"" << peerId << "\"" << std::endl;
+        return;
+    }
     auto dc = pc->createDataChannel("text");
     this->RegisterTextChannel(peerId, dc);
 }
@@ -61,7 +66,10 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, s
     tc->onOpen([peerId, wtc = std::weak_ptr(tc)]() {
         std::cout << "DataChannel from " << peerId << " open" << std::endl;
         if (auto dc = wtc.lock())
-            dc->send("Hello from other peer");
+        {
+            uint64_t timestamp = 69;// TODO: calculate timestamp here
+            dc->send(ChatMessage::Serialize(ChatMessage{"Hello from other peer", timestamp}));
+        }
     });
 
     tc->onClosed([this, peerId]() {

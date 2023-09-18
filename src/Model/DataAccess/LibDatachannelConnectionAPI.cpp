@@ -8,12 +8,15 @@
 LibDatachannelConnectionAPI::LibDatachannelConnectionAPI(LibDatachannelState& state, EventBus& networkAPIEventBus)
     : state(state), networkAPIEventBus(networkAPIEventBus)
 {
+    this->webSocket = std::make_shared<rtc::WebSocket>();
+
     networkAPIEventBus.Subscribe("SendLocalDescriptionEvent", [wss = std::weak_ptr(this->webSocket)](const EventData& e) {
         auto eventData = static_cast<const SendLocalDescriptionEvent&>(e);
 
         nlohmann::json message = {{"id", eventData.id},
                                   {"type", eventData.type},
                                   {"description", eventData.description}};
+        std::cout << message.dump()<<std::endl;
         if (auto ws = wss.lock())
             ws->send(message.dump());
     });
@@ -33,12 +36,11 @@ void LibDatachannelConnectionAPI::Init(const ConnectionConfig& config_)
 {
     this->signalingServer = config_.signalingServer;
     this->signalingServerPort = config_.signalingServerPort;
-
-    this->webSocket = std::make_shared<rtc::WebSocket>();
 }
 
 void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& username_)
 {
+    this->wsPromise = {};
     auto wsFuture = this->wsPromise.get_future();
 
     this->webSocket->onOpen([this, username_]() {
