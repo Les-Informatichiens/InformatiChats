@@ -6,29 +6,35 @@
 
 #include "ITextChatAPI.h"
 #include "LibDatachannelState.h"
+#include "Model/EventBus.h"
 
 #include <rtc/datachannel.hpp>
 
-#include <Model/Models/ChatEntry.h>
 #include <Model/Models/ChatMessage.h>
+#include <Model/Models/ChatMessageInfo.h>
 
 #include <unordered_map>
 
 class LibDatachannelTextChatAPI : ITextChatAPI
 {
 public:
-    explicit LibDatachannelTextChatAPI(LibDatachannelState& state);
-
-    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
+    explicit LibDatachannelTextChatAPI(LibDatachannelState& state, EventBus& networkAPIEventBus);
 
     void InitiateTextChat(const std::string& peerId) override;
     void CloseTextChat(const std::string& peerId) override;
-    void OnChatMessage(std::function<void(ChatEntry)> callback) override;
+
+    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
+
+    void OnChatMessage(std::function<void(ChatMessageInfo)> callback) override;
+
+private:
+    void RegisterTextChannel(const std::string& peerId, std::shared_ptr<rtc::Channel> tc);
 
 private:
     LibDatachannelState& state;
+    EventBus& networkAPIEventBus;
 
-    std::unordered_map<std::string, std::shared_ptr<rtc::DataChannel>> dataChannelMap;
+    std::unordered_map<std::string, std::shared_ptr<rtc::Channel>> textChannelMap;
 
-    std::function<void(ChatEntry)> onMessageReceivedCallback;
+    std::function<void(ChatMessageInfo)> onMessageReceivedCallback;
 };

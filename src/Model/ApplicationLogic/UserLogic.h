@@ -30,7 +30,7 @@ public:
 
     void CreateNewChatHistory(const std::string& peerId);
     void AppendSelectedChatHistory(const std::string& message);
-    void AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatEntry& chatMessage);
+    void AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessageInfo& chatMessage);
 
     [[nodiscard]] const std::unordered_map<std::string, PeerData>& GetPeerDataMap() const;
     [[nodiscard]] const ChatHistory* GetSelectedChatHistory() const;

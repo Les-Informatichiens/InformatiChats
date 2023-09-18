@@ -6,9 +6,9 @@
 #include <chrono>
 #include <string>
 
-struct ChatEntry
+struct ChatMessageInfo
 {
-    ChatEntry(ChatMessage&& chatMessage, const std::string& senderId)
+    ChatMessageInfo(ChatMessage&& chatMessage, const std::string& senderId)
         : content(std::move(chatMessage.content))
     {
     }

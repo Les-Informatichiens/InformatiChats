@@ -14,11 +14,19 @@ struct PeerConnectionStateChangeEvent
     ConnectionState connectionState;
 };
 
+struct PeeringConfig
+{
+    std::string stunServer;
+    std::string stunServerPort;
+};
+
 class IPeeringAPI
 {
 public:
+    virtual void Init(const PeeringConfig& peeringConfig) = 0;
+    
     virtual void AttemptToConnectToPeer(const std::string& peerId) = 0;
-//    virtual void
+
     virtual void OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
-    virtual void OnPeerRequest(std::function<bool (std::string)> callback) = 0;
+    virtual void OnPeerRequest(std::function<bool(std::string)> callback) = 0;
 };

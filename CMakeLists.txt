@@ -87,9 +87,10 @@ add_executable(
         src/Model/DataAccess/ITextChatAPI.h
         src/Model/DataAccess/LibDatachannelTextChatAPI.cpp
         src/Model/DataAccess/LibDatachannelTextChatAPI.h
-        src/Model/Models/ChatEntry.h
+        src/Model/Models/ChatMessageInfo.h
         src/Model/IBinarySerializerAPI.h
         src/Model/ZppSerializerAPI.h
+        src/Model/DataAccess/IPeeringAPI.h
         src/Model/DataAccess/LibDatachannelPeeringAPI.h
         src/Model/DataAccess/LibDatachannelPeeringAPI.cpp
         src/Model/DataAccess/LibDatachannelAPIEvents.h

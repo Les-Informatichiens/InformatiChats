@@ -33,7 +33,7 @@ void UserLogic::AppendSelectedChatHistory(const std::string& message)
     }
 }
 
-void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatEntry& chatMessage)
+void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessageInfo& chatMessage)
 {
     auto chatHistory = this->user.chatHistories.find(peerId);
     if (chatHistory != this->user.chatHistories.end())
@@ -125,7 +125,7 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
             this->CreateNewChatHistory(e.peerId);
         }
     });
-    this->textChatAPI.OnChatMessage([this](const ChatEntry& e) {
+    this->textChatAPI.OnChatMessage([this](const ChatMessageInfo& e) {
         this->IncrementPeerUnreadMessageCount(e.senderId);
         this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
                                                            e.timestamp,

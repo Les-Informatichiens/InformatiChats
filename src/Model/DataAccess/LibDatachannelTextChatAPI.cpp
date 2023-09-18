@@ -3,21 +3,22 @@
 //
 
 #include "LibDatachannelTextChatAPI.h"
+#include "LibDatachannelAPIEvents.h"
 
-LibDatachannelTextChatAPI::LibDatachannelTextChatAPI(LibDatachannelState& state)
-    : state(state)
+LibDatachannelTextChatAPI::LibDatachannelTextChatAPI(LibDatachannelState& state, EventBus& networkAPIEventBus)
+    : state(state), networkAPIEventBus(networkAPIEventBus)
 {
-    this->state.OnTextDataChannel([this](const std::string& peerId, std::shared_ptr<rtc::DataChannel> dc) {
-        std::cout << "Text data channel from " << peerId << " received" << std::endl;
-
-        this->dataChannelMap.emplace(peerId, dc);
+    this->networkAPIEventBus.Subscribe("OnTextChannelEvent", [this](const EventData& e) {
+        auto eventData = static_cast<const OnTextChannelEvent&>(e);
+        std::cout << "Text data channel from " << eventData.peerId << " received" << std::endl;
+        this->RegisterTextChannel(eventData.peerId, eventData.textChannel);
     });
 }
 
 void LibDatachannelTextChatAPI::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
-    auto dcIt = this->dataChannelMap.find(peerId);
-    if (dcIt == this->dataChannelMap.end() || !dcIt->second->isOpen())
+    auto dcIt = this->textChannelMap.find(peerId);
+    if (dcIt == this->textChannelMap.end() || !dcIt->second->isOpen())
     {
         return;
     }
@@ -35,46 +36,51 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
         return;
     }
     auto dc = pc->createDataChannel("text");
-
-    dc->onOpen([peerId, wdc = std::weak_ptr(dc)]() {
-        std::cout << "DataChannel from " << peerId << " open" << std::endl;
-        if (auto dc = wdc.lock())
-            dc->send("Hello from other peer");
-    });
-
-    dc->onClosed([this, peerId]() {
-        const auto& dcIt = this->dataChannelMap.find(peerId);
-        if (dcIt != this->dataChannelMap.end())
-        {
-            this->dataChannelMap.erase(peerId);
-        }
-        std::cout << "DataChannel from " << peerId << " closed" << std::endl;
-    });
-
-    dc->onMessage([this, peerId](auto data) {
-        ChatMessage message = ChatMessage::Deserialize(std::get<rtc::binary>(data));
-        this->onMessageReceivedCallback(ChatEntry{std::move(message.content), std::chrono::milliseconds(std::move(message.timestamp)), peerId});
-    });
-
-    dc->onError([peerId](auto error) {
-        std::cout << "Datachannel from " << peerId << " has errored: " << error << std::endl;
-    });
-
-    this->dataChannelMap.emplace(peerId, dc);
+    this->RegisterTextChannel(peerId, dc);
 }
 
 void LibDatachannelTextChatAPI::CloseTextChat(const std::string& peerId)
 {
-    auto dcIt = this->dataChannelMap.find(peerId);
-    if (dcIt == this->dataChannelMap.end() || !dcIt->second->isOpen())
+    auto dcIt = this->textChannelMap.find(peerId);
+    if (dcIt == this->textChannelMap.end() || !dcIt->second->isOpen())
     {
         return;
     }
     dcIt->second->close();
-    this->dataChannelMap.erase(dcIt);
+    this->textChannelMap.erase(dcIt);
 }
 
-void LibDatachannelTextChatAPI::OnChatMessage(std::function<void(ChatEntry)> callback)
+void LibDatachannelTextChatAPI::OnChatMessage(std::function<void(ChatMessageInfo)> callback)
 {
     this->onMessageReceivedCallback = callback;
+}
+
+void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, std::shared_ptr<rtc::Channel> tc)
+{
+
+    tc->onOpen([peerId, wtc = std::weak_ptr(tc)]() {
+        std::cout << "DataChannel from " << peerId << " open" << std::endl;
+        if (auto dc = wtc.lock())
+            dc->send("Hello from other peer");
+    });
+
+    tc->onClosed([this, peerId]() {
+        const auto& dcIt = this->textChannelMap.find(peerId);
+        if (dcIt != this->textChannelMap.end())
+        {
+            this->textChannelMap.erase(peerId);
+        }
+        std::cout << "DataChannel from " << peerId << " closed" << std::endl;
+    });
+
+    tc->onMessage([this, peerId](auto data) {
+        ChatMessage message = ChatMessage::Deserialize(std::get<rtc::binary>(data));
+        this->onMessageReceivedCallback(ChatMessageInfo{std::move(message.content), std::chrono::milliseconds(message.timestamp), peerId});
+    });
+
+    tc->onError([peerId](auto error) {
+        std::cout << "Datachannel from " << peerId << " has errored: " << error << std::endl;
+    });
+
+    this->textChannelMap.emplace(peerId, tc);
 }
