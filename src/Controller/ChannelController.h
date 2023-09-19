@@ -6,13 +6,15 @@
 
 #include "IChannelController.h"
 
+#include <Model/ApplicationLogic/Command/CommandManager.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 
 
 class ChannelController : public IChannelController
 {
 public:
-    explicit ChannelController(UserLogic& userLogic) : userLogic(userLogic){};
+    explicit ChannelController(UserLogic& userLogic, CommandManager& commandManager)
+        : userLogic(userLogic), commandManager(commandManager){};
 
     ChannelViewModel GetViewModel() override;
 
@@ -21,4 +23,5 @@ public:
 
 private:
     UserLogic& userLogic;
+    CommandManager& commandManager;
 };

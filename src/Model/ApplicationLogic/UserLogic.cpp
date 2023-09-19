@@ -198,3 +198,9 @@ const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
 {
     return this->localUsersAPI.GetLocalUserInfos();
 }
+
+
+const std::string& UserLogic::GetSelectedPeerId() const
+{
+    return this->user.selectedChat;
+}

@@ -52,9 +52,6 @@ add_executable(
         src/Model/ApplicationLogic/UserLogic.cpp
         src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
-#        src/Model/DataAccess/IChatAPI.h
-#        src/Model/DataAccess/LibDataChannelChatAPI.cpp
-#        src/Model/DataAccess/LibDataChannelChatAPI.h
         src/Model/Models/User.h
         src/Model/Models/PeerData.h
         src/View/Backend/IWindow.h
@@ -79,6 +76,11 @@ add_executable(
         src/Model/Models/LocalUsers.h
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.cpp
         src/Model/DataAccess/NlohmannJsonLocalUsersAPI.h
+        src/Model/ApplicationLogic/Command/ICommand.h
+        src/Model/ApplicationLogic/Command/CommandManager.cpp
+        src/Model/ApplicationLogic/Command/CommandManager.h
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
+        src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
         src/Model/DataAccess/IConnectionAPI.h
         src/Model/DataAccess/LibDatachannelConnectionAPI.cpp
         src/Model/DataAccess/LibDatachannelConnectionAPI.h

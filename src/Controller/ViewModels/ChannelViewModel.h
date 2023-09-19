@@ -11,5 +11,6 @@
 struct ChannelViewModel
 {
     std::unordered_map<std::string, PeerData> peerDataMap;
+    std::string selectedPeerId;
     std::string userName;
 };
