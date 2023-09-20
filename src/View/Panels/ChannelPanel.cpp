@@ -71,6 +71,8 @@ void ChannelPanel::Update()
             switch (state)
             {
                 case ConnectionState::New: {
+                    hasColor = false;
+                    displayText += " [New]";
                     break;
                 }
                 case ConnectionState::Connecting: {

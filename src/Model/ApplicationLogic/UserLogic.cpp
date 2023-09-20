@@ -84,8 +84,10 @@ const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() con
 void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
     this->peeringAPI.OpenPeerConnection(peerId);
-    this->textChatAPI.InitiateTextChat(peerId);
-    CreateNewChatHistory(peerId);
+    this->peeringAPI.OnPeerConnected([this](const std::string& peerId) {
+        this->textChatAPI.InitiateTextChat(peerId);
+        CreateNewChatHistory(peerId);
+    });
 }
 
 void UserLogic::SetSelectedPeerId(const std::string& peerId)

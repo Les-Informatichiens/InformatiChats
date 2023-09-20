@@ -15,7 +15,7 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
         bool requestAccepted = this->onPeerRequestCb(eventData.peerId);
         if (requestAccepted)
         {
-            this->CreatePeerConnection(eventData.peerId);
+            auto pc = this->CreatePeerConnection(eventData.peerId);
         }
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteDescriptionEvent", [this](const EventData& e) {
@@ -57,7 +57,6 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
         std::cout << "STUN server is " << stunServer << std::endl;
         config.iceServers.emplace_back(stunServer);
     }
-
     this->rtcConfig = config;
 }
 
@@ -92,12 +91,7 @@ void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId)
     std::cout << "Offering to " + peerId << std::endl;
     auto pc = this->CreatePeerConnection(peerId);
     auto pingDc = pc->createDataChannel("ping");
-    pingDc->onOpen([username = std::string("other peer"), peerId, wdc = std::weak_ptr(pingDc)]() {
-        std::cout << "DataChannel from " << peerId << " open" << std::endl;
-        if (auto dc = wdc.lock())
-            dc->send("Ping from " + username);
-    });
-    this->yourChannel = pingDc;
+    this->RegisterEventChannel(peerId, pingDc);
 }
 
 void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
@@ -108,6 +102,11 @@ void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
 void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
 {
     this->onPeerConnectionStateChangeCb = callback;
+}
+
+void LibDatachannelPeeringAPI::OnPeerConnected(std::function<void(std::string)> callback)
+{
+    this->onPeerConnectedCb = callback;
 }
 
 void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(std::string)> callback)
@@ -125,9 +124,16 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
         this->networkAPIEventBus.Publish(SendLocalCandidateEvent(peerId, std::string(candidate), candidate.mid()));
     });
 
-    pc->onStateChange([this, peerId](rtc::PeerConnection::State connectionState) {
+    pc->onStateChange([this, peerId, wpc = std::weak_ptr(pc)](rtc::PeerConnection::State connectionState) {
         std::cout << "State: " << connectionState << std::endl;
         this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
+        if (connectionState == rtc::PeerConnection::State::Connected)
+        {
+            //            if (auto pc = wpc.lock())
+            //            {
+            //                this->state.RegisterPeerConnection(peerId, pc);
+            //            }
+        }
         // TODO: maybe put this in the onPeerConnectionStateChangeCb implementation by the caller
 //        if (connectionState == rtc::PeerConnection::State::Closed ||
 //            connectionState == rtc::PeerConnection::State::Failed)
@@ -154,12 +160,30 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
         }
         else
         {
-            dc->onMessage([](rtc::message_variant m) {
-                std::cout << std::get<std::string>(m) << std::endl;
-            });
-            this->channel = dc;
+            this->RegisterEventChannel(peerId, dc);
         }
     });
     this->state.RegisterPeerConnection(peerId, pc);
     return pc;
+}
+
+void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc)
+{
+
+    dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc)]() {
+        std::cout << "DataChannel from " << peerId << " open" << std::endl;
+        if (auto dc = wdc.lock())
+            dc->send("Ping from " + username);
+
+        this->onPeerConnectedCb(peerId);
+    });
+    dc->onMessage([wdc = std::weak_ptr(dc)](auto m) {
+        std::cout << std::get<std::string>(m) << std::endl;
+        //          if (auto dc = wdc.lock())
+        //              dc->close();
+    });
+    dc->onClosed([this] {
+        std::cout << "ping channel closed" << std::endl;
+    });
+    this->state.SetPeerChannel(peerId, dc);
 }

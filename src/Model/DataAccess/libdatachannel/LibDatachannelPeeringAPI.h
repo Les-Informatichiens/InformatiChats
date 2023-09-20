@@ -22,11 +22,13 @@ public:
     void ClosePeerConnection(const std::string& peerId) override;
 
     void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
+    void OnPeerConnected(std::function<void(std::string)> callback) override;
     void OnPeerRequest(std::function<bool (std::string)> callback) override;
 
 private:
 
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& connectionState);
+    void RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc);
 
 public:
     LibDatachannelState& state;
@@ -35,7 +37,9 @@ public:
     rtc::Configuration rtcConfig;
 
     std::function<void (PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCb;
+    std::function<void(std::string)> onPeerConnectedCb;
     std::function<bool(std::string)> onPeerRequestCb;
+
     std::shared_ptr<rtc::DataChannel> channel;
     std::shared_ptr<rtc::DataChannel> yourChannel;
 };

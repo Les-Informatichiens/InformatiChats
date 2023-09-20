@@ -20,6 +20,7 @@ class LibDatachannelTextChatAPI : public ITextChatAPI
 public:
     explicit LibDatachannelTextChatAPI(LibDatachannelState& state, EventBus& networkAPIEventBus);
 
+    virtual ~LibDatachannelTextChatAPI();
     void InitiateTextChat(const std::string& peerId) override;
     void CloseTextChat(const std::string& peerId) override;
 

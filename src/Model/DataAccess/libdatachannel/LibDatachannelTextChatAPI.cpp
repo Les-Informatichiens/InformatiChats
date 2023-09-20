@@ -15,6 +15,11 @@ LibDatachannelTextChatAPI::LibDatachannelTextChatAPI(LibDatachannelState& state,
     });
 }
 
+LibDatachannelTextChatAPI::~LibDatachannelTextChatAPI()
+{
+    this->textChannelMap.clear();
+}
+
 void LibDatachannelTextChatAPI::SendMessageToPeer(const std::string& peerId, const std::string& message)
 {
     auto dcIt = this->textChannelMap.find(peerId);
@@ -35,7 +40,9 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
         std::cout << "Can't initiate a text chat from inexistant peer connection" << std::endl;
         return;
     }
-    if (this->textChannelMap.contains(peerId))
+
+    auto dcIt = this->textChannelMap.find(peerId);
+    if (dcIt != this->textChannelMap.end() && dcIt->second && dcIt->second->isOpen())
     {
         std::cout << "Text chat has already been initiated with \"" << peerId << "\"" << std::endl;
         return;
@@ -52,7 +59,6 @@ void LibDatachannelTextChatAPI::CloseTextChat(const std::string& peerId)
         return;
     }
     dcIt->second->close();
-    this->textChannelMap.erase(dcIt);
 }
 
 void LibDatachannelTextChatAPI::OnChatMessage(std::function<void(ChatMessageInfo)> callback)
@@ -75,10 +81,10 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, c
     tc->onClosed([this, peerId]() {
         const auto& dcIt = this->textChannelMap.find(peerId);
         std::cout << "DataChannel from " << peerId << " closed" << std::endl;
-        if (dcIt != this->textChannelMap.end())
-        {
-            this->textChannelMap.erase(dcIt);
-        }
+        //        if (dcIt != this->textChannelMap.end())
+        //        {
+        //            dcIt->second.reset();
+        //        }
     });
 
     tc->onMessage([this, peerId](auto data) {
