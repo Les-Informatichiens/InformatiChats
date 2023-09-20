@@ -25,6 +25,7 @@
 #include <View/Backend/GLFWWindowManager.h>
 #include <View/GUI/ImGuiManager.hpp>
 #include <View/Shaders.h>
+#include <functional>
 #include <vector>
 
 
@@ -82,4 +83,7 @@ private:
 
     DisplaySize frameDisplaySize;
     std::vector<std::reference_wrapper<IView>> views;
+
+public:
+    std::function<void()> test;
 };

@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include "ITextChatAPI.h"
 #include "LibDatachannelState.h"
+#include "Model/DataAccess/ITextChatAPI.h"
 #include "Model/EventBus.h"
 
-#include <rtc/datachannel.hpp>
+#include "rtc/datachannel.hpp"
 
-#include <Model/Models/ChatMessage.h>
-#include <Model/Models/ChatMessageInfo.h>
+#include "Model/Models/ChatMessage.h"
+#include "Model/Models/ChatMessageInfo.h"
 
 #include <unordered_map>
 
@@ -30,7 +30,7 @@ public:
 private:
     void RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc);
 
-private:
+public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
 

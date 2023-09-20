@@ -86,44 +86,16 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
             return;
         }
 
-//        // If the id in the message returned from the server is the same as the user,
-//        // it means that the server couldn't find the wanted user.
-//        if (id == username_)
-//        {
-//            auto destIt = message.find("destination_id");
-//
-//            if (destIt == message.end())
-//            {
-//                std::cout << "Could not find user, destination ID is invalid" << std::endl;
-//                return;
-//            }
-//            std::cout << "Could not find user: " << destIt->get<std::string>() << ". Operation cancelled." << std::endl;
-//
-//            if (auto badPc = this->state.GetPeerConnection(destIt->get<std::string>()))
-//            {
-//                badPc->close();
-//            }
-//            return;
-//        }
-
         it = message.find("type");
         if (it == message.end())
             return;
 
         auto type = it->get<std::string>();
 
-        if (auto jt = this->state.GetPeerConnection(id))
-        {
-        }
-        else if (type == "offer")
+        if (type == "offer")
         {
             std::cout << "Answering to " + id << std::endl;
             networkAPIEventBus.Publish(PeerRequestEvent(id));
-        }
-        else
-        {
-            std::cout << "Could not establish connection to " << id << std::endl;
-            return;
         }
 
         if (type == "offer" || type == "answer")
@@ -139,7 +111,7 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
         }
     });
 
-    const std::string wsPrefix = "wss://";
+    const std::string wsPrefix = "ws://";
     const std::string url = wsPrefix + this->signalingServer + ":" +
                             this->signalingServerPort + "/" + username_;
 

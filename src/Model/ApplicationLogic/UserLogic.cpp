@@ -48,11 +48,11 @@ void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
 {
     auto result = this->user.peerDataMap.insert({peerId, {}});
-    if (state == ConnectionState::Failed || state == ConnectionState::Closed || state == ConnectionState::Disconnected)
-    {
-        this->user.peerDataMap.erase(result.first->first);
-        return;
-    }
+//    if (state == ConnectionState::Failed || state == ConnectionState::Closed)
+//    {
+//        this->user.peerDataMap.erase(result.first->first);
+//        return;
+//    }
     result.first->second.connectionState = state;
 }
 
@@ -133,8 +133,8 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
     // re-init the new chat client
     const std::string stunServer = "stun.l.google.com";
     const std::string stunServerPort = "19302";
-    const std::string signalingServer = "informatichiens.com";
-    const std::string signalingServerPort = "51337";
+    const std::string signalingServer = "localhost";
+    const std::string signalingServerPort = "8000";
     ConnectionConfig connectionConfig = {signalingServer, signalingServerPort};
     PeeringConfig peeringConfig = {stunServer, stunServerPort};
     this->connectionAPI.Init(connectionConfig);

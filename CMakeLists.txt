@@ -82,20 +82,20 @@ add_executable(
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
         src/Model/DataAccess/IConnectionAPI.h
-        src/Model/DataAccess/LibDatachannelConnectionAPI.cpp
-        src/Model/DataAccess/LibDatachannelConnectionAPI.h
-        src/Model/DataAccess/LibDatachannelState.cpp
-        src/Model/DataAccess/LibDatachannelState.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.h
         src/Model/DataAccess/ITextChatAPI.h
-        src/Model/DataAccess/LibDatachannelTextChatAPI.cpp
-        src/Model/DataAccess/LibDatachannelTextChatAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h
         src/Model/Models/ChatMessageInfo.h
         src/Model/IBinarySerializerAPI.h
         src/Model/ZppSerializerAPI.h
         src/Model/DataAccess/IPeeringAPI.h
-        src/Model/DataAccess/LibDatachannelPeeringAPI.h
-        src/Model/DataAccess/LibDatachannelPeeringAPI.cpp
-        src/Model/DataAccess/LibDatachannelAPIEvents.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelAPIEvents.h
 )
 
 target_include_directories(

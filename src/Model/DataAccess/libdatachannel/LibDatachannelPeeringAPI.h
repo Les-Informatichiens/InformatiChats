@@ -5,11 +5,11 @@
 #pragma once
 
 
-#include "IPeeringAPI.h"
 #include "LibDatachannelState.h"
+#include "Model/DataAccess/IPeeringAPI.h"
 #include "Model/EventBus.h"
 
-#include <rtc/peerconnection.hpp>
+#include "rtc/peerconnection.hpp"
 
 class LibDatachannelPeeringAPI : public IPeeringAPI
 {
@@ -28,7 +28,7 @@ private:
 
     std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& connectionState);
 
-private:
+public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
 
@@ -36,5 +36,6 @@ private:
 
     std::function<void (PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCb;
     std::function<bool(std::string)> onPeerRequestCb;
-
+    std::shared_ptr<rtc::DataChannel> channel;
+    std::shared_ptr<rtc::DataChannel> yourChannel;
 };

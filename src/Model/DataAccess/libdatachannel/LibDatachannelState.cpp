@@ -12,9 +12,9 @@ void LibDatachannelState::Reset()
     this->peerConnectionMap.clear();
 }
 
-void LibDatachannelState::RegisterPeerConnection(const std::string& peerId, std::shared_ptr<rtc::PeerConnection> pc)
+void LibDatachannelState::RegisterPeerConnection(const std::string& peerId, const std::shared_ptr<rtc::PeerConnection>& pc)
 {
-    this->peerConnectionMap.emplace(peerId, pc);
+    this->peerConnectionMap.insert_or_assign(peerId, pc);
 }
 
 void LibDatachannelState::ClosePeerConnection(const std::string& peerId)

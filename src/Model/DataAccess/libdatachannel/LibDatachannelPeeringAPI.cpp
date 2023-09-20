@@ -11,6 +11,7 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
 {
     networkAPIEventBus.Subscribe("PeerRequestEvent", [this](const EventData& e) {
         auto eventData = static_cast<const PeerRequestEvent&>(e);
+
         bool requestAccepted = this->onPeerRequestCb(eventData.peerId);
         if (requestAccepted)
         {
@@ -21,6 +22,7 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
         auto eventData = static_cast<const ReceiveRemoteDescriptionEvent&>(e);
         if (auto pc = this->state.GetPeerConnection(eventData.peerId))
         {
+            std::cout << eventData.peerId << " has sent description : " << eventData.description << std::endl;
             pc->setRemoteDescription(eventData.description);
         }
     });
@@ -28,6 +30,7 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
         auto eventData = static_cast<const ReceiveRemoteCandidateEvent&>(e);
         if (auto pc = this->state.GetPeerConnection(eventData.peerId))
         {
+            std::cout << eventData.peerId << " has sent candidate : " << eventData.candidate << std::endl;
             pc->addRemoteCandidate(eventData.candidate);
         }
     });
@@ -67,10 +70,23 @@ void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId)
 //        std::cout << "Cannot connect to own id" << std::endl;
 //        return;
 //    }
-    if (this->state.GetPeerConnection(peerId))
+    if (auto pc = this->state.GetPeerConnection(peerId))
     {
-        std::cout << "Already connected with user: " + peerId << std::endl;
-        return;
+        if (pc->state() == rtc::PeerConnection::State::Connected)
+        {
+            return;
+        }
+////        this->state.ClosePeerConnection(peerId);
+////        std::cout << "Already connected with user: " + peerId << std::endl;
+//        auto pingDc = pc->createDataChannel("ping2");
+//        pingDc->onOpen([username = std::string("other peer"), peerId, wdc = std::weak_ptr(pingDc)]() {
+//            std::cout << "DataChannel from " << peerId << " open" << std::endl;
+//            if (auto dc = wdc.lock())
+//                dc->send("Ping2 from " + username);
+//        });
+//        this->yourChannel = pingDc;
+//        pc->setLocalDescription();
+//        return;
     }
 
     std::cout << "Offering to " + peerId << std::endl;
@@ -81,6 +97,7 @@ void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId)
         if (auto dc = wdc.lock())
             dc->send("Ping from " + username);
     });
+    this->yourChannel = pingDc;
 }
 
 void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
@@ -104,7 +121,6 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
     pc->onLocalDescription([this, peerId](const rtc::Description& description) {
         this->networkAPIEventBus.Publish(SendLocalDescriptionEvent(peerId, description.typeString(), description));
     });
-
     pc->onLocalCandidate([this, peerId](const rtc::Candidate& candidate) {
         this->networkAPIEventBus.Publish(SendLocalCandidateEvent(peerId, std::string(candidate), candidate.mid()));
     });
@@ -112,16 +128,16 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
     pc->onStateChange([this, peerId](rtc::PeerConnection::State connectionState) {
         std::cout << "State: " << connectionState << std::endl;
         this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
-        if (connectionState == rtc::PeerConnection::State::Closed ||
-            connectionState == rtc::PeerConnection::State::Disconnected ||
-            connectionState == rtc::PeerConnection::State::Failed)
-        {
-            if (auto pc = this->state.GetPeerConnection(peerId))
-            {
-                this->state.ClosePeerConnection(peerId);
-                // should maybe close the open datachannels too? needs testing
-            }
-        }
+        // TODO: maybe put this in the onPeerConnectionStateChangeCb implementation by the caller
+//        if (connectionState == rtc::PeerConnection::State::Closed ||
+//            connectionState == rtc::PeerConnection::State::Failed)
+//        {
+//            if (auto pc = this->state.GetPeerConnection(peerId))
+//            {
+//                this->state.ClosePeerConnection(peerId);
+//                // should maybe close the open datachannels too? needs testing
+//            }
+//        }
     });
 
     pc->onDataChannel([peerId, this](const std::shared_ptr<rtc::DataChannel>& dc) {
@@ -135,6 +151,13 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
         else if (dc->label() == "event")
         {
             this->networkAPIEventBus.Publish(OnEventChannelEvent(peerId, dc));
+        }
+        else
+        {
+            dc->onMessage([](rtc::message_variant m) {
+                std::cout << std::get<std::string>(m) << std::endl;
+            });
+            this->channel = dc;
         }
     });
     this->state.RegisterPeerConnection(peerId, pc);

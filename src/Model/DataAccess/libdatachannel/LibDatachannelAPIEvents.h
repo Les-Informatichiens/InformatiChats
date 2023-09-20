@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <Model/EventBus.h>
-#include <rtc/rtc.hpp>
+#include "Model/EventBus.h"
+#include "rtc/rtc.hpp"
 #include <utility>
 
 struct PeerRequestEvent : public EventData

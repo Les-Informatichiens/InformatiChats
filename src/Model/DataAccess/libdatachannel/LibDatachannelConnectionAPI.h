@@ -4,17 +4,17 @@
 
 #pragma once
 
-#include "IConnectionAPI.h"
 #include "LibDatachannelState.h"
+#include "Model/DataAccess/IConnectionAPI.h"
 #include "Model/EventBus.h"
 
-#include <rtc/peerconnection.hpp>
-#include <rtc/websocket.hpp>
+#include "rtc/peerconnection.hpp"
+#include "rtc/websocket.hpp"
 
+#include "nlohmann/json.hpp"
 #include <future>
 #include <iostream>
 #include <memory>
-#include <nlohmann/json.hpp>
 
 class LibDatachannelConnectionAPI : public IConnectionAPI
 {
@@ -30,7 +30,7 @@ public:
 
     void OnConnected(std::function<void ()> callback) override;
 
-private:
+public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
 

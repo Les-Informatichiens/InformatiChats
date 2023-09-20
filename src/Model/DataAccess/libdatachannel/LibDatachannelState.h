@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <rtc/datachannel.hpp>
-#include <rtc/peerconnection.hpp>
+#include "rtc/datachannel.hpp"
+#include "rtc/peerconnection.hpp"
 
 #include <unordered_map>
 #include <utility>
@@ -16,10 +16,10 @@ class LibDatachannelState
 public:
     void Reset();
 
-    void RegisterPeerConnection(const std::string& peerId, std::shared_ptr<rtc::PeerConnection> pc);
+    void RegisterPeerConnection(const std::string& peerId, const std::shared_ptr<rtc::PeerConnection>& pc);
     void ClosePeerConnection(const std::string& peerId);
     std::shared_ptr<rtc::PeerConnection> GetPeerConnection(const std::string& peerId);
 
-private:
+public:
     std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
 };

@@ -74,11 +74,11 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, c
 
     tc->onClosed([this, peerId]() {
         const auto& dcIt = this->textChannelMap.find(peerId);
+        std::cout << "DataChannel from " << peerId << " closed" << std::endl;
         if (dcIt != this->textChannelMap.end())
         {
             this->textChannelMap.erase(dcIt);
         }
-        std::cout << "DataChannel from " << peerId << " closed" << std::endl;
     });
 
     tc->onMessage([this, peerId](auto data) {
@@ -90,5 +90,5 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, c
         std::cout << "Datachannel from " << peerId << " has errored: " << error << std::endl;
     });
 
-    this->textChannelMap.emplace(peerId, tc);
+    this->textChannelMap.insert_or_assign(peerId, tc);
 }
