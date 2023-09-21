@@ -47,8 +47,19 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
         std::cout << "Text chat has already been initiated with \"" << peerId << "\"" << std::endl;
         return;
     }
-    auto dc = pc->createDataChannel("text");
-    this->RegisterTextChannel(peerId, dc);
+
+    Peer peer = this->state.GetPeer(peerId);
+    if (peer.dc)
+    {
+        std::cout << "Requesting text to " + peerId << std::endl;
+        auto [data, out] = zpp::bits::data_out();
+        out(0).or_throw();
+        peer.dc->send(data);
+//        peer.dc->send()
+//        auto negDc = peer.pc->createDataChannel("text", init);
+    }
+//    auto dc = pc->createDataChannel("text");
+//    this->RegisterTextChannel(peerId, dc);
 }
 
 void LibDatachannelTextChatAPI::CloseTextChat(const std::string& peerId)
@@ -70,17 +81,17 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, c
 {
 
     tc->onOpen([peerId, wtc = std::weak_ptr(tc)]() {
-        std::cout << "DataChannel from " << peerId << " open" << std::endl;
-        if (auto dc = wtc.lock())
-        {
-            uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            dc->send(ChatMessage::Serialize(ChatMessage{"Hello from other peer", timestamp}));
-        }
+        std::cout << "Text channel from " << peerId << " open" << std::endl;
+//        if (auto dc = wtc.lock())
+//        {
+//            uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+//            dc->send(ChatMessage::Serialize(ChatMessage{"Hello from other peer", timestamp}));
+//        }
     });
 
     tc->onClosed([this, peerId]() {
         const auto& dcIt = this->textChannelMap.find(peerId);
-        std::cout << "DataChannel from " << peerId << " closed" << std::endl;
+        std::cout << "Text channel from " << peerId << " closed" << std::endl;
         //        if (dcIt != this->textChannelMap.end())
         //        {
         //            dcIt->second.reset();

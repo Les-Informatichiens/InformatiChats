@@ -70,12 +70,12 @@ int main(int, char**)
 
     app.test = [&libdatachannelState, &textChatAPI, &peeringAPI] {
         ImGui::Begin("Test");
-        for (const auto& peerConnection: libdatachannelState.peerConnectionMap)
+        for (const auto& peerConnection: libdatachannelState.peerMap)
         {
             ImGui::Separator();
             ImGui::Text("%s", peerConnection.first.c_str());
             ImGui::SameLine();
-            ImGui::Text("%d", peerConnection.second->state());
+            ImGui::Text("%d", peerConnection.second.pc->state());
             auto textchannelid = textChatAPI.textChannelMap.contains(peerConnection.first) ? (textChatAPI.textChannelMap.at(peerConnection.first) ? textChatAPI.textChannelMap.at(peerConnection.first)->isOpen() : -1) : -1;
             ImGui::Text("TChannel: %d", textchannelid);
             auto channelid = libdatachannelState.peerMap.contains(peerConnection.first) ? (libdatachannelState.peerMap.at(peerConnection.first).dc ? libdatachannelState.peerMap.at(peerConnection.first).dc->isOpen() : -1) : -1;

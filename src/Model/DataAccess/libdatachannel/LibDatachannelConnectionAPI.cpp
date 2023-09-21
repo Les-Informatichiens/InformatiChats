@@ -16,7 +16,6 @@ LibDatachannelConnectionAPI::LibDatachannelConnectionAPI(LibDatachannelState& st
         nlohmann::json message = {{"id", eventData.id},
                                   {"type", eventData.type},
                                   {"description", eventData.description}};
-        std::cout << message.dump()<<std::endl;
         if (auto ws = wss.lock())
             ws->send(message.dump());
     });
@@ -34,6 +33,8 @@ LibDatachannelConnectionAPI::LibDatachannelConnectionAPI(LibDatachannelState& st
 
 void LibDatachannelConnectionAPI::Init(const ConnectionConfig& config_)
 {
+    rtc::InitLogger(rtc::LogLevel::Debug);
+
     this->signalingServer = config_.signalingServer;
     this->signalingServerPort = config_.signalingServerPort;
 }
@@ -69,7 +70,7 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
 
         nlohmann::json message = nlohmann::json::parse(std::get<std::string>(data));
 
-        std::cout << "The message sent by the server is: " << message << std::endl;
+//        std::cout << "The message sent by the server is: " << message << std::endl;
 
 
         auto it = message.find("id");

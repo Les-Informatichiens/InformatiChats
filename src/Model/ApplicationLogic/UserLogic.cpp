@@ -88,6 +88,7 @@ void UserLogic::AddNewChatPeer(const std::string& peerId)
         this->textChatAPI.InitiateTextChat(peerId);
         CreateNewChatHistory(peerId);
     });
+
 }
 
 void UserLogic::SetSelectedPeerId(const std::string& peerId)

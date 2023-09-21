@@ -5,6 +5,7 @@
 #include "LibDatachannelPeeringAPI.h"
 #include "LibDatachannelAPIEvents.h"
 #include "nlohmann/json.hpp"
+#include "zpp_bits.h"
 
 LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, EventBus& networkAPIEventBus)
     : state(state), networkAPIEventBus(networkAPIEventBus)
@@ -171,18 +172,53 @@ void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, c
 {
 
     dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc)]() {
-        std::cout << "DataChannel from " << peerId << " open" << std::endl;
-        if (auto dc = wdc.lock())
-            dc->send("Ping from " + username);
+        std::cout << "Ping channel open" << std::endl;
+//        if (auto dc = wdc.lock())
+//            dc->send("Ping from " + username);
 
         this->onPeerConnectedCb(peerId);
     });
-    dc->onMessage([wdc = std::weak_ptr(dc)](auto m) {
-        std::cout << std::get<std::string>(m) << std::endl;
+    dc->onMessage([this, peerId, wdc = std::weak_ptr(dc)](auto m) {
+//        std::cout << std::get<std::string>(m) << std::endl;
+        zpp::bits::in in(std::get<rtc::binary>(m));
+        int opcode;
+        in(opcode).or_throw();
+        if (opcode == 0)
+        {
+            if (auto dc = wdc.lock())
+            {
+                Peer peer = this->state.GetPeer(peerId);
+                std::cout << "MAX DATACHANNEL STREAM = " << peer.pc->maxDataChannelId() << std::endl;
+                rtc::DataChannelInit init;
+                init.negotiated = true;
+                init.id = 42;
+                auto textDc = peer.pc->createDataChannel("text", init);
+                this->networkAPIEventBus.Publish(OnTextChannelEvent(peerId, textDc));
+                //    auto dc = pc->createDataChannel("text");
+                //    this->RegisterTextChannel(peerId, dc);
+                std::cout << "Received text request to " + peerId + ", sending response." << std::endl;
+                auto [data, out] = zpp::bits::data_out();
+                out(1).or_throw();
+                dc->send(data);
+            }
+        }
+        else if (opcode == 1)
+        {
+            Peer peer = this->state.GetPeer(peerId);
+
+            std::cout << "MAX DATACHANNEL STREAM = " << peer.pc->maxDataChannelId() << std::endl;
+            rtc::DataChannelInit init;
+            init.negotiated = true;
+            init.id = 42;
+            auto textDc = peer.pc->createDataChannel("test", init);
+            std::cout << "Received text approval from " + peerId << std::endl;
+
+            this->networkAPIEventBus.Publish(OnTextChannelEvent(peerId, textDc));
+        }
         //          if (auto dc = wdc.lock())
         //              dc->close();
     });
-    dc->onClosed([this] {
+    dc->onClosed([this, peerId] {
         std::cout << "ping channel closed" << std::endl;
     });
     this->state.SetPeerChannel(peerId, dc);
