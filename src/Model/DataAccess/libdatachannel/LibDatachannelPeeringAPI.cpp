@@ -61,38 +61,20 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
     this->rtcConfig = config;
 }
 
-void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId)
+void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std::function<void()> onReady)
 {
-    // TODO: should this be the task of the API's caller?
-//    std::string username = this->state.GetSignalingSocket()->path().value();
-//    if (peerId == username)
-//    {
-//        std::cout << "Cannot connect to own id" << std::endl;
-//        return;
-//    }
     if (auto pc = this->state.GetPeerConnection(peerId))
     {
         if (pc->state() == rtc::PeerConnection::State::Connected)
         {
             return;
         }
-////        this->state.ClosePeerConnection(peerId);
-////        std::cout << "Already connected with user: " + peerId << std::endl;
-//        auto pingDc = pc->createDataChannel("ping2");
-//        pingDc->onOpen([username = std::string("other peer"), peerId, wdc = std::weak_ptr(pingDc)]() {
-//            std::cout << "DataChannel from " << peerId << " open" << std::endl;
-//            if (auto dc = wdc.lock())
-//                dc->send("Ping2 from " + username);
-//        });
-//        this->yourChannel = pingDc;
-//        pc->setLocalDescription();
-//        return;
     }
 
     std::cout << "Offering to " + peerId << std::endl;
-    auto pc = this->CreatePeerConnection(peerId);
+    auto pc = this->CreatePeerConnection(peerId, onReady);
     auto pingDc = pc->createDataChannel("ping");
-    this->RegisterEventChannel(peerId, pingDc);
+    this->RegisterEventChannel(peerId, pingDc, onReady);
 }
 
 void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
@@ -115,7 +97,7 @@ void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(std::string)> ca
     this->onPeerRequestCb = callback;
 }
 
-std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId)
+std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId, const std::function<void()>& onReady)
 {
     auto pc = std::make_shared<rtc::PeerConnection>(this->rtcConfig);
     pc->onLocalDescription([this, peerId](const rtc::Description& description) {
@@ -130,10 +112,10 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
         this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
         if (connectionState == rtc::PeerConnection::State::Connected)
         {
-            //            if (auto pc = wpc.lock())
-            //            {
-            //                this->state.RegisterPeerConnection(peerId, pc);
-            //            }
+            if (this->onPeerConnectedCb)
+            {
+                this->onPeerConnectedCb(peerId);
+            }
         }
         // TODO: maybe put this in the onPeerConnectionStateChangeCb implementation by the caller
 //        if (connectionState == rtc::PeerConnection::State::Closed ||
@@ -147,7 +129,7 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
 //        }
     });
 
-    pc->onDataChannel([peerId, this](const std::shared_ptr<rtc::DataChannel>& dc) {
+    pc->onDataChannel([peerId, this, onReady](const std::shared_ptr<rtc::DataChannel>& dc) {
         std::cout << "DataChannel from " << peerId << " received with label \"" << dc->label() << "\""
                   << std::endl;
 
@@ -168,15 +150,15 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
     return pc;
 }
 
-void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc)
+void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc, const std::function<void()>& onReady)
 {
 
-    dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc)]() {
+    dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc), onReady]() {
         std::cout << "Ping channel open" << std::endl;
 //        if (auto dc = wdc.lock())
 //            dc->send("Ping from " + username);
-
-        this->onPeerConnectedCb(peerId);
+        if (onReady)
+            onReady();
     });
     dc->onMessage([this, peerId, wdc = std::weak_ptr(dc)](auto m) {
 //        std::cout << std::get<std::string>(m) << std::endl;

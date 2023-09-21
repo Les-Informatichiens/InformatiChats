@@ -24,8 +24,8 @@ class IPeeringAPI
 {
 public:
     virtual void Init(const PeeringConfig& peeringConfig) = 0;
-    
-    virtual void OpenPeerConnection(const std::string& peerId) = 0;
+
+    virtual void OpenPeerConnection(const std::string& peerId, std::function<void()> onReady) = 0;
     virtual void ClosePeerConnection(const std::string& peerId) = 0;
 
     virtual void OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
