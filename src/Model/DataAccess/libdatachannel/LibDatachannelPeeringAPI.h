@@ -26,7 +26,8 @@ public:
     void OnPeerRequest(std::function<bool (std::string)> callback) override;
 
 private:
-    std::shared_ptr<rtc::PeerConnection> CreatePeerConnection(const std::string& connectionState, const std::function<void()>& onReady = nullptr);
+    std::shared_ptr<Peer> CreatePeerConnection(const std::string&
+                                                       connectionState);
     void RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc, const std::function<void()>& onReady = nullptr);
 
 public:

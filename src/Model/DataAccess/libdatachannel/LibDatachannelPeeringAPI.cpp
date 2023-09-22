@@ -21,18 +21,18 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteDescriptionEvent", [this](const EventData& e) {
         auto eventData = static_cast<const ReceiveRemoteDescriptionEvent&>(e);
-        if (auto pc = this->state.GetPeerConnection(eventData.peerId))
+        if (auto pc = this->state.GetPeer(eventData.peerId))
         {
             std::cout << eventData.peerId << " has sent description : " << eventData.description << std::endl;
-            pc->setRemoteDescription(eventData.description);
+            pc->pc->setRemoteDescription(eventData.description);
         }
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteCandidateEvent", [this](const EventData& e) {
         auto eventData = static_cast<const ReceiveRemoteCandidateEvent&>(e);
-        if (auto pc = this->state.GetPeerConnection(eventData.peerId))
+        if (auto pc = this->state.GetPeer(eventData.peerId))
         {
             std::cout << eventData.peerId << " has sent candidate : " << eventData.candidate << std::endl;
-            pc->addRemoteCandidate(eventData.candidate);
+            pc->pc->addRemoteCandidate(eventData.candidate);
         }
     });
 }
@@ -63,6 +63,12 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
 
 void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std::function<void()> onReady)
 {
+    std::cout << "Offering to " + peerId << std::endl;
+    auto peer = this->CreatePeerConnection(peerId);
+    peer->OnConnected(onReady);
+    peer->Connect();
+
+    /*
     if (auto pc = this->state.GetPeerConnection(peerId))
     {
         if (pc->state() == rtc::PeerConnection::State::Connected)
@@ -72,9 +78,10 @@ void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std
     }
 
     std::cout << "Offering to " + peerId << std::endl;
-    auto pc = this->CreatePeerConnection(peerId, onReady);
+    auto pc = this->CreatePeerConnection(peerId);
     auto pingDc = pc->createDataChannel("ping");
     this->RegisterEventChannel(peerId, pingDc, onReady);
+     */
 }
 
 void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
@@ -97,8 +104,16 @@ void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(std::string)> ca
     this->onPeerRequestCb = callback;
 }
 
-std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId, const std::function<void()>& onReady)
+std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId)
 {
+    auto peer = std::make_shared<Peer>(peerId, this->networkAPIEventBus, this->rtcConfig);
+    this->state.RegisterPeer(peer);
+    peer->OnStateChange([this, peerId](rtc::PeerConnection::State connectionState) {
+        if (this->onPeerConnectionStateChangeCb)
+            this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
+    });
+    return peer;
+    /*
     auto pc = std::make_shared<rtc::PeerConnection>(this->rtcConfig);
     pc->onLocalDescription([this, peerId](const rtc::Description& description) {
         this->networkAPIEventBus.Publish(SendLocalDescriptionEvent(peerId, description.typeString(), description));
@@ -148,11 +163,12 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelPeeringAPI::CreatePeerConnect
     });
     this->state.RegisterPeerConnection(peerId, pc);
     return pc;
+    */
 }
 
 void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc, const std::function<void()>& onReady)
 {
-
+    /*
     dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc), onReady]() {
         std::cout << "Ping channel open" << std::endl;
 //        if (auto dc = wdc.lock())
@@ -204,4 +220,5 @@ void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, c
         std::cout << "ping channel closed" << std::endl;
     });
     this->state.SetPeerChannel(peerId, dc);
+    */
 }

@@ -33,9 +33,8 @@ void LibDatachannelTextChatAPI::SendMessageToPeer(const std::string& peerId, con
 
 void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
 {
-    auto pc = this->state.GetPeerConnection(peerId);
-
-    if (!pc)
+    auto peer = this->state.GetPeer(peerId);
+    if (!peer)
     {
         std::cout << "Can't initiate a text chat from inexistant peer connection" << std::endl;
         return;
@@ -48,14 +47,13 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
         return;
     }
 
-    Peer peer = this->state.GetPeer(peerId);
-    if (peer.dc)
+    if (peer->IsConnected())
     {
         std::cout << "Requesting text to " + peerId << std::endl;
         auto [data, out] = zpp::bits::data_out();
         out(0).or_throw();
-        peer.dc->send(data);
-//        peer.dc->send()
+        peer->dc->send(data);
+        //        peer.dc->send()
 //        auto negDc = peer.pc->createDataChannel("text", init);
     }
 //    auto dc = pc->createDataChannel("text");
