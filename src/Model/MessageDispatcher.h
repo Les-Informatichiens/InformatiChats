@@ -13,11 +13,8 @@ template<typename TypeEnum>
 class BaseMessage
 {
 public:
-    static const TypeEnum opcode = static_cast<TypeEnum>(-1);
-
-public:
     virtual ~BaseMessage() = default;
-    virtual TypeEnum GetOpcode() const { return opcode; };
+    virtual TypeEnum GetOpcode() const = 0;
     virtual std::vector<std::byte> Serialize() const = 0;
     virtual void Deserialize(const std::vector<std::byte>& data) const = 0;
 };
