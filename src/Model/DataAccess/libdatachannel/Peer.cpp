@@ -47,7 +47,7 @@ void Peer::Disconnect()
     }
 }
 
-void Peer::Send(const BaseMessage<MessageType>& message)
+void Peer::SendMessage(const BaseMessage<MessageType>& message)
 {
     if (!this->IsConnected())
         return;
@@ -55,6 +55,19 @@ void Peer::Send(const BaseMessage<MessageType>& message)
     auto [data, out] = zpp::bits::data_out();
     out(message.GetOpcode(), message.Serialize()).or_throw();
     this->dc->send(data);
+}
+
+std::shared_ptr<rtc::DataChannel> Peer::CreateNegotiatedChannel(const std::string& label, int streamId)
+{
+    if (!this->IsConnected())
+    {
+        return nullptr;
+    }
+
+    rtc::DataChannelInit init;
+    init.negotiated = true;
+    init.id = streamId;
+    return this->pc->createDataChannel(label, init);
 }
 
 void Peer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
@@ -79,7 +92,6 @@ void Peer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
     this->dc->onClosed(closeCallback);
 
     this->dc->onMessage([this, wdc = std::weak_ptr(this->dc)](auto data) {
-        //        std::cout << std::get<std::string>(m) << std::endl;
         MessageType opcode;
         std::vector<std::byte> payload;
         zpp::bits::in in(std::get<std::vector<std::byte>>(data));
@@ -139,16 +151,4 @@ void Peer::OnConnected(std::function<void()> callback)
 void Peer::OnStateChange(std::function<void(rtc::PeerConnection::State)> callback)
 {
     this->onStateChangeCb = std::move(callback);
-}
-std::shared_ptr<rtc::DataChannel> Peer::CreateNegotiatedChannel(const std::string& label, int streamId)
-{
-    if (!this->IsConnected())
-    {
-        return nullptr;
-    }
-
-    rtc::DataChannelInit init;
-    init.negotiated = true;
-    init.id = streamId;
-    return this->pc->createDataChannel(label, init);
 }

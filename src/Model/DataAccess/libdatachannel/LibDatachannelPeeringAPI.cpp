@@ -63,11 +63,6 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
 
 void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std::function<void()> onReady)
 {
-    std::cout << "Offering to " + peerId << std::endl;
-    auto peer = this->CreatePeerConnection(peerId);
-    peer->OnConnected(onReady);
-    peer->Connect();
-
     /*
     if (auto pc = this->state.GetPeerConnection(peerId))
     {
@@ -76,27 +71,23 @@ void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std
             return;
         }
     }
+     */
 
     std::cout << "Offering to " + peerId << std::endl;
-    auto pc = this->CreatePeerConnection(peerId);
-    auto pingDc = pc->createDataChannel("ping");
-    this->RegisterEventChannel(peerId, pingDc, onReady);
-     */
+    auto peer = this->CreatePeerConnection(peerId);
+    peer->OnConnected(onReady);
+    peer->Connect();
 }
 
 void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
 {
-    // TODO: allow closing a connection with a peer. This includes: closing all datachannels and removing the peerConnection from the State.
+    this->state.GetPeer(peerId)->Disconnect();
+    this->state.DestroyPeer(peerId);
 }
 
 void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
 {
     this->onPeerConnectionStateChangeCb = callback;
-}
-
-void LibDatachannelPeeringAPI::OnPeerConnected(std::function<void(std::string)> callback)
-{
-    this->onPeerConnectedCb = callback;
 }
 
 void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(std::string)> callback)
@@ -114,61 +105,4 @@ std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::
     });
     this->networkAPIEventBus.Publish(OnNewPeerEvent{peer});
     return peer;
-}
-
-void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc, const std::function<void()>& onReady)
-{
-    /*
-    dc->onOpen([this, username = std::string("other peer"), peerId, wdc = std::weak_ptr(dc), onReady]() {
-        std::cout << "Ping channel open" << std::endl;
-//        if (auto dc = wdc.lock())
-//            dc->send("Ping from " + username);
-        if (onReady)
-            onReady();
-    });
-    dc->onMessage([this, peerId, wdc = std::weak_ptr(dc)](auto m) {
-//        std::cout << std::get<std::string>(m) << std::endl;
-        zpp::bits::in in(std::get<rtc::binary>(m));
-        int opcode;
-        in(opcode).or_throw();
-        if (opcode == 0)
-        {
-            if (auto dc = wdc.lock())
-            {
-                Peer peer = this->state.GetPeer(peerId);
-                std::cout << "MAX DATACHANNEL STREAM = " << peer.pc->maxDataChannelId() << std::endl;
-                rtc::DataChannelInit init;
-                init.negotiated = true;
-                init.id = 42;
-                auto textDc = peer.pc->createDataChannel("text", init);
-                this->networkAPIEventBus.Publish(OnTextChannelEvent(peerId, textDc));
-                //    auto dc = pc->createDataChannel("text");
-                //    this->RegisterTextChannel(peerId, dc);
-                std::cout << "Received text request to " + peerId + ", sending response." << std::endl;
-                auto [data, out] = zpp::bits::data_out();
-                out(1).or_throw();
-                dc->send(data);
-            }
-        }
-        else if (opcode == 1)
-        {
-            Peer peer = this->state.GetPeer(peerId);
-
-            std::cout << "MAX DATACHANNEL STREAM = " << peer.pc->maxDataChannelId() << std::endl;
-            rtc::DataChannelInit init;
-            init.negotiated = true;
-            init.id = 42;
-            auto textDc = peer.pc->createDataChannel("test", init);
-            std::cout << "Received text approval from " + peerId << std::endl;
-
-            this->networkAPIEventBus.Publish(OnTextChannelEvent(peerId, textDc));
-        }
-        //          if (auto dc = wdc.lock())
-        //              dc->close();
-    });
-    dc->onClosed([this, peerId] {
-        std::cout << "ping channel closed" << std::endl;
-    });
-    this->state.SetPeerChannel(peerId, dc);
-    */
 }

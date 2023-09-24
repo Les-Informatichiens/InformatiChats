@@ -29,6 +29,5 @@ public:
     virtual void ClosePeerConnection(const std::string& peerId) = 0;
 
     virtual void OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback) = 0;
-    virtual void OnPeerConnected(std::function<void(std::string)> callback) = 0;
     virtual void OnPeerRequest(std::function<bool(std::string)> callback) = 0;
 };

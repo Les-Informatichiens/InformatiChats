@@ -58,7 +58,7 @@ public:
     void Connect();
     void Disconnect();
 
-    void Send(const BaseMessage<MessageType>& message);
+    void SendMessage(const BaseMessage<MessageType>& message);
 
     template<typename T, typename Handler>
     void SubscribeEvent(Handler&& handler)
