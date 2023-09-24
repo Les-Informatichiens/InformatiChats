@@ -39,7 +39,4 @@ public:
     std::function<void (PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCb;
     std::function<void(std::string)> onPeerConnectedCb;
     std::function<bool(std::string)> onPeerRequestCb;
-
-    std::shared_ptr<rtc::DataChannel> channel;
-    std::shared_ptr<rtc::DataChannel> yourChannel;
 };

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Model/EventBus.h"
+#include "Peer.h"
 #include "rtc/rtc.hpp"
 #include <utility>
 
@@ -70,4 +71,14 @@ struct OnEventChannelEvent : public EventData
 
     OnEventChannelEvent(std::string peerId, std::shared_ptr<rtc::Channel> eventChannel)
         : EventData("OnEventChannelEvent"), peerId(std::move(peerId)), eventChannel(std::move(eventChannel)) {}
+};
+
+class Peer;
+
+struct OnNewPeerEvent : public EventData
+{
+    std::shared_ptr<Peer> peer;
+
+    explicit OnNewPeerEvent(std::shared_ptr<Peer> peer)
+        : EventData("OnNewPeerEvent"), peer(std::move(peer)) {}
 };

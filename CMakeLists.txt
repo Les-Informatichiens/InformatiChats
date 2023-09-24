@@ -96,6 +96,9 @@ add_executable(
         src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h
         src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.cpp
         src/Model/DataAccess/libdatachannel/LibDatachannelAPIEvents.h
+        src/Model/DataAccess/libdatachannel/Peer.cpp
+        src/Model/DataAccess/libdatachannel/Peer.h
+        src/Model/MessageDispatcher.h
 )
 
 target_include_directories(

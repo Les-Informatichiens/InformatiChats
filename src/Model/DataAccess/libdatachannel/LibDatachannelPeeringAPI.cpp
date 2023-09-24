@@ -21,18 +21,18 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteDescriptionEvent", [this](const EventData& e) {
         auto eventData = static_cast<const ReceiveRemoteDescriptionEvent&>(e);
-        if (auto pc = this->state.GetPeer(eventData.peerId))
+        if (auto peer = this->state.GetPeer(eventData.peerId))
         {
             std::cout << eventData.peerId << " has sent description : " << eventData.description << std::endl;
-            pc->pc->setRemoteDescription(eventData.description);
+            peer->SetRemoteDescription(eventData.description);
         }
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteCandidateEvent", [this](const EventData& e) {
         auto eventData = static_cast<const ReceiveRemoteCandidateEvent&>(e);
-        if (auto pc = this->state.GetPeer(eventData.peerId))
+        if (auto peer = this->state.GetPeer(eventData.peerId))
         {
             std::cout << eventData.peerId << " has sent candidate : " << eventData.candidate << std::endl;
-            pc->pc->addRemoteCandidate(eventData.candidate);
+            peer->AddRemoteCandidate(eventData.candidate);
         }
     });
 }
@@ -112,58 +112,8 @@ std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::
         if (this->onPeerConnectionStateChangeCb)
             this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
     });
+    this->networkAPIEventBus.Publish(OnNewPeerEvent{peer});
     return peer;
-    /*
-    auto pc = std::make_shared<rtc::PeerConnection>(this->rtcConfig);
-    pc->onLocalDescription([this, peerId](const rtc::Description& description) {
-        this->networkAPIEventBus.Publish(SendLocalDescriptionEvent(peerId, description.typeString(), description));
-    });
-    pc->onLocalCandidate([this, peerId](const rtc::Candidate& candidate) {
-        this->networkAPIEventBus.Publish(SendLocalCandidateEvent(peerId, std::string(candidate), candidate.mid()));
-    });
-
-    pc->onStateChange([this, peerId, wpc = std::weak_ptr(pc)](rtc::PeerConnection::State connectionState) {
-        std::cout << "State: " << connectionState << std::endl;
-        this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
-        if (connectionState == rtc::PeerConnection::State::Connected)
-        {
-            if (this->onPeerConnectedCb)
-            {
-                this->onPeerConnectedCb(peerId);
-            }
-        }
-        // TODO: maybe put this in the onPeerConnectionStateChangeCb implementation by the caller
-//        if (connectionState == rtc::PeerConnection::State::Closed ||
-//            connectionState == rtc::PeerConnection::State::Failed)
-//        {
-//            if (auto pc = this->state.GetPeerConnection(peerId))
-//            {
-//                this->state.ClosePeerConnection(peerId);
-//                // should maybe close the open datachannels too? needs testing
-//            }
-//        }
-    });
-
-    pc->onDataChannel([peerId, this, onReady](const std::shared_ptr<rtc::DataChannel>& dc) {
-        std::cout << "DataChannel from " << peerId << " received with label \"" << dc->label() << "\""
-                  << std::endl;
-
-        if (dc->label() == "text")
-        {
-            this->networkAPIEventBus.Publish(OnTextChannelEvent(peerId, dc));
-        }
-        else if (dc->label() == "event")
-        {
-            this->networkAPIEventBus.Publish(OnEventChannelEvent(peerId, dc));
-        }
-        else
-        {
-            this->RegisterEventChannel(peerId, dc);
-        }
-    });
-    this->state.RegisterPeerConnection(peerId, pc);
-    return pc;
-    */
 }
 
 void LibDatachannelPeeringAPI::RegisterEventChannel(const std::string& peerId, const std::shared_ptr<rtc::DataChannel>& dc, const std::function<void()>& onReady)

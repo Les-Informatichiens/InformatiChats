@@ -57,7 +57,7 @@ std::shared_ptr<rtc::PeerConnection> LibDatachannelState::GetPeerConnection(cons
 
 void LibDatachannelState::RegisterPeer(const std::shared_ptr<Peer>& peer)
 {
-    this->peerMap.insert_or_assign(peer->peerId, peer);
+    this->peerMap.insert_or_assign(peer->GetId(), peer);
 }
 
 std::shared_ptr<Peer> LibDatachannelState::GetPeer(const std::string& peerId)
