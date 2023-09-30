@@ -21,8 +21,13 @@ public:
     void OpenPeerConnection(const std::string& peerId, std::function<void()> onReady) override;
     void ClosePeerConnection(const std::string& peerId) override;
 
+    void SendMessage(const std::string& peerId, const BaseMessage<MessageType>& message) override;
+
     void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
-    void OnPeerRequest(std::function<bool (std::string)> callback) override;
+    void OnPeerRequest(std::function<bool(const std::string&)> callback) override;
+    void OnNewPeer(std::function<void(const std::string&)> callback) override;
+    void OnPeerMessage(const std::string& peerId, std::function<void(BaseMessage<MessageType>&)> callback) override;
+    void OnPeerConnected(const std::string& peerId, std::function<void()> callback) override;
 
 private:
     std::shared_ptr<Peer> CreatePeerConnection(const std::string&
@@ -35,6 +40,6 @@ public:
     rtc::Configuration rtcConfig;
 
     std::function<void (PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCb;
-    std::function<void(std::string)> onPeerConnectedCb;
-    std::function<bool(std::string)> onPeerRequestCb;
+    std::function<bool(const std::string&)> onPeerRequestCb;
+    std::function<void(const std::string&)> onNewPeerCb;
 };

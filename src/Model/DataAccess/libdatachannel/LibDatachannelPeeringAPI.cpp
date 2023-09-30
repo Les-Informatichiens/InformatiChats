@@ -3,9 +3,11 @@
 //
 
 #include "LibDatachannelPeeringAPI.h"
+
 #include "LibDatachannelAPIEvents.h"
 #include "nlohmann/json.hpp"
 #include "zpp_bits.h"
+#include <utility>
 
 LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, EventBus& networkAPIEventBus)
     : state(state), networkAPIEventBus(networkAPIEventBus)
@@ -17,6 +19,8 @@ LibDatachannelPeeringAPI::LibDatachannelPeeringAPI(LibDatachannelState& state, E
         if (requestAccepted)
         {
             auto pc = this->CreatePeerConnection(eventData.peerId);
+            if (this->onNewPeerCb)
+                this->onNewPeerCb(eventData.peerId);
         }
     });
     networkAPIEventBus.Subscribe("ReceiveRemoteDescriptionEvent", [this](const EventData& e) {
@@ -85,14 +89,28 @@ void LibDatachannelPeeringAPI::ClosePeerConnection(const std::string& peerId)
     this->state.DestroyPeer(peerId);
 }
 
-void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
+void LibDatachannelPeeringAPI::SendMessage(const std::string& peerId, const BaseMessage<MessageType>& message)
 {
-    this->onPeerConnectionStateChangeCb = callback;
+    auto peer = this->state.GetPeer(peerId);
+    if (peer)
+    {
+        peer->SendMessage(message);
+    }
 }
 
-void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(std::string)> callback)
+void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
 {
-    this->onPeerRequestCb = callback;
+    this->onPeerConnectionStateChangeCb = std::move(callback);
+}
+
+void LibDatachannelPeeringAPI::OnPeerRequest(std::function<bool(const std::string&)> callback)
+{
+    this->onPeerRequestCb = std::move(callback);
+}
+
+void LibDatachannelPeeringAPI::OnNewPeer(std::function<void(const std::string&)> callback)
+{
+    this->onNewPeerCb = std::move(callback);
 }
 
 std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId)
@@ -105,4 +123,23 @@ std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::
     });
     this->networkAPIEventBus.Publish(OnNewPeerEvent{peer});
     return peer;
+}
+
+void LibDatachannelPeeringAPI::OnPeerMessage(const std::string& peerId, std::function<void(BaseMessage<MessageType>&)> callback)
+{
+    auto peer = this->state.GetPeer(peerId);
+    if (peer)
+    {
+        peer->OnMessage(std::move(callback));
+    }
+}
+
+void LibDatachannelPeeringAPI::OnPeerConnected(const std::string& peerId, std::function<void()> callback)
+{
+    auto peer = this->state.GetPeer(peerId);
+    if (peer)
+    {
+        peer->OnConnected(std::move(callback));
+    }
+    std::cout << "hello" << std::endl;
 }

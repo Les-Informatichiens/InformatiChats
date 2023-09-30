@@ -10,43 +10,17 @@
 #include "LibDatachannelAPIEvents.h"
 #include "Model/EventBus.h"
 #include "Model/MessageDispatcher.h"
+#include <Model/Models/PeerEventMessages.h>
+
 #include "rtc/websocket.hpp"
 #include "zpp_bits.h"
-#include <unordered_map>
+
 #include <utility>
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-enum class MessageType
-{
-    TextRequest,
-    TextResponse
-};
-
-class TextRequest final : public BaseMessage<MessageType>
-{
-public:
-    static const constexpr MessageType opcode = MessageType::TextRequest;
-
-public:
-    MessageType GetOpcode() const override { return opcode; };
-    std::vector<std::byte> Serialize() const override { return {}; };
-    void Deserialize(const std::vector<std::byte>& data) const override{};
-};
-
-class TextResponse final : public BaseMessage<MessageType>
-{
-public:
-    static const constexpr MessageType opcode = MessageType::TextResponse;
-
-public:
-    MessageType GetOpcode() const override { return opcode; };
-    std::vector<std::byte> Serialize() const override { return {}; };
-    void Deserialize(const std::vector<std::byte>& data) const override{};
-};
 
 
 class Peer
@@ -77,6 +51,7 @@ public:
 
     void OnConnected(std::function<void()> callback);
     void OnStateChange(std::function<void(rtc::PeerConnection::State)> callback);
+    void OnMessage(std::function<void(BaseMessage<MessageType>&)> callback);
 
 private:
     void SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_);
@@ -90,4 +65,5 @@ private:
 
     std::function<void()> onConnectedCb;
     std::function<void(rtc::PeerConnection::State)> onStateChangeCb;
+    std::function<void(BaseMessage<MessageType>&)> onMessageCb;
 };

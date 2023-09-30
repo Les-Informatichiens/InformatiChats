@@ -13,29 +13,29 @@ LibDatachannelTextChatAPI::LibDatachannelTextChatAPI(LibDatachannelState& state,
         std::cout << "Text data channel from " << eventData.peerId << " received" << std::endl;
         this->RegisterTextChannel(eventData.peerId, eventData.textChannel);
     });
-    this->networkAPIEventBus.Subscribe("OnNewPeerEvent", [this](const EventData& e) {
-        auto eventData = static_cast<const OnNewPeerEvent&>(e);
-        eventData.peer->SubscribeEvent<TextRequest>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& request) {
-            auto peer = wpeer.lock();
-            if (!peer)
-                return;
-
-            std::cout << "Received text request to " + peer->GetId() + ", sending response." << std::endl;
-
-            auto textDc = peer->CreateNegotiatedChannel("text", 42);
-            this->RegisterTextChannel(peer->GetId(), textDc);
-            peer->SendMessage(TextResponse{});
-        });
-        eventData.peer->SubscribeEvent<TextResponse>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& response) {
-            auto peer = wpeer.lock();
-            if (!peer)
-                return;
-
-            std::cout << "Received text approval from " + peer->GetId() << std::endl;
-            auto textDc = peer->CreateNegotiatedChannel("text", 42);
-            this->RegisterTextChannel(peer->GetId(), textDc);
-        });
-    });
+    //    this->networkAPIEventBus.Subscribe("OnNewPeerEvent", [this](const EventData& e) {
+    //        auto eventData = static_cast<const OnNewPeerEvent&>(e);
+    //        eventData.peer->SubscribeEvent<TextRequest>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& request) {
+    //            auto peer = wpeer.lock();
+    //            if (!peer)
+    //                return;
+    //
+    //            std::cout << "Received text request to " + peer->GetId() + ", sending response." << std::endl;
+    //
+    //            auto textDc = peer->CreateNegotiatedChannel("text", 42);
+    //            this->RegisterTextChannel(peer->GetId(), textDc);
+    //            peer->SendMessage(TextResponse{});
+    //        });
+    //        eventData.peer->SubscribeEvent<TextResponse>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& response) {
+    //            auto peer = wpeer.lock();
+    //            if (!peer)
+    //                return;
+    //
+    //            std::cout << "Received text approval from " + peer->GetId() << std::endl;
+    //            auto textDc = peer->CreateNegotiatedChannel("text", 42);
+    //            this->RegisterTextChannel(peer->GetId(), textDc);
+    //        });
+    //    });
 }
 
 LibDatachannelTextChatAPI::~LibDatachannelTextChatAPI()
@@ -72,8 +72,9 @@ void LibDatachannelTextChatAPI::InitiateTextChat(const std::string& peerId)
 
     if (peer->IsConnected())
     {
-        std::cout << "Requesting text to " + peerId << std::endl;
-        peer->SendMessage(TextRequest{});
+        std::cout << "Initiating text chat" << std::endl;
+        auto textDc = peer->CreateNegotiatedChannel("text", 42);
+        this->RegisterTextChannel(peer->GetId(), textDc);
     }
 }
 

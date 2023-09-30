@@ -40,6 +40,9 @@ public:
     [[nodiscard]] const std::string& GetSelectedPeerId() const;
 
 private:
+    void HandlePeerMessage(const std::string& peerId, const BaseMessage<MessageType>& message);
+
+private:
     User& user;
     IConnectionAPI& connectionAPI;
     IPeeringAPI& peeringAPI;

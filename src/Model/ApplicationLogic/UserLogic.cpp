@@ -48,11 +48,11 @@ void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
 {
     auto result = this->user.peerDataMap.insert({peerId, {}});
-//    if (state == ConnectionState::Failed || state == ConnectionState::Closed)
-//    {
-//        this->user.peerDataMap.erase(result.first->first);
-//        return;
-//    }
+    //    if (state == ConnectionState::Failed || state == ConnectionState::Closed)
+    //    {
+    //        this->user.peerDataMap.erase(result.first->first);
+    //        return;
+    //    }
     result.first->second.connectionState = state;
 }
 
@@ -85,7 +85,8 @@ void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
     this->peeringAPI.OpenPeerConnection(peerId, [this, peerId] {
         std::cout << "Communications with " << peerId << "are READY.";
-        this->textChatAPI.InitiateTextChat(peerId);
+        this->peeringAPI.OnPeerMessage(peerId, [this, &peerId](auto& message) { this->HandlePeerMessage(peerId, std::forward<decltype((message))>(message)); });
+        this->peeringAPI.SendMessage(peerId, TextRequest{});
         CreateNewChatHistory(peerId);
     });
 }
@@ -143,9 +144,23 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
     this->peeringAPI.Init(peeringConfig);
 
     this->connectionAPI.ConnectWithUsername(this->GetUserName());
-    this->peeringAPI.OnPeerRequest([](const std::string& peerId) {
+
+    bool approveAllIncomingRequests = true;
+    this->peeringAPI.OnPeerRequest([this, approveAllIncomingRequests](const std::string& peerId) {
         std::cout << "Peer request received from " << peerId << std::endl;
-        return true;
+
+        if (approveAllIncomingRequests)
+        {
+            return true;
+        }
+        return false;
+    });
+    this->peeringAPI.OnNewPeer([this](const std::string& peerId) {
+        this->peeringAPI.OnPeerConnected(peerId, [this, peerId] {
+            this->peeringAPI.OnPeerMessage(peerId, [this, peerId](BaseMessage<MessageType>& message) {
+                this->HandlePeerMessage(peerId, message);
+            });
+        });
     });
     return true;
 }
@@ -205,4 +220,20 @@ const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
 const std::string& UserLogic::GetSelectedPeerId() const
 {
     return this->user.selectedChat;
+}
+
+void UserLogic::HandlePeerMessage(const std::string& peerId, const BaseMessage<MessageType>& message)
+{
+    switch (message.GetOpcode())
+    {
+        case TextRequest::opcode: {
+            this->textChatAPI.InitiateTextChat(peerId);
+            this->peeringAPI.SendMessage(peerId, TextResponse{});
+            break;
+        }
+        case TextResponse::opcode: {
+            this->textChatAPI.InitiateTextChat(peerId);
+            break;
+        }
+    }
 }

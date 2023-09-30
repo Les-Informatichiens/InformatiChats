@@ -32,9 +32,6 @@ public:
 private:
     void RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc);
 
-    void OnTextRequest(const TextRequest& request);
-    void OnTextResponse(const TextResponse& response);
-
 public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
