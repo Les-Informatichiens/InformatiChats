@@ -57,7 +57,7 @@ jobs:
 
         - name: Build App
           run: |
-              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build CXX=x86_64-w64-mingw32-gcc -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
+              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build CXX=x86_64-w64-mingw32-gcc-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
               cmake --build ./build -j 14
 
         - name: Set up cache
