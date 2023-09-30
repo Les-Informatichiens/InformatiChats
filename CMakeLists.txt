@@ -98,6 +98,8 @@ add_executable(
         src/Model/DataAccess/libdatachannel/LibDatachannelPeer.h
         src/Model/MessageDispatcher.h
         src/Model/Models/PeerEventMessages.h
+        src/Model/Models/Exchange.cpp
+        src/Model/Models/Exchange.h
 )
 
 target_include_directories(

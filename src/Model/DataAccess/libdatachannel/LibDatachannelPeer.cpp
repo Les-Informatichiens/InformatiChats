@@ -105,11 +105,17 @@ void LibDatachannelPeer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
 
         switch (opcode)
         {
+            case ResetExchange::opcode:
+                dispatchPayload.template operator()<ResetExchange>();
+                break;
             case TextRequest::opcode:
                 dispatchPayload.template operator()<TextRequest>();
                 break;
-            case TextResponse::opcode:
-                dispatchPayload.template operator()<TextResponse>();
+            case TextRequestResponse::opcode:
+                dispatchPayload.template operator()<TextRequestResponse>();
+                break;
+            case TextResponseAck::opcode:
+                dispatchPayload.template operator()<TextResponseAck>();
                 break;
         }
     });

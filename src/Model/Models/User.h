@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ChatMessageInfo.h"
+#include "Peer.h"
 #include <Model/Models/PeerData.h>
 #include <chrono>
 #include <string>
@@ -8,7 +9,6 @@
 #include <vector>
 
 
-using ChatHistory = std::vector<ChatMessageInfo>;
 
 class User
 {
@@ -18,12 +18,8 @@ private:
     std::string username;
     static constexpr size_t maxNameLength{32};
 
-    std::unordered_map<std::string, PeerData> peerDataMap;
+    std::unordered_map<std::string, Peer> peerMap;
     std::string selectedChat;
-
-    // TODO: better management for chat histories
-    // peerId, History for that peer id
-    std::unordered_map<std::string, ChatHistory> chatHistories;
 
     friend class UserLogic;
 

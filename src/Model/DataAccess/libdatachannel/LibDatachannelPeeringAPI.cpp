@@ -131,5 +131,4 @@ void LibDatachannelPeeringAPI::OnPeerConnected(const std::string& peerId, std::f
     {
         peer->OnConnected(std::move(callback));
     }
-    std::cout << "hello" << std::endl;
 }
