@@ -20,7 +20,7 @@ jobs:
       - name: Setup Linux
         run: |
           sudo apt-get update -y
-          sudo apt-get install ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
+          sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
 
       - name: Set up cache
         uses: actions/cache@v3
