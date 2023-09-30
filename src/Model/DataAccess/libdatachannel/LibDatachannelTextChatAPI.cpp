@@ -13,29 +13,6 @@ LibDatachannelTextChatAPI::LibDatachannelTextChatAPI(LibDatachannelState& state,
         std::cout << "Text data channel from " << eventData.peerId << " received" << std::endl;
         this->RegisterTextChannel(eventData.peerId, eventData.textChannel);
     });
-    //    this->networkAPIEventBus.Subscribe("OnNewPeerEvent", [this](const EventData& e) {
-    //        auto eventData = static_cast<const OnNewPeerEvent&>(e);
-    //        eventData.peer->SubscribeEvent<TextRequest>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& request) {
-    //            auto peer = wpeer.lock();
-    //            if (!peer)
-    //                return;
-    //
-    //            std::cout << "Received text request to " + peer->GetId() + ", sending response." << std::endl;
-    //
-    //            auto textDc = peer->CreateNegotiatedChannel("text", 42);
-    //            this->RegisterTextChannel(peer->GetId(), textDc);
-    //            peer->SendMessage(TextResponse{});
-    //        });
-    //        eventData.peer->SubscribeEvent<TextResponse>([this, wpeer = std::weak_ptr(eventData.peer)](const auto& response) {
-    //            auto peer = wpeer.lock();
-    //            if (!peer)
-    //                return;
-    //
-    //            std::cout << "Received text approval from " + peer->GetId() << std::endl;
-    //            auto textDc = peer->CreateNegotiatedChannel("text", 42);
-    //            this->RegisterTextChannel(peer->GetId(), textDc);
-    //        });
-    //    });
 }
 
 LibDatachannelTextChatAPI::~LibDatachannelTextChatAPI()
@@ -96,18 +73,12 @@ void LibDatachannelTextChatAPI::OnChatMessage(std::function<void(ChatMessageInfo
 void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc)
 {
 
-    tc->onOpen([peerId, wtc = std::weak_ptr(tc)]() {
+    tc->onOpen([peerId]() {
         std::cout << "Text channel from " << peerId << " open" << std::endl;
     });
 
-    tc->onClosed([this, peerId]() {
+    tc->onClosed([peerId]() {
         std::cout << "Text channel from " << peerId << " closed" << std::endl;
-        // TODO: im not sure how this should be handled. should it be removed from the map here?
-        //        const auto& dcIt = this->textChannelMap.find(peerId);
-        //        if (dcIt != this->textChannelMap.end())
-        //        {
-        //            dcIt->second.reset();
-        //        }
     });
 
     tc->onMessage([this, peerId](auto data) {

@@ -2,18 +2,17 @@
 // Created by Jonathan Richard on 2023-09-22.
 //
 
-#include "Peer.h"
+#include "LibDatachannelPeer.h"
 
-#include <utility>
 
-Peer::Peer(const std::string& peerId, EventBus& eventBus, const rtc::Configuration& config)
+LibDatachannelPeer::LibDatachannelPeer(const std::string& peerId, EventBus& eventBus, const rtc::Configuration& config)
     : peerId(peerId), eventBus(eventBus)
 {
     this->pc = std::make_shared<rtc::PeerConnection>(config);
 
     this->pc->onDataChannel([this](rtc::shared_ptr<rtc::DataChannel> dataChannel) {
         std::cout << "Data channel received" << std::endl;
-        if (dataChannel->label() == "ping")
+        if (dataChannel->label() == eventChannelName)
             this->SetDataChannel(dataChannel);
     });
 
@@ -28,17 +27,17 @@ Peer::Peer(const std::string& peerId, EventBus& eventBus, const rtc::Configurati
     });
 }
 
-Peer::~Peer()
+LibDatachannelPeer::~LibDatachannelPeer()
 {
     this->Disconnect();
 }
 
-void Peer::Connect()
+void LibDatachannelPeer::Connect()
 {
-    this->SetDataChannel(this->pc->createDataChannel("ping"));
+    this->SetDataChannel(this->pc->createDataChannel(eventChannelName));
 }
 
-void Peer::Disconnect()
+void LibDatachannelPeer::Disconnect()
 {
     if (dc)
     {
@@ -47,7 +46,7 @@ void Peer::Disconnect()
     }
 }
 
-void Peer::SendMessage(const BaseMessage<MessageType>& message)
+void LibDatachannelPeer::SendMessage(const BaseMessage<MessageType>& message)
 {
     if (!this->IsConnected())
         return;
@@ -57,7 +56,7 @@ void Peer::SendMessage(const BaseMessage<MessageType>& message)
     this->dc->send(data);
 }
 
-std::shared_ptr<rtc::DataChannel> Peer::CreateNegotiatedChannel(const std::string& label, int streamId)
+std::shared_ptr<rtc::DataChannel> LibDatachannelPeer::CreateNegotiatedChannel(const std::string& label, int streamId)
 {
     if (!this->IsConnected())
     {
@@ -70,18 +69,18 @@ std::shared_ptr<rtc::DataChannel> Peer::CreateNegotiatedChannel(const std::strin
     return this->pc->createDataChannel(label, init);
 }
 
-void Peer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
+void LibDatachannelPeer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
 {
     this->dc = std::move(dc_);
 
     auto openCallback = [this]() {
-        std::cout << "Data channel open" << std::endl;
+        std::cout << "Events channel open" << std::endl;
         if (this->onConnectedCb)
             this->onConnectedCb();
     };
 
-    auto closeCallback = [this]() {
-        std::cout << "Data channel closed" << std::endl;
+    auto closeCallback = []() {
+        std::cout << "Events channel closed" << std::endl;
     };
 
     if (this->dc->isOpen())
@@ -116,32 +115,32 @@ void Peer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
     });
 }
 
-void Peer::SetRemoteDescription(rtc::Description description)
+void LibDatachannelPeer::SetRemoteDescription(rtc::Description description)
 {
     this->pc->setRemoteDescription(std::move(description));
 }
 
-void Peer::AddRemoteCandidate(rtc::Candidate candidate)
+void LibDatachannelPeer::AddRemoteCandidate(rtc::Candidate candidate)
 {
     this->pc->addRemoteCandidate(std::move(candidate));
 }
 
-const std::string& Peer::GetId() const
+const std::string& LibDatachannelPeer::GetId() const
 {
     return this->peerId;
 }
 
-bool Peer::IsConnected() const
+bool LibDatachannelPeer::IsConnected() const
 {
     return this->dc && this->dc->isOpen();
 }
 
-rtc::PeerConnection::State Peer::State()
+rtc::PeerConnection::State LibDatachannelPeer::State()
 {
     return this->pc->state();
 }
 
-void Peer::OnConnected(std::function<void()> callback)
+void LibDatachannelPeer::OnConnected(std::function<void()> callback)
 {
     if (this->IsConnected())
         callback();
@@ -149,12 +148,12 @@ void Peer::OnConnected(std::function<void()> callback)
         this->onConnectedCb = std::move(callback);
 }
 
-void Peer::OnStateChange(std::function<void(rtc::PeerConnection::State)> callback)
+void LibDatachannelPeer::OnStateChange(std::function<void(rtc::PeerConnection::State)> callback)
 {
     this->onStateChangeCb = std::move(callback);
 }
 
-void Peer::OnMessage(std::function<void(BaseMessage<MessageType>&)> callback)
+void LibDatachannelPeer::OnMessage(std::function<void(BaseMessage<MessageType>&)> callback)
 {
     this->onMessageCb = std::move(callback);
 }

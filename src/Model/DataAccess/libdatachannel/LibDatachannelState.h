@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Peer.h"
+#include "LibDatachannelPeer.h"
 #include <unordered_map>
 #include <utility>
 
@@ -15,11 +15,11 @@ public:
 
     void Reset();
 
-    void RegisterPeer(const std::shared_ptr<Peer>& peer);
+    void RegisterPeer(const std::shared_ptr<LibDatachannelPeer>& peer);
     void DestroyPeer(const std::string& peerId);
-    std::shared_ptr<Peer> GetPeer(const std::string& peerId);
+    std::shared_ptr<LibDatachannelPeer> GetPeer(const std::string& peerId);
 
 public:
     std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
-    std::unordered_map<std::string, std::shared_ptr<Peer>> peerMap;
+    std::unordered_map<std::string, std::shared_ptr<LibDatachannelPeer>> peerMap;
 };

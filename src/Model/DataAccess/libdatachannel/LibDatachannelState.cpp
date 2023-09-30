@@ -16,7 +16,7 @@ LibDatachannelState::~LibDatachannelState()
     this->Reset();
 }
 
-void LibDatachannelState::RegisterPeer(const std::shared_ptr<Peer>& peer)
+void LibDatachannelState::RegisterPeer(const std::shared_ptr<LibDatachannelPeer>& peer)
 {
     this->peerMap.insert_or_assign(peer->GetId(), peer);
 }
@@ -32,7 +32,7 @@ void LibDatachannelState::DestroyPeer(const std::string& peerId)
     this->peerMap.erase(pcIt);
 }
 
-std::shared_ptr<Peer> LibDatachannelState::GetPeer(const std::string& peerId)
+std::shared_ptr<LibDatachannelPeer> LibDatachannelState::GetPeer(const std::string& peerId)
 {
     auto pcIt = this->peerMap.find(peerId);
     if (pcIt == this->peerMap.end())

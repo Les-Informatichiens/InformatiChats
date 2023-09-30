@@ -94,8 +94,8 @@ add_executable(
         src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h
         src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.cpp
         src/Model/DataAccess/libdatachannel/LibDatachannelAPIEvents.h
-        src/Model/DataAccess/libdatachannel/Peer.cpp
-        src/Model/DataAccess/libdatachannel/Peer.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.h
         src/Model/MessageDispatcher.h
         src/Model/Models/PeerEventMessages.h
 )

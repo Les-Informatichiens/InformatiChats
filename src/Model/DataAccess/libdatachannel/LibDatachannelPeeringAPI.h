@@ -30,7 +30,7 @@ public:
     void OnPeerConnected(const std::string& peerId, std::function<void()> callback) override;
 
 private:
-    std::shared_ptr<Peer> CreatePeerConnection(const std::string&
+    std::shared_ptr<LibDatachannelPeer> CreatePeerConnection(const std::string&
                                                        connectionState);
 
 public:

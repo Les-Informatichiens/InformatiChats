@@ -67,16 +67,6 @@ void LibDatachannelPeeringAPI::Init(const PeeringConfig& peeringConfig)
 
 void LibDatachannelPeeringAPI::OpenPeerConnection(const std::string& peerId, std::function<void()> onReady)
 {
-    /*
-    if (auto pc = this->state.GetPeerConnection(peerId))
-    {
-        if (pc->state() == rtc::PeerConnection::State::Connected)
-        {
-            return;
-        }
-    }
-     */
-
     std::cout << "Offering to " + peerId << std::endl;
     auto peer = this->CreatePeerConnection(peerId);
     peer->OnConnected(onReady);
@@ -113,9 +103,9 @@ void LibDatachannelPeeringAPI::OnNewPeer(std::function<void(const std::string&)>
     this->onNewPeerCb = std::move(callback);
 }
 
-std::shared_ptr<Peer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId)
+std::shared_ptr<LibDatachannelPeer> LibDatachannelPeeringAPI::CreatePeerConnection(const std::string& peerId)
 {
-    auto peer = std::make_shared<Peer>(peerId, this->networkAPIEventBus, this->rtcConfig);
+    auto peer = std::make_shared<LibDatachannelPeer>(peerId, this->networkAPIEventBus, this->rtcConfig);
     this->state.RegisterPeer(peer);
     peer->OnStateChange([this, peerId](rtc::PeerConnection::State connectionState) {
         if (this->onPeerConnectionStateChangeCb)

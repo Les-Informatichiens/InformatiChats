@@ -16,18 +16,19 @@
 #include "zpp_bits.h"
 
 #include <utility>
-
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 
 
-class Peer
+static const std::string eventChannelName = "message";
+
+class LibDatachannelPeer
 {
 public:
-    Peer(const std::string& peerId, EventBus& eventBus, const rtc::Configuration& config);
-    ~Peer();
+    LibDatachannelPeer(const std::string& peerId, EventBus& eventBus, const rtc::Configuration& config);
+    ~LibDatachannelPeer();
 
     void Connect();
     void Disconnect();

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Model/DataAccess/libdatachannel/Peer.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelPeer.h"
 #include "Model/Models/PeerData.h"
 #include <functional>
 #include <string>
