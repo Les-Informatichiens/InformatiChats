@@ -101,6 +101,7 @@ void Peer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
             T m;
             m.Deserialize(payload);
             this->messageDispatcher.Dispatch(m);
+            this->onMessageCb(m);
         };
 
         switch (opcode)
@@ -151,4 +152,9 @@ void Peer::OnConnected(std::function<void()> callback)
 void Peer::OnStateChange(std::function<void(rtc::PeerConnection::State)> callback)
 {
     this->onStateChangeCb = std::move(callback);
+}
+
+void Peer::OnMessage(std::function<void(BaseMessage<MessageType>&)> callback)
+{
+    this->onMessageCb = std::move(callback);
 }
