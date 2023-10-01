@@ -19,8 +19,8 @@ jobs:
 
       - name: Setup Linux
         run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
+        # sudo apt-get update -y
+        # sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
 
       - name: Set up cache
         uses: actions/cache@v3
@@ -39,7 +39,7 @@ jobs:
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build -j 14
+          cmake --build ./build
 
   Build-Windows:
       runs-on: self-hosted
@@ -51,14 +51,14 @@ jobs:
 
         - name: Install Mingw32 cross-compiler
           run: |
-            sudo apt-get update
-            sudo apt-get install -y mingw-w64
-            export PATH="/usr/share/mingw-w64/bin:$PATH"
+          #  sudo apt-get update
+          #  sudo apt-get install -y mingw-w64
+          #  export PATH="/usr/share/mingw-w64/bin:$PATH"
 
         - name: Build App
           run: |
-              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build-windows -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-c++-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
-              cmake --build ./build-windows -j 14
+              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build-windows -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-gcc-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
+              cmake --build ./build-windows
 
         - name: Set up cache
           uses: actions/cache@v3
