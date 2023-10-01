@@ -99,9 +99,7 @@ void UserLogic::AddNewChatPeer(const std::string& peerId)
         this->peeringAPI.OnPeerMessage(peerId, [this, &peerId](auto& message) { this->HandlePeerMessage(peerId, std::forward<decltype((message))>(message)); });
 
         if (auto peer = this->GetPeer(peerId))
-            peer->ongoingExchanges.StartNewExchange(std::make_shared<TextRequestExchange>(
-                    TextRequestExchange::AwaitingResponse,
-                    [] {}));
+            peer->ongoingExchanges.StartNewExchange(std::make_shared<OfferTextRequestExchange>([] {}));
         this->peeringAPI.SendMessage(peerId, TextRequest{});
         CreateNewChatHistory(peerId);
     });
@@ -257,28 +255,43 @@ void UserLogic::HandlePeerMessage(const std::string& peerId, const BaseMessage<M
         }
         case TextRequest::opcode: {
 
-            if (peer->ongoingExchanges.StartNewExchange(std::make_shared<TextRequestExchange>(TextRequestExchange::AwaitingAck, [] {})))
+            if (peer->ongoingExchanges.StartNewExchange(std::make_shared<AnswerTextRequestExchange>([] {})))
             {
                 this->peeringAPI.SendMessage(peerId, TextRequestResponse{});
+            }
+            else
+            {
+                peer->ongoingExchanges.EndExchange(ExchangeType::TextRequestExchange);
+                this->peeringAPI.SendMessage(peerId, ResetExchange{});
             }
             break;
         }
         case TextRequestResponse::opcode: {
 
-            if (peer->ongoingExchanges.SetExchangeState(ExchangeType::TextRequestExchange, TextRequestExchange::State::Completed))
+            if (peer->ongoingExchanges.SetExchangeState(ExchangeType::TextRequestExchange, OfferTextRequestExchange::CompletedState::Make()))
             {
                 this->peeringAPI.SendMessage(peerId, TextResponseAck{});
                 this->textChatAPI.InitiateTextChat(peerId);
                 peer->ongoingExchanges.EndExchange(ExchangeType::TextRequestExchange);
             }
+            else
+            {
+                peer->ongoingExchanges.EndExchange(ExchangeType::TextRequestExchange);
+                this->peeringAPI.SendMessage(peerId, ResetExchange{});
+            }
             break;
         }
         case TextResponseAck::opcode: {
 
-            if (peer->ongoingExchanges.SetExchangeState(ExchangeType::TextRequestExchange, TextRequestExchange::State::Completed))
+            if (peer->ongoingExchanges.SetExchangeState(ExchangeType::TextRequestExchange, AnswerTextRequestExchange::CompletedState::Make()))
             {
                 this->textChatAPI.InitiateTextChat(peerId);
                 peer->ongoingExchanges.EndExchange(ExchangeType::TextRequestExchange);
+            }
+            else
+            {
+                peer->ongoingExchanges.EndExchange(ExchangeType::TextRequestExchange);
+                this->peeringAPI.SendMessage(peerId, ResetExchange{});
             }
             break;
         }
