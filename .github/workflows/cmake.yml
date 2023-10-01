@@ -57,7 +57,7 @@ jobs:
 
         - name: Build App
           run: |
-              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build-windows -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "MinGW Makefiles"
+              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build-windows -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
 
         - name: Set up cache
           uses: actions/cache@v3
