@@ -46,7 +46,8 @@ void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const
 
 void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 {
-    //    this->user.peerMap.emplace(peerId_, Peer{});
+    //TODO: refactor this
+    //this->user.peerMap.emplace(peerId_, Peer{});
 }
 
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
@@ -247,8 +248,8 @@ void UserLogic::HandlePeerMessage(const std::string& peerId, const BaseMessage<M
     switch (message.GetOpcode())
     {
         case ResetExchange::opcode: {
-            ExchangeType exchangeType = static_cast<ExchangeType>(static_cast<const class ResetExchange&>(message).exchangeType);
-            std::cout << "Exchange of type " << static_cast<int>(exchangeType) << " was reset by " << peer << std::endl;
+            auto exchangeType = static_cast<ExchangeType>(dynamic_cast<const class ResetExchange&>(message).exchangeType);
+            std::cout << "Exchange of type " << static_cast<int>(exchangeType) << " was reset by " << peerId << std::endl;
 
             peer->ongoingExchanges.EndExchange(exchangeType);
             break;
@@ -303,7 +304,7 @@ void UserLogic::RegisterPeer(Peer peer)
     this->user.peerMap.emplace(peer.username, std::move(peer));
 }
 
-Peer* UserLogic::GetPeer(std::string peerId)
+Peer* UserLogic::GetPeer(const std::string& peerId)
 {
     auto peerIt = this->user.peerMap.find(peerId);
     if (peerIt != this->user.peerMap.end())

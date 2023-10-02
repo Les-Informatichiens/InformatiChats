@@ -21,13 +21,19 @@ class ExchangeState
 public:
     virtual ~ExchangeState() = default;
 
+    template<typename T>
+    constexpr bool Is()
+    {
+        static_assert(!std::is_abstract_v<T>, "This should not be a base type.");
+        return dynamic_cast<T*>(this) != nullptr;
+    }
 };
 
 template<typename T>
 class ExchangeStateFactory
 {
 public:
-    static std::unique_ptr<T> Make() { return std::make_unique<T>(); };
+    static constexpr std::unique_ptr<T> Make() { return std::make_unique<T>(); };
 };
 
 class Exchange
@@ -68,8 +74,8 @@ public:
             }
         };
 
-        if (dynamic_cast<AwaitingResponseState*>(this->state.get()))
-            return result(dynamic_cast<CompletedState*>(newState_.get()) != nullptr, true);
+        if (this->state->Is<AwaitingResponseState>())
+            return result(newState_->Is<CompletedState>(), true);
         else
             return result(false);
     }
@@ -115,8 +121,8 @@ public:
             }
         };
 
-        if (dynamic_cast<AwaitingAckState*>(this->state.get()))
-            return result(dynamic_cast<CompletedState*>(newState_.get()) != nullptr, true);
+        if (this->state->Is<AwaitingAckState>())
+            return result(newState_->Is<CompletedState>(), true);
         else
             return result(false);
     }
@@ -141,7 +147,7 @@ public:
         return this->exchanges.emplace(exchange->Type(), std::move(exchange)).second;
     }
 
-    bool IsExchangeStarted(ExchangeType exchangeType)
+    bool IsExchangeActive(ExchangeType exchangeType)
     {
         return this->exchanges.contains(exchangeType);
     }
