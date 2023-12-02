@@ -28,10 +28,13 @@ int main(int, char**)
     auto configAPI = NlohmannJsonConfigAPI();
     UserLogic userLogic{user, chatAPI, localUsersAPI, configAPI};
 
+    //init command manager
+    CommandManager commandManager{};
+
     //init controller layer
-    auto chatController = ChatController(userLogic);
-    auto channelController = ChannelController(userLogic);
-    auto loginController = LoginController(userLogic);
+    auto chatController = ChatController(userLogic, commandManager);
+    auto channelController = ChannelController(userLogic, commandManager);
+    auto loginController = LoginController(userLogic, commandManager);
 
     //init view layer
     auto chatView = ChatView(chatController);

@@ -36,6 +36,7 @@ public:
     [[nodiscard]] const std::vector<UserData>& GetLocalUserInfos() const;
     [[nodiscard]] const std::string& GetUserName() const;
     [[nodiscard]] static const size_t& GetMaxNameLength();
+    [[nodiscard]] const std::string& GetSelectedPeerId() const;
     [[nodiscard]] const std::unordered_map<std::string, std::string>& GetConfig() const;
 
 private:

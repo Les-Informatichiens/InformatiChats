@@ -5,12 +5,15 @@
 #pragma once
 
 #include "IChatController.h"
+#include <Model/ApplicationLogic/Command/CommandManager.h>
 #include <Model/ApplicationLogic/UserLogic.h>
+
 
 class ChatController : public IChatController
 {
 public:
-    explicit ChatController(UserLogic& userLogic) : userLogic(userLogic){};
+    explicit ChatController(UserLogic& userLogic, CommandManager& commandManager)
+        : userLogic(userLogic), commandManager(commandManager){};
 
     ChatViewModel GetViewModel() override;
 
@@ -18,4 +21,5 @@ public:
 
 private:
     UserLogic& userLogic;
+    CommandManager& commandManager;
 };
