@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ChatMessage.h"
+#include "ChatMessageInfo.h"
 #include <Model/Models/PeerData.h>
 #include <chrono>
 #include <string>
@@ -8,7 +8,7 @@
 #include <vector>
 
 
-using ChatHistory = std::vector<ChatMessage>;
+using ChatHistory = std::vector<ChatMessageInfo>;
 
 class User
 {

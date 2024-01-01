@@ -33,7 +33,7 @@ void UserLogic::AppendSelectedChatHistory(const std::string& message)
     }
 }
 
-void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessage& chatMessage)
+void UserLogic::AddChatMessageToPeerChatHistory(const std::string& peerId, const ChatMessageInfo& chatMessage)
 {
     auto chatHistory = this->user.chatHistories.find(peerId);
     if (chatHistory != this->user.chatHistories.end())
@@ -48,11 +48,11 @@ void UserLogic::CreateNewChatHistory(const std::string& peerId_)
 void UserLogic::UpdatePeerState(const std::string& peerId, const ConnectionState& state)
 {
     auto result = this->user.peerDataMap.insert({peerId, {}});
-    if (state == ConnectionState::Failed || state == ConnectionState::Closed || state == ConnectionState::Disconnected)
-    {
-        this->user.peerDataMap.erase(result.first->first);
-        return;
-    }
+    //    if (state == ConnectionState::Failed || state == ConnectionState::Closed)
+    //    {
+    //        this->user.peerDataMap.erase(result.first->first);
+    //        return;
+    //    }
     result.first->second.connectionState = state;
 }
 
@@ -73,7 +73,7 @@ const std::string& UserLogic::GetUserName() const
 
 void UserLogic::SendTextMessage(const std::string& message)
 {
-    this->chatAPI.SendMessageToPeer(this->user.selectedChat, message);
+    this->textChatAPI.SendMessageToPeer(this->user.selectedChat, message);
 }
 
 const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() const
@@ -83,8 +83,12 @@ const std::unordered_map<std::string, PeerData>& UserLogic::GetPeerDataMap() con
 
 void UserLogic::AddNewChatPeer(const std::string& peerId)
 {
-    this->chatAPI.AttemptToConnectToPeer(peerId);
-    CreateNewChatHistory(peerId);
+    this->peeringAPI.OpenPeerConnection(peerId, [this, peerId] {
+        std::cout << "Communications with " << peerId << "are READY.";
+        this->peeringAPI.OnPeerMessage(peerId, [this, &peerId](auto& message) { this->HandlePeerMessage(peerId, std::forward<decltype((message))>(message)); });
+        this->peeringAPI.SendMessage(peerId, TextRequest{});
+        CreateNewChatHistory(peerId);
+    });
 }
 
 void UserLogic::SetSelectedPeerId(const std::string& peerId)
@@ -115,38 +119,55 @@ bool UserLogic::LoginWithNewUser(const std::string& username_, const std::string
         return false;
 
     this->Reset(username_);
-    this->chatAPI.Reset();
+    this->connectionAPI.Disconnect();
 
-    this->chatAPI.SetOnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
+    this->peeringAPI.OnPeerConnectionStateChange([this](const PeerConnectionStateChangeEvent& e) {
         this->UpdatePeerState(e.peerId, e.connectionState);
         if (e.connectionState == ConnectionState::Connected)
         {
             this->CreateNewChatHistory(e.peerId);
         }
     });
-    this->chatAPI.SetOnMessageReceived([this](const ChatMessage& e) {
+    this->textChatAPI.OnChatMessage([this](const ChatMessageInfo& e) {
         this->IncrementPeerUnreadMessageCount(e.senderId);
-        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content,
-                                                           duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()),
-                                                           e.senderId});
+        this->AddChatMessageToPeerChatHistory(e.senderId, {e.content, e.timestamp, e.senderId});
     });
 
     // re-init the new chat client
     const std::string stunServer = "stun.l.google.com";
     const std::string stunServerPort = "19302";
-    const std::string signalingServer = "informatichiens.com";
-    const std::string signalingServerPort = "51337";
-    ConnectionConfig config = {stunServer, stunServerPort, signalingServer, signalingServerPort};
-    this->chatAPI.Init(config);
+    const std::string signalingServer = "localhost";
+    const std::string signalingServerPort = "8000";
+    ConnectionConfig connectionConfig = {signalingServer, signalingServerPort};
+    PeeringConfig peeringConfig = {stunServer, stunServerPort};
+    this->connectionAPI.Init(connectionConfig);
+    this->peeringAPI.Init(peeringConfig);
 
-    this->chatAPI.AttemptConnectionWithUsername(this->GetUserName());
+    this->connectionAPI.ConnectWithUsername(this->GetUserName());
 
+    bool approveAllIncomingRequests = true;
+    this->peeringAPI.OnPeerRequest([this, approveAllIncomingRequests](const std::string& peerId) {
+        std::cout << "Peer request received from " << peerId << std::endl;
+
+        if (approveAllIncomingRequests)
+        {
+            return true;
+        }
+        return false;
+    });
+    this->peeringAPI.OnNewPeer([this](const std::string& peerId) {
+        this->peeringAPI.OnPeerConnected(peerId, [this, peerId] {
+            this->peeringAPI.OnPeerMessage(peerId, [this, peerId](BaseMessage<MessageType>& message) {
+                this->HandlePeerMessage(peerId, message);
+            });
+        });
+    });
     return true;
 }
 
 bool UserLogic::IsClientConnected() const
 {
-    return this->chatAPI.IsConnected();
+    return this->connectionAPI.IsConnected();
 }
 
 bool UserLogic::CreateNewUser(const std::string& username_, const std::string& password_)
@@ -199,4 +220,20 @@ const std::vector<UserData>& UserLogic::GetLocalUserInfos() const
 const std::string& UserLogic::GetSelectedPeerId() const
 {
     return this->user.selectedChat;
+}
+
+void UserLogic::HandlePeerMessage(const std::string& peerId, const BaseMessage<MessageType>& message)
+{
+    switch (message.GetOpcode())
+    {
+        case TextRequest::opcode: {
+            this->textChatAPI.InitiateTextChat(peerId);
+            this->peeringAPI.SendMessage(peerId, TextResponse{});
+            break;
+        }
+        case TextResponse::opcode: {
+            this->textChatAPI.InitiateTextChat(peerId);
+            break;
+        }
+    }
 }

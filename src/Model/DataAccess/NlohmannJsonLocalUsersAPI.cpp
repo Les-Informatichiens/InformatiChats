@@ -5,6 +5,7 @@
 #include "NlohmannJsonLocalUsersAPI.h"
 #include <Model/Models/UserData.h>
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 
@@ -29,16 +30,24 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
     std::vector<UserData> users;
     for (auto& [username, user]: data.items())
     {
-        UserData userData;
-        userData.permanentUsername = username;
-        userData.encryptedPassword = user["encryptedPassword"];
-        userData.publicIdentificationKey = user["publicIdentificationKey"];
-        userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
-        userData.profile.displayName = user["profile"]["displayName"];
-        userData.profile.description = user["profile"]["description"];
-        userData.profile.status = user["profile"]["status"];
-        userData.profile.nameColor = user["profile"]["nameColor"];
-        users.push_back(userData);
+        try
+        {
+            UserData userData;
+            userData.permanentUsername = username;
+            userData.encryptedPassword = user["encryptedPassword"];
+            userData.publicIdentificationKey = user["publicIdentificationKey"];
+            userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
+            userData.profile.displayName = user["profile"]["displayName"];
+            userData.profile.description = user["profile"]["description"];
+            userData.profile.status = user["profile"]["status"];
+            userData.profile.nameColor = user["profile"]["nameColor"];
+            users.push_back(userData);
+        }
+        catch (const nlohmann::json::exception& e)
+        {
+            std::cout << "Error parsing user \"" << username << "\": "<< e.what() << std::endl;
+            continue;
+        }
     }
     this->localUserInfos = std::move(users);
 }

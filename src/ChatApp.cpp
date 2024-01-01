@@ -62,7 +62,7 @@ void ChatApp::Update()
 
     // Prepares the main pannel with all child panels for rendering
     UpdateMainPanel();
-
+    test();
     // Render the frame
     RenderFrame();
 

@@ -1,9 +1,12 @@
+#include "Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelState.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h"
 #include <ChatApp.h>
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/LoginController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
-#include <Model/DataAccess/LibDataChannelChatAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
@@ -22,9 +25,13 @@ int main(int, char**)
 {
     //init model layer
     User user{};
-    auto chatAPI = LibDataChannelChatAPI();
+    auto libdatachannelState = LibDatachannelState();
+    auto libDatachannelEventBus = EventBus();
+    auto connectionAPI = LibDatachannelConnectionAPI(libdatachannelState, libDatachannelEventBus);
+    auto textChatAPI = LibDatachannelTextChatAPI(libdatachannelState, libDatachannelEventBus);
+    auto peeringAPI = LibDatachannelPeeringAPI(libdatachannelState, libDatachannelEventBus);
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
-    UserLogic userLogic{user, chatAPI, localUsersAPI};
+    UserLogic userLogic{user, connectionAPI, peeringAPI, textChatAPI, localUsersAPI};
 
     //init command manager
     CommandManager commandManager{};
@@ -61,6 +68,23 @@ int main(int, char**)
     app.AddView(chatView);
     app.AddView(loginView);
 
+    app.test = [&libdatachannelState, &textChatAPI, &peeringAPI] {
+        ImGui::Begin("Test");
+        for (const auto& peerConnection: libdatachannelState.peerMap)
+        {
+            ImGui::Separator();
+            ImGui::Text("%s", peerConnection.first.c_str());
+            ImGui::SameLine();
+            ImGui::Text("%d", peerConnection.second->State());
+            auto textchannelid = textChatAPI.textChannelMap.contains(peerConnection.first) ? (textChatAPI.textChannelMap.at(peerConnection.first) ? textChatAPI.textChannelMap.at(peerConnection.first)->isOpen() : -1) : -1;
+            ImGui::Text("TChannel: %d", textchannelid);
+            auto channelid = libdatachannelState.peerMap.contains(peerConnection.first) ? libdatachannelState.peerMap.at(peerConnection.first)->IsConnected() : -1;
+            ImGui::Text("Channel: %d", channelid);
+        }
+
+
+        ImGui::End();
+    };
     app.Run();
 
     return 0;

@@ -52,9 +52,6 @@ add_executable(
         src/Model/ApplicationLogic/UserLogic.cpp
         src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
-        src/Model/DataAccess/IChatAPI.h
-        src/Model/DataAccess/LibDataChannelChatAPI.cpp
-        src/Model/DataAccess/LibDataChannelChatAPI.h
         src/Model/Models/User.h
         src/Model/Models/PeerData.h
         src/View/Backend/IWindow.h
@@ -84,6 +81,23 @@ add_executable(
         src/Model/ApplicationLogic/Command/CommandManager.h
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
+        src/Model/DataAccess/IConnectionAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.h
+        src/Model/DataAccess/ITextChatAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h
+        src/Model/Models/ChatMessageInfo.h
+        src/Model/DataAccess/IPeeringAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelAPIEvents.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.h
+        src/Model/MessageDispatcher.h
+        src/Model/Models/PeerEventMessages.h
 )
 
 target_include_directories(
