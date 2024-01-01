@@ -128,7 +128,7 @@ include(cmake/CPM.cmake)
 if (NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
             NAME "LibDataChannel"
-            VERSION "0.18.5"
+            VERSION "0.19.4"
             GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
     )
 endif ()
@@ -140,7 +140,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE LibDataChannel::LibDataChannelStat
 if (NOT TARGET nlohmann_json::nlohmann_json)
     CPMFindPackage(
             NAME "nlohmann_json"
-            VERSION "3.11.2"
+            VERSION "3.11.3"
             GITHUB_REPOSITORY "nlohmann/json"
     )
 endif ()
@@ -197,7 +197,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 CPMAddPackage(
         NAME "zpp_bits"
         GITHUB_REPOSITORY "eyalz800/zpp_bits"
-        VERSION "4.4.19"
+        VERSION "4.4.20"
 )
 if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
