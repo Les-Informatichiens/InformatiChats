@@ -9,27 +9,18 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  Build:
-    runs-on: ${{ matrix.os }}
+  Build-Linux:
+    runs-on: self-hosted
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            generator: Ninja
-            compiler: msvc
-          - os: ubuntu-latest
-            generator: Ninja
-            compiler: gcc
+
     steps:
       - uses: actions/checkout@v3
-      - uses: ilammy/msvc-dev-cmd@v1
 
       - name: Setup Linux
-        if: matrix.os == 'ubuntu-latest'
         run: |
-          sudo apt-get update -y
-          sudo apt-get install ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
+        # sudo apt-get update -y
+        # sudo apt-get install -y ninja-build libgl1-mesa-dev libegl1-mesa-dev xorg-dev libglu1-mesa-dev
 
       - name: Set up cache
         uses: actions/cache@v3
@@ -48,10 +39,33 @@ jobs:
       - name: Build CMake
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
-          cmake --build ./build -j 14
+          cmake --build ./build
 
-    #- name: Test
-    #  working-directory: ${{github.workspace}}/build
-    #  # Execute tests defined by the CMake configuration.
-    #  # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-    #  run: ctest -C ${{env.BUILD_TYPE}}
+  Build-Windows:
+      runs-on: self-hosted
+      strategy:
+        fail-fast: false
+
+      steps:
+        - uses: actions/checkout@v3
+
+        - name: Install Mingw32 cross-compiler
+          run: |
+          #  sudo apt-get update
+          #  sudo apt-get install -y mingw-w64
+          #  export PATH="/usr/share/mingw-w64/bin:$PATH"
+
+        - name: Build App
+          run: |
+              cmake -DCPM_SOURCE_CACHE=~/cpm-cache -S . -B ./build-windows -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++-win32 -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Ninja"
+
+        - name: Set up cache
+          uses: actions/cache@v3
+          with:
+            path: |
+              ~/cpm-cache
+            key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
+            restore-keys: |
+              ${{ runner.os }}-cpm-
+  
+      
