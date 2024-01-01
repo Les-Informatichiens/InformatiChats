@@ -35,6 +35,12 @@ public:
 
     void SendMessage(const BaseMessage<MessageType>& message);
 
+    template<typename... Ts, typename Handler>
+    void SubscribeEvent(Handler&& handler)
+    {
+        this->messageDispatcher.RegisterHandler<Ts...>(std::forward<Handler>(handler));
+    }
+
     template<typename T, typename Handler>
     void SubscribeEvent(Handler&& handler)
     {
@@ -47,6 +53,7 @@ public:
     void AddRemoteCandidate(rtc::Candidate candidate);
 
     [[nodiscard]] const std::string& GetId() const;
+    [[nodiscard]] std::optional<std::string> GetIpAddress() const;
     [[nodiscard]] bool IsConnected() const;
     [[nodiscard]] rtc::PeerConnection::State State();
 

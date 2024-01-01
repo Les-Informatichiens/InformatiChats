@@ -112,7 +112,7 @@ void LibDatachannelConnectionAPI::ConnectWithUsername(const std::string& usernam
         }
     });
 
-    const std::string wsPrefix = "ws://";
+    const std::string wsPrefix = "wss://";
     const std::string url = wsPrefix + this->signalingServer + ":" +
                             this->signalingServerPort + "/" + username_;
 

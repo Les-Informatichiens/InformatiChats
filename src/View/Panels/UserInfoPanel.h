@@ -4,21 +4,29 @@
 
 #pragma once
 
+#include "Controller/IUserController.h"
 #include "IPanel.h"
 #include "imgui.h"
-#include <Controller/IChannelController.h>
+#include "misc/cpp/imgui_stdlib.h"
+
 #include <ctime>
 #include <glm/glm.hpp>
 
 class UserInfoPanel : public IPanel
 {
 public:
-    explicit UserInfoPanel(IChannelController& controller);
+    explicit UserInfoPanel(IUserController& controller);
 
     void Draw() override;
     void Update() override;
     bool IsVisible() override;
 
 private:
-    IChannelController& controller;
+    IUserController& controller;
+
+    std::string displayNameBuf;
+    std::string descriptionBuf;
+    std::string statusBuf;
+    float colorBuf[3];
+
 };

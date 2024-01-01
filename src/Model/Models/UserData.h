@@ -5,7 +5,9 @@
 #pragma once
 
 #include <array>
+#include <map>
 #include <string>
+#include <vector>
 
 
 /**
@@ -16,7 +18,15 @@ struct UserProfile
     std::string displayName;
     std::string description;
     std::string status;
-    std::array<uint8_t, 3> nameColor;
+    std::array<float, 3> nameColor;
+};
+
+struct ContactData
+{
+    std::string permanentUsername;
+    std::string publicIdentificationKey;
+    uint64_t lastSeen{};
+    UserProfile profile;
 };
 
 /**
@@ -29,4 +39,5 @@ struct UserData
     std::string publicIdentificationKey;
     std::string encryptedPrivateIdentificationKey;
     UserProfile profile;
+    std::map<std::string, ContactData> contacts;
 };

@@ -31,7 +31,7 @@ public:
     template<typename T>
     void Publish(const T& eventData)
     {
-        if (subscribers.find(eventData.eventType) != subscribers.end())
+        if (subscribers.contains(eventData.eventType))
         {
             for (const auto& callback: subscribers[eventData.eventType])
             {
@@ -41,5 +41,5 @@ public:
     }
 
 private:
-    std::map<std::string, std::vector<std::function<void(const EventData&)>>> subscribers;
+    std::map<std::string, std::vector<std::function<void(const EventData&)>>> subscribers{};
 };

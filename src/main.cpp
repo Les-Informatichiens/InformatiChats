@@ -2,10 +2,12 @@
 #include "Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h"
 #include "Model/DataAccess/libdatachannel/LibDatachannelState.h"
 #include "Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h"
+#include "util/crypto/CryptoTest.h"
 #include <ChatApp.h>
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/LoginController.h>
+#include <Controller/UserController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
@@ -20,9 +22,72 @@
 #include <View/Views/ChatView.h>
 #include <View/Views/LoginView.h>
 
+
+// #include <sol/sol.hpp>
+// #include <sol/assert.hpp>
+
 // Main code
 int main(int, char**)
 {
+    //
+    // sol::state lua;
+    // lua.open_libraries(sol::lib::base);
+    // auto result = lua.script_file("myscript.lua", sol::script_pass_on_error);
+    // if (!result.valid())
+    // {
+    //     sol::error err = result;
+    //     std::cerr << err.what() << std::endl;
+    // }
+    // auto func = lua.get<sol::protected_function>("update");
+    //
+    // // run a script, get the result
+    // int value = lua.script("return 54");
+    // sol_c_assert(value == 54);
+
+//
+//    // Your exists class
+//    class Cat
+//    {
+//    public:
+//        Cat() = default;
+//        explicit Cat(std::string a): name(std::move(a)) {};
+//        virtual ~Cat() = default;
+//    public:
+//        void setName(const std::string& name_) { name = name_; };
+//        const std::string& getName() const { return name; };
+//        void eat(const std::list<std::string>& foods) {
+//                std::cout << getName() << " has eaten " << foods.size() << " foods" << std::endl;
+//        };
+//        static void speak(const std::string& w) {
+//                std::cout << "Cat has" << " said: " << w << std::endl;
+//        };
+//        //...
+//    private:
+//        std::string name;
+//        //...
+//    };
+//
+//
+//    lua_State * L = luaL_newstate(); // create and init lua
+//
+//    // To export it:
+//    LuaClass<Cat> luaCat(L, "AwesomeCat");
+//    luaCat.ctor<std::string>();
+//    luaCat.fun("setName", &Cat::setName);
+//    luaCat.fun("getName", &Cat::getName);
+//    luaCat.fun("eat", &Cat::eat);
+//    // static mmember fuction was exported as Lua class member fuction.
+//    // from Lua, call it as same as other member fuctions.
+//    luaCat.fun("speak", &Cat::speak);
+//    luaCat.def("tag", "Cat");
+//
+//    // Load and execute Lua code
+//    luaL_openlibs(L); // Load standard Lua libraries
+//    luaL_dofile(L, "myscript.lua"); // Execute a Lua script
+//
+//    // Close the LuaJIT state when done
+//    lua_close(L);
+
     //init model layer
     User user{};
     auto libdatachannelState = LibDatachannelState();
@@ -31,7 +96,9 @@ int main(int, char**)
     auto textChatAPI = LibDatachannelTextChatAPI(libdatachannelState, libDatachannelEventBus);
     auto peeringAPI = LibDatachannelPeeringAPI(libdatachannelState, libDatachannelEventBus);
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
-    UserLogic userLogic{user, connectionAPI, peeringAPI, textChatAPI, localUsersAPI};
+
+    UserDataManager userDataManager(user, localUsersAPI);
+    UserLogic userLogic{userDataManager, connectionAPI, peeringAPI, textChatAPI, localUsersAPI};
 
     //init command manager
     CommandManager commandManager{};
@@ -40,6 +107,7 @@ int main(int, char**)
     auto chatController = ChatController(userLogic, commandManager);
     auto channelController = ChannelController(userLogic, commandManager);
     auto loginController = LoginController(userLogic, commandManager);
+    auto userController = UserController(userLogic);
 
     //init view layer
     auto chatView = ChatView(chatController);
@@ -48,7 +116,7 @@ int main(int, char**)
 
     //init panels
     auto channelPanel = ChannelPanel(channelController);
-    auto userInfoPanel = UserInfoPanel(channelController);
+    auto userInfoPanel = UserInfoPanel(userController);
     auto chatPanel = ChatPanel(chatController);
     auto loginPanel = LoginPanel(loginController);
 
@@ -70,6 +138,7 @@ int main(int, char**)
 
     app.test = [&libdatachannelState, &textChatAPI, &peeringAPI] {
         ImGui::Begin("Test");
+        // func();
         for (const auto& peerConnection: libdatachannelState.peerMap)
         {
             ImGui::Separator();

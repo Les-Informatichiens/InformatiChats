@@ -100,6 +100,18 @@ add_executable(
         src/Model/Models/PeerEventMessages.h
         src/Model/Models/Exchange.cpp
         src/Model/Models/Exchange.h
+        src/util/crypto/Hashing.cpp
+        src/util/crypto/Hashing.h
+        src/Model/ApplicationLogic/UserEventManager.cpp
+        src/Model/ApplicationLogic/UserEventManager.h
+        src/Model/ApplicationLogic/PeerManager.cpp
+        src/Model/ApplicationLogic/PeerManager.h
+        src/Model/ApplicationLogic/UserDataManager.cpp
+        src/Model/ApplicationLogic/UserDataManager.h
+        src/Controller/UserController.cpp
+        src/Controller/UserController.h
+        src/Controller/IUserController.h
+        src/Controller/ViewModels/UserViewModel.h
 )
 
 target_include_directories(
@@ -198,6 +210,37 @@ if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
 endif ()
 # =====================================================================================================
+
+## lua =================================================================================================
+#CPMAddPackage(
+#        NAME "lua"
+#        GITHUB_REPOSITORY "9chu/LuaJIT-cmake"
+#        GIT_TAG "master"
+#)
+#target_link_libraries(${PROJECT_NAME} PRIVATE liblua-static)
+## =====================================================================================================
+
+## luaaa ===============================================================================================
+#CPMAddPackage(
+#        NAME "luaaa"
+#        GITHUB_REPOSITORY "jwric/luaaa"
+#        VERSION "1.0.1"
+#)
+#
+#if (luaaa_ADDED)
+#    target_include_directories(${PROJECT_NAME} PRIVATE ${luaaa_SOURCE_DIR})
+#endif ()
+## =====================================================================================================
+
+## lua =================================================================================================
+#CPMAddPackage(
+#        NAME "sol2"
+#        GITHUB_REPOSITORY "ThePhD/sol2"
+#        VERSION "3.3.0"
+#)
+#target_link_libraries(${PROJECT_NAME} PRIVATE sol2::sol2)
+## =====================================================================================================
+
 
 # tr-and-slate-or =====================================================================================
 if (NOT TARGET trandslateor)

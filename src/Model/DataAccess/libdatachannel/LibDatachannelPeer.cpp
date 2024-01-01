@@ -117,6 +117,30 @@ void LibDatachannelPeer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
             case TextResponseAck::opcode:
                 dispatchPayload.template operator()<TextResponseAck>();
                 break;
+            case AuthChallengeRequest::opcode:
+                dispatchPayload.template operator()<AuthChallengeRequest>();
+                break;
+            case AuthChallengeAnswer::opcode:
+                dispatchPayload.template operator()<AuthChallengeAnswer>();
+                break;
+            case ContactRequest::opcode:
+                dispatchPayload.template operator()<ContactRequest>();
+                break;
+            case ContactRequestResponse::opcode:
+                dispatchPayload.template operator()<ContactRequestResponse>();
+                break;
+            case UserProfileRequest::opcode:
+                dispatchPayload.template operator()<UserProfileRequest>();
+                break;
+            case UserProfileRequestResponse::opcode:
+                dispatchPayload.template operator()<UserProfileRequestResponse>();
+                break;
+            case PublicKeyRequest::opcode:
+                dispatchPayload.template operator()<PublicKeyRequest>();
+                break;
+            case PublicKeyRequestResponse::opcode:
+                dispatchPayload.template operator()<PublicKeyRequestResponse>();
+                break;
         }
     });
 }
@@ -134,6 +158,11 @@ void LibDatachannelPeer::AddRemoteCandidate(rtc::Candidate candidate)
 const std::string& LibDatachannelPeer::GetId() const
 {
     return this->peerId;
+}
+
+std::optional<std::string> LibDatachannelPeer::GetIpAddress() const
+{
+    return this->pc->remoteAddress();
 }
 
 bool LibDatachannelPeer::IsConnected() const

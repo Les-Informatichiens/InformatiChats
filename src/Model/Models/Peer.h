@@ -22,11 +22,15 @@ public:
     }
 private:
     std::string username;
-    PeerData peerData;
+    std::string verifiedPublicKey;
+    std::string ipAddress;
+
+    PeerData peerData{};
     ChatHistory chatHistory;
 
-    OngoingExchanges ongoingExchanges;
+    ExchangeManager ongoingExchanges;
 
     friend class User;
     friend class UserLogic;
+    friend class UserDataManager;
 };

@@ -18,6 +18,8 @@ public:
     ChatViewModel GetViewModel() override;
 
     void SendMessage(const std::string& message) override;
+    void AddPeerAsContact(const std::string& peerId) override;
+    void RemovePeerFromContacts(const std::string& peerId) override;
 
 private:
     UserLogic& userLogic;

@@ -23,6 +23,14 @@ template<typename TypeEnum>
 class MessageDispatcher
 {
 public:
+
+    template<typename... T, typename Handler>
+    void RegisterHandler(Handler&& handler)
+    {
+        ((handlers_[T::opcode] = std::make_unique<MessageHandler<T, Handler>>(
+                std::forward<Handler>(handler))), ...);
+    }
+
     template<typename T, typename Handler>
     void RegisterHandler(Handler&& handler)
     {

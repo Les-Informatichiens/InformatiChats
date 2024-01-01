@@ -88,6 +88,15 @@ void LibDatachannelPeeringAPI::SendMessage(const std::string& peerId, const Base
     }
 }
 
+std::optional<std::string> LibDatachannelPeeringAPI::GetPeerIpAddress(const std::string& peerId)
+{
+    if (const auto peer = this->state.GetPeer(peerId))
+    {
+        return peer->GetIpAddress();
+    }
+    return std::nullopt;
+}
+
 void LibDatachannelPeeringAPI::OnPeerConnectionStateChange(std::function<void(PeerConnectionStateChangeEvent)> callback)
 {
     this->onPeerConnectionStateChangeCb = std::move(callback);
@@ -112,6 +121,13 @@ std::shared_ptr<LibDatachannelPeer> LibDatachannelPeeringAPI::CreatePeerConnecti
             this->onPeerConnectionStateChangeCb(PeerConnectionStateChangeEvent{peerId, static_cast<ConnectionState>(connectionState)});
     });
     this->networkAPIEventBus.Publish(OnNewPeerEvent{peer});
+
+    peer->SubscribeEvent<TextRequest,
+                         TextRequestResponse,
+                         TextResponseAck>(
+            [](const BaseMessage<MessageType>& message) {
+                std::cout << "Message of TYPE " << static_cast<int>(message.GetOpcode()) << " received!" << std::endl;
+            });
     return peer;
 }
 

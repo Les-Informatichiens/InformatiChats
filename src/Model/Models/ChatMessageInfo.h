@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <Model/Models/UserData.h>
 
-#include "ChatMessage.h"
 #include <chrono>
 #include <string>
 
@@ -14,4 +14,5 @@ struct ChatMessageInfo
     std::string content;
     std::chrono::milliseconds timestamp;
     std::string senderId;
+    UserProfile senderProfile;
 };

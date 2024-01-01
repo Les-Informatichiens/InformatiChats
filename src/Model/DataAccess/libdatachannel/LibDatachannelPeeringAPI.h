@@ -23,6 +23,8 @@ public:
 
     void SendMessage(const std::string& peerId, const BaseMessage<MessageType>& message) override;
 
+    [[nodiscard]] std::optional<std::string> GetPeerIpAddress(const std::string& peerId) override;
+
     void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
     void OnPeerRequest(std::function<bool(const std::string&)> callback) override;
     void OnNewPeer(std::function<void(const std::string&)> callback) override;

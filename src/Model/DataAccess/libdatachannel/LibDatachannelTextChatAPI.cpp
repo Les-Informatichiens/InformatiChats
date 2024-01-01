@@ -27,7 +27,7 @@ void LibDatachannelTextChatAPI::SendMessageToPeer(const std::string& peerId, con
     {
         return;
     }
-    uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    const uint64_t timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     dcIt->second->send(ChatMessage::Serialize(ChatMessage{message, timestamp}));
 }
 
@@ -83,7 +83,7 @@ void LibDatachannelTextChatAPI::RegisterTextChannel(const std::string& peerId, c
 
     tc->onMessage([this, peerId](auto data) {
         ChatMessage message = ChatMessage::Deserialize(std::get<rtc::binary>(data));
-        this->onMessageReceivedCallback(ChatMessageInfo{std::move(message.content), std::chrono::milliseconds(message.timestamp), peerId});
+        this->onMessageReceivedCallback(ChatMessageInfo{std::move(message.content), std::chrono::milliseconds(message.timestamp), peerId, {}});
     });
 
     tc->onError([peerId](auto error) {

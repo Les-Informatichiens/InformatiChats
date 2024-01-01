@@ -5,6 +5,7 @@
 #pragma once
 
 #include <cstddef>
+#include <Model/Models/UserData.h>
 
 
 enum ConnectionState
@@ -19,6 +20,8 @@ enum ConnectionState
 
 struct PeerData
 {
-    size_t unreadMessageCount;
-    ConnectionState connectionState;
+    UserProfile profile;
+    size_t unreadMessageCount = 0;
+    ConnectionState connectionState{};
+    bool authenticated = false;
 };
