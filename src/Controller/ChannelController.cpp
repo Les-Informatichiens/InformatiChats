@@ -27,3 +27,12 @@ void ChannelController::SetSelectedPeerId(const std::string& peerId_)
             this->userLogic.GetSelectedPeerId(),
             peerId_));
 }
+void ChannelController::SetIsCurrentlyEditingConfigs(bool currentlyEditingConfigs_)
+{
+    this->configLogic.SetIsCurrentlyEditingConfigs(currentlyEditingConfigs_);
+}
+
+bool ChannelController::IsCurrentlyEditingConfigs() const
+{
+    return this->configLogic.IsCurrentlyEditingConfigs();
+}

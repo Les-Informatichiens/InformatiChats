@@ -203,5 +203,5 @@ const std::string& UserLogic::GetSelectedPeerId() const
 
 const std::unordered_map<std::string, std::string>& UserLogic::GetConfig() const
 {
-    return this->configAPI.GetConfig();
+    return this->configAPI.GetConfigs();
 }

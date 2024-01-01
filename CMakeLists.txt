@@ -87,6 +87,24 @@ add_executable(
         src/Model/DataAccess/IConfigAPI.h
         src/Model/DataAccess/NlohmannJsonConfigAPI.cpp
         src/Model/DataAccess/NlohmannJsonConfigAPI.h
+        src/Model/ConfigUtils/IConfigGenerator.h
+        src/Model/ConfigUtils/IConfigGenerator.h
+        src/Model/ConfigUtils/DefaultConfigGenerator.h
+        src/Model/ConfigUtils/ConfigEntry.h
+        src/Model/ApplicationLogic/ConfigLogic.h
+        src/Controller/IConfigController.h
+        src/Controller/ConfigController.cpp
+        src/Controller/ConfigController.h
+        src/Controller/ViewModels/ConfigViewModel.h
+        src/Model/Models/ConfigSchema.h
+        src/View/Views/ConfigView.cpp
+        src/View/Views/ConfigView.h
+        src/View/Panels/ConfigPanel.cpp
+        src/View/Panels/ConfigPanel.h
+        src/Model/ConfigUtils/validators/Validator.h
+        src/Model/ConfigUtils/validators/RangeValidator.hpp
+        src/Model/ConfigUtils/validators/StringLengthValidator.hpp
+        src/Model/ConfigUtils/ConfigType.h
 )
 
 target_include_directories(

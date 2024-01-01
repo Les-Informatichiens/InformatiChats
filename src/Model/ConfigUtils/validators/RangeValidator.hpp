@@ -16,7 +16,7 @@ public:
 
     bool validate(const ConfigType& value) override
     {
-        if(!std::holds_alternative<int>(value))
+        if (!std::holds_alternative<int>(value))
         {
             std::cerr << "Int range validator can only be used on ints" << std::endl;
             return false;
@@ -40,7 +40,7 @@ public:
 
     bool validate(const ConfigType& value) override
     {
-        if(!std::holds_alternative<double>(value))
+        if (!std::holds_alternative<double>(value))
         {
             std::cerr << "Double range validator can only be used on doubles" << std::endl;
             return false;
@@ -64,7 +64,7 @@ public:
 
     bool validate(const ConfigType& value) override
     {
-        if(!std::holds_alternative<float>(value))
+        if (!std::holds_alternative<float>(value))
         {
             std::cerr << "Float range validator can only be used on floats" << std::endl;
             return false;

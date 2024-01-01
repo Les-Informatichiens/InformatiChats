@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <variant>
 #include <string>
+#include <variant>
 
 typedef std::variant<int, double, float, std::string, bool> ConfigType;

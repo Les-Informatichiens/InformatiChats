@@ -18,7 +18,7 @@ public:
 
     bool validate(const ConfigType& value) override
     {
-        if(!std::holds_alternative<std::string>(value))
+        if (!std::holds_alternative<std::string>(value))
         {
             std::cerr << "String length validator can only be used on strings" << std::endl;
             return false;

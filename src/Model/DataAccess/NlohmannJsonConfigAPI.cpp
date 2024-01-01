@@ -1,5 +1,5 @@
 //
-// Created by fofi1 on 2023-09-16.
+// Created by thierrycd on 2023-09-16.
 //
 
 #include "NlohmannJsonConfigAPI.h"
@@ -47,7 +47,7 @@ void NlohmannJsonConfigAPI::SaveConfig() const
     }
 }
 
-const std::unordered_map<std::string, std::string>& NlohmannJsonConfigAPI::GetConfig() const
+const std::unordered_map<std::string, std::string>& NlohmannJsonConfigAPI::GetConfigs() const
 {
     return this->config;
 }

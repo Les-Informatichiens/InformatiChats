@@ -11,7 +11,7 @@
 class UserLogic
 {
 public:
-    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI, IConfigAPI& configAPI)
+    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI)
         : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI), configAPI(configAPI){};
 
     void Reset(const std::string& username);
