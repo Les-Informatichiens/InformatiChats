@@ -30,11 +30,6 @@ void UserInfoPanel::Update()
         }
     }
 
-    if (ImGui::Button("Config"))
-    {
-        this->controller.SetIsCurrentlyEditingConfigs(true);
-    }
-
     ImGui::EndChild();
     ImGui::EndGroup();
 }

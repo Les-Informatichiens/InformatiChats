@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include "ConfigType.h"
-#include "Model/ConfigUtils/ConfigType.h"
+#include <Model/ConfigUtils/ConfigType.h>
 #include <Model/ConfigUtils/validators/Validator.h>
 
 #include <memory>

@@ -22,9 +22,6 @@ public:
     void AddNewChatPeer(const std::string& peerName) override;
     void SetSelectedPeerId(const std::string& peerId) override;
 
-    void SetIsCurrentlyEditingConfigs(bool currentlyEditingConfigs_) override;
-    [[nodiscard]] bool IsCurrentlyEditingConfigs() const override;
-
 private:
     UserLogic& userLogic;
     ConfigLogic& configLogic;

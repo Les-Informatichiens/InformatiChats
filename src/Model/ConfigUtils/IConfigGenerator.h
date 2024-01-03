@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "ConfigEntry.h"
+#include <Model/ConfigUtils/ConfigEntry.h>
+
 #include <map>
 #include <string>
 #include <vector>

@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "ConfigEntry.h"
-#include "IConfigGenerator.h"
-#include "Model/ConfigUtils/validators/RangeValidator.hpp"
-#include "Model/ConfigUtils/validators/StringLengthValidator.hpp"
-#include "Model/ConfigUtils/validators/Validator.h"
+#include <Model/ConfigUtils/ConfigEntry.h>
+#include <Model/ConfigUtils/IConfigGenerator.h>
+#include <Model/ConfigUtils/validators/RangeValidator.hpp>
+#include <Model/ConfigUtils/validators/StringLengthValidator.hpp>
+#include <Model/ConfigUtils/validators/Validator.h>
 
 #include <map>
 

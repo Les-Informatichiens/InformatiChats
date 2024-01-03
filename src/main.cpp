@@ -80,8 +80,5 @@ int main(int, char**)
 
     app.Run();
 
-    //    std::cout << configSchema.entries[0].toString() << std::endl;
-    //    std::cout << configLogic.GetConfigValue<int>("VolumeLevel").value() << std::endl;
-
     return 0;
 }

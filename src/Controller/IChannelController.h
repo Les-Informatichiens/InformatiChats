@@ -16,6 +16,4 @@ public:
     virtual void AddNewChatPeer(const std::string& peerName) = 0;
 
     virtual void SetSelectedPeerId(const std::string& peerId) = 0;
-    virtual void SetIsCurrentlyEditingConfigs(bool currentlyEditingConfigs_) = 0;
-    [[nodiscard]] virtual bool IsCurrentlyEditingConfigs() const = 0;
 };
