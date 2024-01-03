@@ -200,8 +200,3 @@ const std::string& UserLogic::GetSelectedPeerId() const
 {
     return this->user.selectedChat;
 }
-
-const std::unordered_map<std::string, std::string>& UserLogic::GetConfig() const
-{
-    return this->configAPI.GetConfigs();
-}

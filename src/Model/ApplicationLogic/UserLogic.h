@@ -12,7 +12,7 @@ class UserLogic
 {
 public:
     UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI)
-        : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI), configAPI(configAPI){};
+        : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI){};
 
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;
@@ -37,11 +37,9 @@ public:
     [[nodiscard]] const std::string& GetUserName() const;
     [[nodiscard]] static const size_t& GetMaxNameLength();
     [[nodiscard]] const std::string& GetSelectedPeerId() const;
-    [[nodiscard]] const std::unordered_map<std::string, std::string>& GetConfig() const;
 
 private:
     User& user;
     IChatAPI& chatAPI;
     ILocalUsersAPI& localUsersAPI;
-    IConfigAPI& configAPI;
 };
