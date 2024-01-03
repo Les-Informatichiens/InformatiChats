@@ -25,10 +25,10 @@ public:
     ConfigEntry(std::string name, ConfigType value, std::string description, Validator... validator)
         : name(std::move(name)), value(std::move(value)), description(std::move(description)), validators()
     {
-        (addValidator(validator), ...);
+        (AddValidator(validator), ...);
     }
 
-    void addValidator(const std::shared_ptr<Validator>& validator)
+    void AddValidator(const std::shared_ptr<Validator>& validator)
     {
         validators.push_back(validator);
     }
@@ -53,7 +53,7 @@ public:
         return description;
     }
 
-    [[nodiscard]] std::string toString() const
+    [[nodiscard]] std::string ToString() const
     {
         std::string val;
 
@@ -81,11 +81,11 @@ public:
         return name + "= " + val + ": " + description + "\n";
     }
 
-    [[nodiscard]] bool validate() const
+    [[nodiscard]] bool Validate() const
     {
         for (const auto& validator: this->validators)
         {
-            if (!validator->validate(value))
+            if (!validator->Validate(value))
             {
                 return false;
             }
@@ -94,11 +94,11 @@ public:
         return true;
     }
 
-    [[nodiscard]] bool validate(const ConfigType& newVal_) const
+    [[nodiscard]] bool Validate(const ConfigType& newVal_) const
     {
         for (const auto& validator: this->validators)
         {
-            if (!validator->validate(newVal_))
+            if (!validator->Validate(newVal_))
             {
                 return false;
             }

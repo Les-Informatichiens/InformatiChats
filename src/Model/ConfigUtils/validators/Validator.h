@@ -7,5 +7,5 @@
 class Validator
 {
 public:
-    virtual bool validate(const ConfigType& value) = 0;
+    virtual bool Validate(const ConfigType& value) = 0;
 };

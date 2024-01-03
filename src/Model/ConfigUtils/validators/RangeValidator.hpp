@@ -15,7 +15,7 @@ class IntRangeValidator : public Validator
 public:
     IntRangeValidator(int min_, int max_) : min(min_), max(max_) {}
 
-    bool validate(const ConfigType& value) override
+    bool Validate(const ConfigType& value) override
     {
         if (!std::holds_alternative<int>(value))
         {
@@ -39,7 +39,7 @@ class DoubleRangeValidator : public Validator
 public:
     DoubleRangeValidator(double min_, double max_) : min(min_), max(max_) {}
 
-    bool validate(const ConfigType& value) override
+    bool Validate(const ConfigType& value) override
     {
         if (!std::holds_alternative<double>(value))
         {
@@ -63,7 +63,7 @@ class FloatRangeValidator : public Validator
 public:
     FloatRangeValidator(float min_, float max_) : min(min_), max(max_) {}
 
-    bool validate(const ConfigType& value) override
+    bool Validate(const ConfigType& value) override
     {
         if (!std::holds_alternative<float>(value))
         {

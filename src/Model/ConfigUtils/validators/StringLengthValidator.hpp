@@ -16,7 +16,7 @@ public:
     explicit StringLengthValidator(size_t max_) : min(0), max(max_) {}
     StringLengthValidator(size_t min_, size_t max_) : min(min_), max(max_) {}
 
-    bool validate(const ConfigType& value) override
+    bool Validate(const ConfigType& value) override
     {
         if (!std::holds_alternative<std::string>(value))
         {
