@@ -27,7 +27,7 @@ void NlohmannJsonConfigAPI::LoadConfig()
 
     for (auto& [key, value]: data.items())
     {
-        this->config[key] = value;
+        this->config[key] = value.get<std::string>();
     }
 }
 
@@ -50,4 +50,9 @@ void NlohmannJsonConfigAPI::SaveConfig() const
 const std::unordered_map<std::string, std::string>& NlohmannJsonConfigAPI::GetConfigs() const
 {
     return this->config;
+}
+
+void NlohmannJsonConfigAPI::SetConfigs(const std::unordered_map<std::string, std::string>& configs)
+{
+    this->config = configs;
 }

@@ -14,6 +14,7 @@ public:
     void SaveConfig() const override;
 
     [[nodiscard]] const std::unordered_map<std::string, std::string>& GetConfigs() const override;
+    void SetConfigs(const std::unordered_map<std::string, std::string>& configs) override;
 
 private:
     std::unordered_map<std::string, std::string> config;
