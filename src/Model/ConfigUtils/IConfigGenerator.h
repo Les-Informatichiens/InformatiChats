@@ -14,4 +14,6 @@ class IConfigGenerator
 {
 public:
     [[nodiscard]] virtual std::vector<ConfigEntry> GenerateConfig() const = 0;
+
+    virtual ~IConfigGenerator() = default;
 };
