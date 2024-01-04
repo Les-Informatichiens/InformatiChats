@@ -35,7 +35,8 @@ public:
 
         try { return data[key].get<T>(); } catch (const std::exception&)
         {
-            std::cerr << "Error parsing data of type: " << typeid(T).name() << std::endl;
+            std::cerr << "-- Error parsing data of type: " << typeid(T).name() << std::endl;
+            std::cerr << "   Expected type: " << data[key].type_name() << std::endl;
             return std::nullopt;
         }
     }
@@ -59,7 +60,7 @@ private:
         {
             try { data = nlohmann::json::parse(input); } catch (const std::exception&)
             {
-                std::cerr << "Error parsing config file" << std::endl;
+                std::cerr << "-- Error parsing config file" << std::endl;
                 return false;
             }
 
