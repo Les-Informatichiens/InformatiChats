@@ -17,95 +17,31 @@ class ConfigEntry
 {
 public:
     ConfigEntry(std::string name, ConfigType value, std::string description)
-        : name(std::move(name)), value(std::move(value)), description(std::move(description)), validators()
+        : name(std::move(name)), value(std::move(value)), description(std::move(description))
     {
     }
 
     template<typename... Validator>
     ConfigEntry(std::string name, ConfigType value, std::string description, Validator... validator)
-        : name(std::move(name)), value(std::move(value)), description(std::move(description)), validators()
+        : name(std::move(name)), value(std::move(value)), description(std::move(description))
     {
         (AddValidator(validator), ...);
     }
 
-    void AddValidator(const std::shared_ptr<Validator>& validator)
-    {
-        validators.push_back(validator);
-    }
 
-    [[nodiscard]] const std::string& GetName() const
-    {
-        return name;
-    }
+    [[nodiscard]] const std::string& GetName() const;
 
-    [[nodiscard]] const ConfigType& GetValue() const
-    {
-        return value;
-    }
+    [[nodiscard]] const ConfigType& GetValue() const;
+    void SetValue(const ConfigType& newVal_);
 
-    [[nodiscard]] const std::vector<std::shared_ptr<Validator>>& GetValidators() const
-    {
-        return validators;
-    }
+    [[nodiscard]] const std::vector<std::shared_ptr<Validator>>& GetValidators() const;
+    [[nodiscard]] const std::string& GetDescription() const;
+    [[nodiscard]] std::string ToString() const;
+    [[nodiscard]] std::string ValueToString() const;
 
-    [[nodiscard]] const std::string& GetDescription() const
-    {
-        return description;
-    }
-
-    [[nodiscard]] std::string ToString() const
-    {
-        std::string val;
-
-        if (std::holds_alternative<int>(value))
-        {
-            val = std::to_string(std::get<int>(value));
-        }
-        else if (std::holds_alternative<double>(value))
-        {
-            val = std::to_string(std::get<double>(value));
-        }
-        else if (std::holds_alternative<float>(value))
-        {
-            val = std::to_string(std::get<float>(value));
-        }
-        else if (std::holds_alternative<std::string>(value))
-        {
-            val = std::get<std::string>(value);
-        }
-        else if (std::holds_alternative<bool>(value))
-        {
-            val = std::to_string(std::get<bool>(value));
-        }
-
-        return name + "= " + val + ": " + description + "\n";
-    }
-
-    [[nodiscard]] bool Validate() const
-    {
-        for (const auto& validator: this->validators)
-        {
-            if (!validator->Validate(value))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    [[nodiscard]] bool Validate(const ConfigType& newVal_) const
-    {
-        for (const auto& validator: this->validators)
-        {
-            if (!validator->Validate(newVal_))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    [[nodiscard]] bool Validate() const;
+    [[nodiscard]] bool Validate(const ConfigType& newVal_) const;
+    void AddValidator(const std::shared_ptr<Validator>& validator);
 
 private:
     std::string name;
