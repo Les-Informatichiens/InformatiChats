@@ -97,6 +97,7 @@ add_executable(
         src/Model/ApplicationLogic/Command/SaveNewConfigValueCommand.cpp
         src/Model/ApplicationLogic/Command/SaveNewConfigValueCommand.h
         src/Model/Models/ConfigRefPair.h
+        src/Model/Models/ConfigFile.hpp
 )
 
 target_include_directories(

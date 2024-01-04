@@ -50,66 +50,8 @@ public:
             output.close();
         }
     }
-
-    template<typename T>
-    static std::optional<T> LoadConfigValue(const std::string& key)
-    {
-        if (std::ifstream input("config.json");
-            input.is_open())
-        {
-            nlohmann::ordered_json data;
-
-            try { data = nlohmann::json::parse(input); } catch (const std::exception& e)
-            {
-                std::cerr << "Error parsing config file" << std::endl;
-                return std::nullopt;
-            }
-
-            input.close();
-
-            try { return data[key].get<T>(); } catch (const std::exception& e)
-            {
-                std::cerr << "Error parsing data of type: " << typeid(T) << std::endl;
-                return std::nullopt;
-            }
-        }
-
-        return std::nullopt;
-    }
-
-    template<typename... Ts>
-    static void LoadConfigValues(ConfigRefPair<Ts>... key)
-    {
-        if (std::ifstream input("config.json");
-            input.is_open())
-        {
-            nlohmann::ordered_json data;
-
-            try { data = nlohmann::json::parse(input); } catch (const std::exception& e) { std::cerr << "Error parsing config file" << std::endl; }
-
-            input.close();
-
-            firstVal(data, key...);
-        }
-    }
-
-    template<typename T, typename... Ts>
-    static void firstVal(nlohmann::ordered_json& data,
-                         ConfigRefPair<T>& first,
-                         ConfigRefPair<Ts>&... rest)
-    {
-        if(data.contains(first.key))
-        {
-            first.value = data[first.key].template get<T>();
-        }
-
-        if constexpr (sizeof...(rest) > 0)
-        {
-            firstVal(data, rest...);
-        }
-    }
-
 private:
+
     inline static std::string configFilePath{"config.json"};
 
 };
