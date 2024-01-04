@@ -48,7 +48,7 @@ public:
 
         if (!this->valid) { return; }
 
-        firstVal(data, key...);
+        LoadValuesRecursive(key...);
     }
 
     [[nodiscard]] bool IsOpen() const { return this->input.is_open(); }
@@ -71,13 +71,12 @@ private:
     }
 
     template<typename T, typename... Ts>
-    static void firstVal(nlohmann::ordered_json& data,
-                         ConfigRefPair<T>& first,
-                         ConfigRefPair<Ts>&... rest)
+    void LoadValuesRecursive(ConfigRefPair<T>& first,
+                             ConfigRefPair<Ts>&... rest)
     {
         if (data.contains(first.key)) { first.value = data[first.key].template get<T>(); }
 
-        if constexpr (sizeof...(rest) > 0) { firstVal(data, rest...); }
+        if constexpr (sizeof...(rest) > 0) { LoadValuesRecursive(data, rest...); }
     }
 
     std::ifstream input;
