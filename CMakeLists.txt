@@ -106,6 +106,7 @@ add_executable(
         src/Model/ConfigUtils/validators/StringLengthValidator.hpp
         src/Model/ConfigUtils/ConfigType.h
         src/Model/ApplicationLogic/ConfigLogic.cpp
+        src/util/VariantUtil.h
 )
 
 target_include_directories(
