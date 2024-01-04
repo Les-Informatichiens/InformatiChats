@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "Model/Models/ConfigRefPair.h"
+
 #include <string>
 #include <optional>
 #include <nlohmann/json.hpp>
@@ -76,7 +78,7 @@ public:
     }
 
     template<typename... Ts>
-    static void LoadConfigValues(std::pair<std::string, std::reference_wrapper<Ts>>... key)
+    static void LoadConfigValues(ConfigRefPair<Ts>... key)
     {
         if (std::ifstream input("config.json");
             input.is_open())
@@ -93,12 +95,12 @@ public:
 
     template<typename T, typename... Ts>
     static void firstVal(nlohmann::ordered_json& data,
-                         std::pair<std::string, std::reference_wrapper<T>>& first,
-                         std::pair<std::string, std::reference_wrapper<Ts>>&... rest)
+                         ConfigRefPair<T>& first,
+                         ConfigRefPair<Ts>&... rest)
     {
-        if(data.contains(first.first))
+        if(data.contains(first.key))
         {
-            first.second.get() = data[first.first].template get<T>();
+            first.value = data[first.key].template get<T>();
         }
 
         if constexpr (sizeof...(rest) > 0)
