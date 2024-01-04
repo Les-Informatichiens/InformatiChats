@@ -30,19 +30,6 @@ void UserInfoPanel::Update()
             draw_list->AddLine(p1, p2, 0xFFFFFFFF, 1);
         }
     }
-    if(ImGui::Button("Show configs"))
-    {
-        for(auto& config : this->controller.GetConfigEntries())
-        {
-            std::cout << config.ToString() << std::endl;
-        }
-
-    }
-
-    if(ImGui::Button("Save Config"))
-    {
-        this->controller.SaveConfig();
-    }
 
     ImGui::EndChild();
     ImGui::EndGroup();
