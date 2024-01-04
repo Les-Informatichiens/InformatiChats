@@ -7,6 +7,8 @@
 #include "Controller/IConfigController.h"
 #include "IPanel.h"
 
+#include <string>
+
 
 class ConfigPanel : public IPanel
 {

@@ -4,7 +4,6 @@
 #pragma once
 
 #include <Model/DataAccess/IChatAPI.h>
-#include <Model/DataAccess/IConfigAPI.h>
 #include <Model/DataAccess/ILocalUsersAPI.h>
 #include <Model/Models/User.h>
 

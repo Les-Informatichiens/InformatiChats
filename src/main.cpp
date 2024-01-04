@@ -3,7 +3,6 @@
 #include <Controller/ChatController.h>
 #include <Controller/ConfigController.h>
 #include <Controller/LoginController.h>
-#include <Model/ApplicationLogic/ConfigLogic.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
@@ -29,10 +28,6 @@ int main(int, char**)
     auto chatAPI = LibDataChannelChatAPI();
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
     UserLogic userLogic{user, chatAPI, localUsersAPI};
-
-    //init config layer
-    ConfigLogic::GetInstance();
-
 
     //init command manager
     CommandManager commandManager{};

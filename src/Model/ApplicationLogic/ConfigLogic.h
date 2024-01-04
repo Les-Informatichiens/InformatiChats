@@ -4,49 +4,77 @@
 
 #pragma once
 
-#include <Model/ConfigUtils/IConfigGenerator.h>
-#include <Model/DataAccess/IConfigAPI.h>
-#include <Model/DataAccess/NlohmannJsonConfigAPI.h>
-#include <Model/Models/ConfigSchema.h>
-
-#include "Model/ConfigUtils/DefaultConfigGenerator.h"
-#include <iostream>
+#include <string>
 #include <optional>
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <iostream>
 
 
 class ConfigLogic
 {
 public:
-    ConfigLogic()
+    template<typename T>
+    static void SaveConfigValue(const std::string& key, const T& value)
     {
-        this->configSchema = ConfigSchema();
-        this->configAPI = std::make_unique<NlohmannJsonConfigAPI>(NlohmannJsonConfigAPI());
-        this->configGenerator = std::make_unique<DefaultConfigGenerator>(DefaultConfigGenerator());
-    };
+        std::ifstream input("config.json");
+        if (!input.is_open())
+        {
+            std::ofstream output("config.json");
+            output << "{}";
+            output.close();
+        }
+        input = std::ifstream("config.json");
+
+        nlohmann::ordered_json data;
+
+        if (input.is_open())
+        {
+            try { data = nlohmann::json::parse(input); } catch (const std::exception& e)
+            {
+                std::cerr << "Error parsing config file" << std::endl;
+                return;
+            }
+
+            input.close();
+        }
+
+        std::ofstream output("config.json");
+        if (output.is_open())
+        {
+            data[key] = value;
+
+            output << data.dump(4);
+            output.close();
+        }
+    }
 
     template<typename T>
-    [[nodiscard]] std::optional<T> GetConfigValue(const std::string& key) const;
-    template<typename T>
-    void SetConfigValue(const std::string& key, const T& value) const;
+    static std::optional<T> LoadConfigValue(const std::string& key)
+    {
+        if (std::ifstream input("config.json");
+            input.is_open())
+        {
+            nlohmann::ordered_json data;
 
-    void SetupConfig();
-    void SaveConfig() const;
-    [[nodiscard]] std::vector<ConfigEntry> GetConfigs() const;
+            try { data = nlohmann::json::parse(input); } catch (const std::exception& e)
+            {
+                std::cerr << "Error parsing config file" << std::endl;
+                return std::nullopt;
+            }
 
-    [[nodiscard]] bool IsCurrentlyEditingConfigs() const;
-    void SetIsCurrentlyEditingConfigs(bool currentlyEditingConfigs_);
+            input.close();
 
-    static ConfigLogic& GetInstance();
+            try { return data[key].get<T>(); } catch (const std::exception& e)
+            {
+                std::cerr << "Error parsing data of type: " << typeid(T) << std::endl;
+                return std::nullopt;
+            }
+        }
+
+        return std::nullopt;
+    }
 
 private:
-    void GenerateConfig();
-    void ApplyFilesConfig();
-    [[nodiscard]] std::unordered_map<std::string, std::string> GetConfigMap() const;
-
-private:
-    ConfigSchema configSchema;
-    std::unique_ptr<IConfigAPI> configAPI;
-    std::unique_ptr<IConfigGenerator> configGenerator;
-
-    bool currentlyEditingConfigs = false;
+    inline static std::string configFilePath{"config.json"};
 };
