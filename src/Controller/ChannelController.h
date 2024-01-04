@@ -14,16 +14,18 @@
 class ChannelController : public IChannelController
 {
 public:
-    explicit ChannelController(UserLogic& userLogic, ConfigLogic& configLogic, CommandManager& commandManager)
-        : userLogic(userLogic), configLogic(configLogic), commandManager(commandManager){};
+    explicit ChannelController(UserLogic& userLogic, CommandManager& commandManager)
+        : userLogic(userLogic), commandManager(commandManager){};
 
     ChannelViewModel GetViewModel() override;
 
     void AddNewChatPeer(const std::string& peerName) override;
     void SetSelectedPeerId(const std::string& peerId) override;
 
+    void SaveConfig() const override;
+    [[nodiscard]] std::vector<ConfigEntry> GetConfigEntries() const override;
+
 private:
     UserLogic& userLogic;
-    ConfigLogic& configLogic;
     CommandManager& commandManager;
 };

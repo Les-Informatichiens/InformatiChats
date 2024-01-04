@@ -6,6 +6,7 @@
 
 #include <Controller/ViewModels/ChannelViewModel.h>
 
+#include "Model/ConfigUtils/ConfigEntry.h"
 #include <string>
 
 class IChannelController
@@ -16,4 +17,8 @@ public:
     virtual void AddNewChatPeer(const std::string& peerName) = 0;
 
     virtual void SetSelectedPeerId(const std::string& peerId) = 0;
+
+    virtual void SaveConfig() const = 0;
+
+    [[nodiscard]] virtual std::vector<ConfigEntry> GetConfigEntries() const = 0;
 };

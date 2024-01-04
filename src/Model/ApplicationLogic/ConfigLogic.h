@@ -6,8 +6,10 @@
 
 #include <Model/ConfigUtils/IConfigGenerator.h>
 #include <Model/DataAccess/IConfigAPI.h>
+#include <Model/DataAccess/NlohmannJsonConfigAPI.h>
 #include <Model/Models/ConfigSchema.h>
 
+#include "Model/ConfigUtils/DefaultConfigGenerator.h"
 #include <iostream>
 #include <optional>
 
@@ -15,27 +17,36 @@
 class ConfigLogic
 {
 public:
-    ConfigLogic(ConfigSchema& configSchema_, IConfigAPI& configAPI, IConfigGenerator& configGenerator)
-        : configSchema(configSchema_), configAPI(configAPI), configGenerator(configGenerator){};
+    ConfigLogic()
+    {
+        this->configSchema = ConfigSchema();
+        this->configAPI = std::make_unique<NlohmannJsonConfigAPI>(NlohmannJsonConfigAPI());
+        this->configGenerator = std::make_unique<DefaultConfigGenerator>(DefaultConfigGenerator());
+    };
 
     template<typename T>
     [[nodiscard]] std::optional<T> GetConfigValue(const std::string& key) const;
     template<typename T>
     void SetConfigValue(const std::string& key, const T& value) const;
 
-    void SetupConfig() const;
+    void SetupConfig();
+    void SaveConfig() const;
     [[nodiscard]] std::vector<ConfigEntry> GetConfigs() const;
+
     [[nodiscard]] bool IsCurrentlyEditingConfigs() const;
     void SetIsCurrentlyEditingConfigs(bool currentlyEditingConfigs_);
 
-private:
-    void GenerateConfig() const;
-    void ApplyFilesConfig() const;
+    static ConfigLogic& GetInstance();
 
 private:
-    ConfigSchema& configSchema;
-    IConfigAPI& configAPI;
-    IConfigGenerator& configGenerator;
+    void GenerateConfig();
+    void ApplyFilesConfig();
+    [[nodiscard]] std::unordered_map<std::string, std::string> GetConfigMap() const;
+
+private:
+    ConfigSchema configSchema;
+    std::unique_ptr<IConfigAPI> configAPI;
+    std::unique_ptr<IConfigGenerator> configGenerator;
 
     bool currentlyEditingConfigs = false;
 };

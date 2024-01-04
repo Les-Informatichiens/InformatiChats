@@ -15,6 +15,7 @@ public:
     virtual void SaveConfig() const = 0;
 
     [[nodiscard]] virtual const std::unordered_map<std::string, std::string>& GetConfigs() const = 0;
+    virtual void SetConfigs(const std::unordered_map<std::string, std::string>& configs) = 0;
 
     virtual ~IConfigAPI() = default;
 };

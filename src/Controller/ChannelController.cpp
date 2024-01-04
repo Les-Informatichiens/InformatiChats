@@ -27,3 +27,14 @@ void ChannelController::SetSelectedPeerId(const std::string& peerId_)
             this->userLogic.GetSelectedPeerId(),
             peerId_));
 }
+
+void ChannelController::SaveConfig() const
+{
+    ConfigLogic::GetInstance().SaveConfig();
+}
+
+std::vector<ConfigEntry> ChannelController::GetConfigEntries() const
+{
+    return ConfigLogic::GetInstance().GetConfigs();
+}
+

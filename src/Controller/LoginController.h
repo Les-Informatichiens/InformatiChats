@@ -13,8 +13,8 @@
 class LoginController : public ILoginController
 {
 public:
-    explicit LoginController(UserLogic& userLogic, ConfigLogic& configLogic, CommandManager& commandManager)
-        : userLogic(userLogic), configLogic(configLogic), commandManager(commandManager){};
+    explicit LoginController(UserLogic& userLogic, CommandManager& commandManager)
+        : userLogic(userLogic), commandManager(commandManager){};
 
     LoginViewModel GetViewModel() override;
 
@@ -28,7 +28,6 @@ public:
 
 private:
     UserLogic& userLogic;
-    ConfigLogic& configLogic;
     CommandManager& commandManager;
 
     bool createNewUser = false;

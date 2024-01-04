@@ -12,7 +12,7 @@
 class ConfigController : public IConfigController
 {
 public:
-    ConfigController(UserLogic& userLogic_, ConfigLogic& configLogic_, CommandManager& commandManager_);
+    ConfigController(UserLogic& userLogic_, CommandManager& commandManager_);
 
     ConfigViewModel GetViewModel() override;
     void SetupConfig() const override;
@@ -22,6 +22,5 @@ public:
 
 private:
     UserLogic& userLogic;
-    ConfigLogic& configLogic;
     CommandManager& commandManager;
 };

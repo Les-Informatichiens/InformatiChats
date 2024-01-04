@@ -5,9 +5,7 @@
 #include <Controller/LoginController.h>
 #include <Model/ApplicationLogic/ConfigLogic.h>
 #include <Model/ApplicationLogic/UserLogic.h>
-#include <Model/ConfigUtils/DefaultConfigGenerator.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
-#include <Model/DataAccess/NlohmannJsonConfigAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
@@ -32,20 +30,18 @@ int main(int, char**)
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
     UserLogic userLogic{user, chatAPI, localUsersAPI};
 
-    ConfigSchema configSchema = ConfigSchema();
-    auto configAPI = NlohmannJsonConfigAPI();
-    auto configGenerator = DefaultConfigGenerator();
-    ConfigLogic configLogic{configSchema, configAPI, configGenerator};
+    //init config layer
+    ConfigLogic::GetInstance();
 
 
     //init command manager
     CommandManager commandManager{};
 
     //init controller layer
-    auto chatController = ChatController(userLogic, configLogic, commandManager);
-    auto channelController = ChannelController(userLogic, configLogic, commandManager);
-    auto loginController = LoginController(userLogic, configLogic, commandManager);
-    auto configController = ConfigController(userLogic, configLogic, commandManager);
+    auto chatController = ChatController(userLogic, commandManager);
+    auto channelController = ChannelController(userLogic, commandManager);
+    auto loginController = LoginController(userLogic, commandManager);
+    auto configController = ConfigController(userLogic, commandManager);
 
     //init view layer
     auto chatView = ChatView(chatController);
