@@ -75,6 +75,39 @@ public:
         return std::nullopt;
     }
 
+    template<typename... Ts>
+    static void LoadConfigValues(std::pair<std::string, std::reference_wrapper<Ts>>... key)
+    {
+        if (std::ifstream input("config.json");
+            input.is_open())
+        {
+            nlohmann::ordered_json data;
+
+            try { data = nlohmann::json::parse(input); } catch (const std::exception& e) { std::cerr << "Error parsing config file" << std::endl; }
+
+            input.close();
+
+            firstVal(data, key...);
+        }
+    }
+
+    template<typename T, typename... Ts>
+    static void firstVal(nlohmann::ordered_json& data,
+                         std::pair<std::string, std::reference_wrapper<T>>& first,
+                         std::pair<std::string, std::reference_wrapper<Ts>>&... rest)
+    {
+        if(data.contains(first.first))
+        {
+            first.second.get() = data[first.first].template get<T>();
+        }
+
+        if constexpr (sizeof...(rest) > 0)
+        {
+            firstVal(data, rest...);
+        }
+    }
+
 private:
     inline static std::string configFilePath{"config.json"};
+
 };
