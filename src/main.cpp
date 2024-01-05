@@ -1,4 +1,5 @@
 #include <ChatApp.h>
+
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/ConfigController.h>
@@ -6,6 +7,7 @@
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/LibDataChannelChatAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
+#include <Model/Models/ConfigFile.hpp>
 #include <Model/Models/User.h>
 #include <View/Backend/GLFWWindowManager.h>
 #include <View/Backend/IWindow.h>
@@ -21,8 +23,14 @@
 #include <View/Views/LoginView.h>
 
 // Main code
-int main(int, char**)
-{
+int main(int, char **) {
+    //Get the config data.
+    //All the parts of the application that need data from the config file should
+    // get it from the ConfigFile object before the actual application is running.
+    //This object should be taken in the constructor of the class that needs it as a reference
+    // and load needed values, but not keep a reference to it.
+    ConfigFile config(config::CONFIG_FILE_NAME);
+
     //init model layer
     User user{};
     auto chatAPI = LibDataChannelChatAPI();
@@ -68,6 +76,9 @@ int main(int, char**)
     app.AddView(chatView);
     app.AddView(loginView);
     app.AddView(configView);
+
+    //Close the config file before running the application
+    config.Close();
 
     app.Run();
 
