@@ -5,13 +5,25 @@
 #pragma once
 
 #include <string>
+#include <utility>
 
 template<typename T>
 struct ConfigRefPair
 {
-    ConfigRefPair(const std::string& key_, T& value_)
-        : key(key_), value(value_) {}
+    ConfigRefPair(std::string  key_, T& value_)
+        : key(std::move(key_)), value(value_) {}
 
     std::string key;
     T& value;
+};
+
+template<typename T>
+struct ConfigRefPairWithDefault
+{
+    ConfigRefPairWithDefault(std::string  key_, T& value_, T defaultValue_)
+            : key(std::move(key_)), value(value_), defaultValue(defaultValue_) {}
+
+    std::string key;
+    T& value;
+    T defaultValue;
 };
