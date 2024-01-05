@@ -11,39 +11,66 @@
 #include <optional>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <utility>
+
+namespace config {
+    static inline const std::string CONFIG_FILE_NAME = "config.json";
+}
 
 
-class ConfigFile
-{
+class ConfigFile {
 public:
-    explicit ConfigFile(const std::string& configFileName)
-        : valid(false)
-    {
-        this->input = std::ifstream(configFileName);
+    explicit ConfigFile(std::string configFileName)
+            : fileName(std::move(configFileName)), valid(false) {
+        this->input = std::fstream(this->fileName, std::ios::in | std::ios::out | std::ios::ate);
+        if(!this->input.is_open())
+        {
+            std::ofstream file(this->fileName);
+            file << "{}";
+            file.close();
+            this->input = std::fstream(this->fileName, std::ios::in | std::ios::out | std::ios::ate);
+            this->data = nlohmann::ordered_json();
+        }
+
         if (this->Parse()) { this->valid = true; }
     }
 
-    ~ConfigFile() { this->input.close(); }
-
+    ~ConfigFile() { this->Close(); }
 
     template<typename T>
-    std::optional<T> LoadValue(const std::string& key)
-    {
+    void SaveValue(const std::string &key, const T &value) {
+        if (!this->IsOpen()) { this->valid = false; }
+
+        if (!this->valid) { return; }
+
+        data[key] = value;
+
+        //Overwrite the file with the new data
+        this->input.seekg(0);
+        this->input << data.dump(4);
+        this->input.flush();
+
+        // Truncate the file by writing an empty buffer
+        // This is needed because the new data might be smaller than the old data
+        this->input.write("", 0);
+
+    }
+
+    template<typename T>
+    std::optional<T> LoadValue(const std::string &key) {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return std::nullopt; }
 
-        try { return data[key].get<T>(); } catch (const std::exception&)
-        {
-            std::cerr << "-- Error parsing data of type: " << typeid(T).name() << std::endl;
+        try { return data[key].get<T>(); } catch (const std::exception &) {
+            std::cerr << "-- Error parsing data of type of key `" << key << "`: " << typeid(T).name() << std::endl;
             std::cerr << "   Expected type: " << data[key].type_name() << std::endl;
             return std::nullopt;
         }
     }
 
     template<typename... Ts>
-    void LoadValues(ConfigRefPair<Ts>... key)
-    {
+    void LoadValues(ConfigRefPair<Ts>... key) {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return; }
@@ -51,15 +78,29 @@ public:
         LoadValuesRecursive(key...);
     }
 
+    template<typename... Ts>
+    void LoadValuesWithDefault(ConfigRefPairWithDefault<Ts>... key) {
+        if (!this->IsOpen()) { this->valid = false; }
+
+        if (!this->valid) { return; }
+
+        LoadValuesWithDefaultRecursive(key...);
+    }
+
     [[nodiscard]] bool IsOpen() const { return this->input.is_open(); }
 
+    void Close() {
+        this->input.close();
+        this->valid = false;
+        this->data = nlohmann::ordered_json();
+        this->fileName = "";
+    }
+
 private:
-    bool Parse()
-    {
-        if (this->input.is_open())
-        {
-            try { data = nlohmann::json::parse(input); } catch (const std::exception&)
-            {
+    bool Parse() {
+        if (this->input.is_open()) {
+            this->input.seekg(0);
+            try { data = nlohmann::json::parse(this->input); } catch (const std::exception &) {
                 std::cerr << "-- Error parsing config file" << std::endl;
                 return false;
             }
@@ -71,15 +112,47 @@ private:
     }
 
     template<typename T, typename... Ts>
-    void LoadValuesRecursive(ConfigRefPair<T>& first,
-                             ConfigRefPair<Ts>&... rest)
-    {
-        if (data.contains(first.key)) { first.value = data[first.key].template get<T>(); }
+    void LoadValuesRecursive(ConfigRefPair<T> &first,
+                             ConfigRefPair<Ts> &... rest) {
+        if (data.contains(first.key)) {
+            try {
+                first.value = data[first.key].template get<T>();
+            }
+            catch (const std::exception &) {
+                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
+                std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
+            }
+        }
 
-        if constexpr (sizeof...(rest) > 0) { LoadValuesRecursive(data, rest...); }
+        if constexpr (sizeof...(rest) > 0) { LoadValuesRecursive(rest...); }
     }
 
-    std::ifstream input;
+    template<typename T, typename... Ts>
+    void LoadValuesWithDefaultRecursive(ConfigRefPairWithDefault<T> &first,
+                             ConfigRefPairWithDefault<Ts> &... rest) {
+        if (data.contains(first.key)) {
+            try {
+                first.value = data[first.key].template get<T>();
+            }
+            catch (const std::exception &) {
+                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
+                std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
+                std::cerr << "   Using default value: " << first.defaultValue << std::endl;
+                first.value = first.defaultValue;
+            }
+        }
+        else
+        {
+            first.value = first.defaultValue;
+        }
+
+        if constexpr (sizeof...(rest) > 0) { LoadValuesWithDefaultRecursive(rest...); }
+    }
+
+private:
+    std::fstream input;
     nlohmann::ordered_json data;
     bool valid;
+
+    std::string fileName;
 };
