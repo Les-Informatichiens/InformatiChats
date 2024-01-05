@@ -5,7 +5,6 @@
 #pragma once
 
 #include "ICommand.h"
-#include <Model/ApplicationLogic/ConfigLogic.h>
 
 #include <string>
 

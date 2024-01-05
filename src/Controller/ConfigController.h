@@ -6,7 +6,6 @@
 
 #include "IConfigController.h"
 #include "Model/ApplicationLogic/Command/CommandManager.h"
-#include "Model/ApplicationLogic/ConfigLogic.h"
 #include "Model/ApplicationLogic/UserLogic.h"
 
 class ConfigController : public IConfigController
