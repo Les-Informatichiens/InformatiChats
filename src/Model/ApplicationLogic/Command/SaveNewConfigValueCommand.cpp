@@ -3,21 +3,24 @@
 //
 
 #include "SaveNewConfigValueCommand.h"
+#include "Model/Models/ConfigFile.hpp"
 
 template <typename T>
 SaveNewConfigValueCommand<T>::SaveNewConfigValueCommand(std::string key, T value, T oldValue)
-: key(std::move(key)), value(value), oldValue(oldValue)
+: key(std::move(key)), value(std::move(value)), oldValue(std::move(oldValue))
 {
 }
 
 template <typename T>
 void SaveNewConfigValueCommand<T>::Execute()
 {
-    ConfigLogic::SaveConfigValue(key, value);
+    ConfigFile config(config::CONFIG_FILE_NAME);
+    config.SaveValue(this->key, this->value);
 }
 
 template <typename T>
 void SaveNewConfigValueCommand<T>::Undo()
 {
-    ConfigLogic::SaveConfigValue(key, oldValue);
+    ConfigFile config(config::CONFIG_FILE_NAME);
+    config.SaveValue(this->key, this->oldValue);
 }
