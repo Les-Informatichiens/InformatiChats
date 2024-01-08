@@ -58,6 +58,33 @@ public:
         this->input.write("", 0);
     }
 
+    /**
+     * \brief Method for saving a value in a builder-like fashion
+     * \tparam T
+     * \param key
+     * \param value
+     * \return
+     */
+    template<typename T>
+    ConfigFile& SaveValue(const std::string& key, const T& value)
+    {
+        if (!this->IsOpen()) { this->valid = false; }
+
+        if (!this->valid) { return *this; }
+
+        data[key] = value;
+
+        //Overwrite the file with the new data
+        this->input.seekg(0);
+        this->input << data.dump(4);
+        this->input.flush();
+
+        // Truncate the file by writing an empty buffer
+        // This is needed because the new data might be smaller than the old data
+        this->input.write("", 0);
+
+        return *this;
+    }
 
     /**
      * \brief Saves a value from the given ConfigRefPair
@@ -68,8 +95,7 @@ public:
     template<typename T>
     ConfigFile& operator<<(const ConfigRefPair<T>& pair)
     {
-        this->SaveValue(pair.key, pair.value);
-        return *this;
+        return this->SaveValue(pair.key, pair.value);
     }
 
     template<typename T>
@@ -90,8 +116,60 @@ public:
         }
     }
 
+    /**
+     * \brief Method for loading a value in a builder-like fashion
+     * \tparam T
+     * \param configPair_
+     * \return
+     */
+    template<typename T>
+    ConfigFile& LoadValue(ConfigRefPair<T>& configPair_)
+    {
+        if (!this->IsOpen()) { this->valid = false; }
+
+        if (!this->valid) { return *this; }
+
+        try
+        {
+            configPair_.value = data[configPair_].template get<T>();
+        } catch (const std::exception&)
+        {
+            std::cerr << "-- Error parsing data of type of key `" << configPair_ << "`: " << typeid(T).name() << std::endl;
+            std::cerr << "   Expected type: " << data[configPair_].type_name() << std::endl;
+        }
+
+        return *this;
+    }
+
+    /**
+     * \brief Method for loading a value in a builder-like fashion
+     * \tparam T
+     * \param configPair_
+     * \return
+     */
+    template<typename T>
+    ConfigFile& LoadValue(const ConfigRefPairWithDefault<T>& configPair_)
+    {
+        if (!this->IsOpen()) { this->valid = false; }
+
+        if (!this->valid) { return *this; }
+
+        try
+        {
+            configPair_.value = data[configPair_.key].template get<T>();
+        } catch (const std::exception&)
+        {
+            std::cerr << "-- Error parsing data of type of key `" << configPair_.key << "`: " << typeid(T).name() << std::endl;
+            std::cerr << "   Expected type: " << data[configPair_.key].type_name() << std::endl;
+            std::cerr << "   Using default value: " << configPair_.defaultValue << std::endl;
+            configPair_.value = configPair_.defaultValue;
+        }
+
+        return *this;
+    }
+
     template<typename... Ts>
-    void LoadValues(ConfigRefPair<Ts>... key)
+    void LoadValues(const ConfigRefPair<Ts>&... key)
     {
         if (!this->IsOpen()) { this->valid = false; }
 
@@ -101,7 +179,7 @@ public:
     }
 
     template<typename... Ts>
-    void LoadValuesWithDefault(ConfigRefPairWithDefault<Ts>... key)
+    void LoadValues(const ConfigRefPairWithDefault<Ts>&... key)
     {
         if (!this->IsOpen()) { this->valid = false; }
 
@@ -177,8 +255,8 @@ private:
     }
 
     template<typename T, typename... Ts>
-    void LoadValuesRecursive(ConfigRefPair<T>& first,
-                             ConfigRefPair<Ts>&... rest)
+    void LoadValuesRecursive(const ConfigRefPair<T>& first,
+                             const ConfigRefPair<Ts>&... rest)
     {
         if (data.contains(first.key))
         {
@@ -187,8 +265,8 @@ private:
                 first.value = data[first.key].template get<T>();
             } catch (const std::exception&)
             {
-                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
-                std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
+                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name() << std::endl;
+                std::cerr << "   Expected type: " << data[first.key].type_name() << std::endl;
             }
         }
 
@@ -196,8 +274,8 @@ private:
     }
 
     template<typename T, typename... Ts>
-    void LoadValuesWithDefaultRecursive(ConfigRefPairWithDefault<T>& first,
-                                        ConfigRefPairWithDefault<Ts>&... rest)
+    void LoadValuesWithDefaultRecursive(const ConfigRefPairWithDefault<T>& first,
+                                        const ConfigRefPairWithDefault<Ts>&... rest)
     {
         if (data.contains(first.key))
         {
@@ -206,8 +284,8 @@ private:
                 first.value = data[first.key].template get<T>();
             } catch (const std::exception&)
             {
-                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
-                std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
+                std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name() << std::endl;
+                std::cerr << "   Expected type: " << data[first.key].type_name() << std::endl;
                 std::cerr << "   Using default value: " << first.defaultValue << std::endl;
                 first.value = first.defaultValue;
             }
