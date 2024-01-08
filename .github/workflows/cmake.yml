@@ -20,7 +20,7 @@ jobs:
             compiler: msvc
           - os: ubuntu-latest
             generator: Ninja
-            compiler: gcc
+            compiler: g++
     steps:
       - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
