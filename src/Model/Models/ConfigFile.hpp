@@ -8,9 +8,9 @@
 
 #include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
-#include <nlohmann/json.hpp>
 #include <utility>
 
 namespace config {
@@ -18,12 +18,14 @@ namespace config {
 }
 
 
-class ConfigFile {
+class ConfigFile
+{
 public:
     explicit ConfigFile(std::string configFileName)
-            : fileName(std::move(configFileName)), valid(false) {
+        : fileName(std::move(configFileName)), valid(false)
+    {
         this->input = std::fstream(this->fileName, std::ios::in | std::ios::out | std::ios::ate);
-        if(!this->input.is_open())
+        if (!this->input.is_open())
         {
             std::ofstream file(this->fileName);
             file << "{}";
@@ -38,7 +40,8 @@ public:
     ~ConfigFile() { this->Close(); }
 
     template<typename T>
-    void SaveValue(const std::string &key, const T &value) {
+    void SaveValue(const std::string& key, const T& value)
+    {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return; }
@@ -53,16 +56,34 @@ public:
         // Truncate the file by writing an empty buffer
         // This is needed because the new data might be smaller than the old data
         this->input.write("", 0);
+    }
 
+
+    /**
+     * \brief Saves a value from the given ConfigRefPair
+     * \tparam T
+     * \param pair
+     * \return
+     */
+    template<typename T>
+    ConfigFile& operator<<(const ConfigRefPair<T>& pair)
+    {
+        this->SaveValue(pair.key, pair.value);
+        return *this;
     }
 
     template<typename T>
-    std::optional<T> LoadValue(const std::string &key) {
+    std::optional<T> LoadValue(const std::string& key)
+    {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return std::nullopt; }
 
-        try { return data[key].get<T>(); } catch (const std::exception &) {
+        try
+        {
+            return data[key].get<T>();
+        } catch (const std::exception&)
+        {
             std::cerr << "-- Error parsing data of type of key `" << key << "`: " << typeid(T).name() << std::endl;
             std::cerr << "   Expected type: " << data[key].type_name() << std::endl;
             return std::nullopt;
@@ -70,7 +91,8 @@ public:
     }
 
     template<typename... Ts>
-    void LoadValues(ConfigRefPair<Ts>... key) {
+    void LoadValues(ConfigRefPair<Ts>... key)
+    {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return; }
@@ -79,7 +101,8 @@ public:
     }
 
     template<typename... Ts>
-    void LoadValuesWithDefault(ConfigRefPairWithDefault<Ts>... key) {
+    void LoadValuesWithDefault(ConfigRefPairWithDefault<Ts>... key)
+    {
         if (!this->IsOpen()) { this->valid = false; }
 
         if (!this->valid) { return; }
@@ -87,9 +110,45 @@ public:
         LoadValuesWithDefaultRecursive(key...);
     }
 
+    /**
+     * \brief Loads a value into the given ConfigRefPair
+     *        If the value does not exist, the value is not changed.
+     * \tparam T
+     * \param pair
+     * \return
+     */
+    template<typename T>
+    ConfigFile& operator>>(const ConfigRefPair<T>& pair)
+    {
+        if (auto loadedValue = this->LoadValue<T>(pair.key);
+            loadedValue.has_value())
+        {
+            pair.value = loadedValue.value();
+        }
+
+        return *this;
+    }
+
+    /**
+     * \brief Loads a value into the given ConfigRefPairWithDefault.
+     *        If the value does not exist, the default value is used.
+     * \tparam T
+     * \param pair
+     * \return
+     */
+    template<typename T>
+    ConfigFile& operator>>(const ConfigRefPairWithDefault<T>& pair)
+    {
+        auto loadedValue = this->LoadValue<T>(pair.key);
+        pair.value = loadedValue.value_or(pair.defaultValue);
+
+        return *this;
+    }
+
     [[nodiscard]] bool IsOpen() const { return this->input.is_open(); }
 
-    void Close() {
+    void Close()
+    {
         this->input.close();
         this->valid = false;
         this->data = nlohmann::ordered_json();
@@ -97,10 +156,16 @@ public:
     }
 
 private:
-    bool Parse() {
-        if (this->input.is_open()) {
+    bool Parse()
+    {
+        if (this->input.is_open())
+        {
             this->input.seekg(0);
-            try { data = nlohmann::json::parse(this->input); } catch (const std::exception &) {
+            try
+            {
+                data = nlohmann::json::parse(this->input);
+            } catch (const std::exception&)
+            {
                 std::cerr << "-- Error parsing config file" << std::endl;
                 return false;
             }
@@ -112,13 +177,16 @@ private:
     }
 
     template<typename T, typename... Ts>
-    void LoadValuesRecursive(ConfigRefPair<T> &first,
-                             ConfigRefPair<Ts> &... rest) {
-        if (data.contains(first.key)) {
-            try {
+    void LoadValuesRecursive(ConfigRefPair<T>& first,
+                             ConfigRefPair<Ts>&... rest)
+    {
+        if (data.contains(first.key))
+        {
+            try
+            {
                 first.value = data[first.key].template get<T>();
-            }
-            catch (const std::exception &) {
+            } catch (const std::exception&)
+            {
                 std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
                 std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
             }
@@ -128,13 +196,16 @@ private:
     }
 
     template<typename T, typename... Ts>
-    void LoadValuesWithDefaultRecursive(ConfigRefPairWithDefault<T> &first,
-                             ConfigRefPairWithDefault<Ts> &... rest) {
-        if (data.contains(first.key)) {
-            try {
+    void LoadValuesWithDefaultRecursive(ConfigRefPairWithDefault<T>& first,
+                                        ConfigRefPairWithDefault<Ts>&... rest)
+    {
+        if (data.contains(first.key))
+        {
+            try
+            {
                 first.value = data[first.key].template get<T>();
-            }
-            catch (const std::exception &) {
+            } catch (const std::exception&)
+            {
                 std::cerr << "-- Error parsing data of type of key `" << first.key << "`: " << typeid(T).name();
                 std::cerr << "\n   Expected type: " << data[first.key].type_name() << std::endl;
                 std::cerr << "   Using default value: " << first.defaultValue << std::endl;
