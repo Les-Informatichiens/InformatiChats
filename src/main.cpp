@@ -25,13 +25,6 @@
 // Main code
 int main(int, char**)
 {
-    //Get the config data.
-    //All the parts of the application that need data from the config file should
-    // get it from the ConfigFile object before the actual application is running.
-    //This object should be taken in the constructor of the class that needs it as a reference
-    // and load needed values, but not keep a reference to it.
-    ConfigFile config(config::CONFIG_FILE_NAME);
-
     //init model layer
     User user{};
     auto chatAPI = LibDataChannelChatAPI();
@@ -41,30 +34,39 @@ int main(int, char**)
     //init command manager
     CommandManager commandManager{};
 
-    //init controller layer
-    auto chatController = ChatController(userLogic, commandManager);
-    auto channelController = ChannelController(userLogic, commandManager);
-    auto loginController = LoginController(userLogic, commandManager);
-    auto configController = ConfigController(userLogic, commandManager);
-
     //init view layer
     auto chatView = ChatView();
     auto channelView = ChannelView();
     auto loginView = LoginView();
     auto configView = ConfigView();
 
-    //init panels
-    auto channelPanel = ChannelPanel(channelController);
-    auto userInfoPanel = UserInfoPanel(channelController);
-    auto chatPanel = ChatPanel(chatController);
-    auto loginPanel = LoginPanel(loginController);
-    auto configPanel = ConfigPanel(configController);
+    {
+        //Get the config data.
+        //All the parts of the application that need data from the config file should
+        // get it from the ConfigFile object before the actual application is running.
+        //This object should be taken in the constructor of the class that needs it as a reference
+        // and load needed values, but not keep a reference to it.
+        ConfigFile config(config::CONFIG_FILE_NAME);
 
-    chatView.AddPanel(chatPanel);
-    channelView.AddPanel(channelPanel);
-    channelView.AddPanel(userInfoPanel);
-    loginView.AddPanel(loginPanel);
-    configView.AddPanel(configPanel);
+        //init controller layer
+        auto chatController = ChatController(userLogic, commandManager);
+        auto channelController = ChannelController(userLogic, commandManager);
+        auto loginController = LoginController(userLogic, commandManager);
+        auto configController = ConfigController(userLogic, commandManager);
+
+        //init panels
+        auto channelPanel = ChannelPanel(channelController);
+        auto userInfoPanel = UserInfoPanel(channelController);
+        auto chatPanel = ChatPanel(chatController);
+        auto loginPanel = LoginPanel(loginController);
+        auto configPanel = ConfigPanel(configController);
+
+        chatView.AddPanel(chatPanel);
+        channelView.AddPanel(channelPanel);
+        channelView.AddPanel(userInfoPanel);
+        loginView.AddPanel(loginPanel);
+        configView.AddPanel(configPanel);
+    }
 
     //init renderer, window
     static const constexpr RendererAPI rendererApi = RendererAPI::OpenGL;
@@ -77,9 +79,6 @@ int main(int, char**)
     app.AddView(chatView);
     app.AddView(loginView);
     app.AddView(configView);
-
-    //Close the config file before running the application
-    config.Close();
 
     app.Run();
 
