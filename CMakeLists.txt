@@ -84,6 +84,18 @@ add_executable(
         src/Model/ApplicationLogic/Command/CommandManager.h
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.cpp
         src/Model/ApplicationLogic/Command/SetSelectedPeerIdCommand.h
+        src/Controller/IConfigController.h
+        src/Controller/ConfigController.cpp
+        src/Controller/ConfigController.h
+        src/View/Views/ConfigView.cpp
+        src/View/Views/ConfigView.h
+        src/View/Panels/ConfigPanel.cpp
+        src/View/Panels/ConfigPanel.h
+        src/util/VariantUtil.h
+        src/Model/ApplicationLogic/Command/SaveNewConfigValueCommand.cpp
+        src/Model/ApplicationLogic/Command/SaveNewConfigValueCommand.h
+        src/Model/Models/ConfigRefPair.h
+        src/Model/Models/ConfigFile.hpp
 )
 
 target_include_directories(

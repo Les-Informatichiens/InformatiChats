@@ -1,10 +1,15 @@
-#include "ChatView.h"
+//
+// Created by thierrycd on 2023-12-31.
+//
+
+#include "ConfigView.h"
+
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ChatView::ChatView(std::vector<IPanel>& panels_)
+ConfigView::ConfigView(std::vector<IPanel>& panels_)
 {
     for (IPanel& panel: panels_)
     {
@@ -12,10 +17,7 @@ ChatView::ChatView(std::vector<IPanel>& panels_)
     }
 }
 
-/**
- * @brief Draws all the panels in the view
- */
-void ChatView::Draw() const
+void ConfigView::Draw() const
 {
     for (const std::reference_wrapper<IPanel>& panel: this->panels)
     {
@@ -23,16 +25,12 @@ void ChatView::Draw() const
     }
 }
 
-/**
- * @brief Adds a panel to the view
- * @param panel_ panel to be added
- */
-void ChatView::AddPanel(IPanel& panel_)
+void ConfigView::AddPanel(IPanel& panel_)
 {
     this->panels.emplace_back(panel_);
 }
 
-bool ChatView::IsVisible()
+bool ConfigView::IsVisible()
 {
     return true;
 }

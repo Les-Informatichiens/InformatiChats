@@ -1,5 +1,5 @@
 //
-// Created by Jean on 8/18/2023.
+// Created by thierrycd on 2023-12-31.
 //
 
 #pragma once
@@ -10,11 +10,11 @@
 #include <vector>
 
 
-class ChannelView final : public IView
+class ConfigView final : public IView
 {
 public:
-    ChannelView() = default;
-    explicit ChannelView(std::vector<IPanel>& panels);
+    ConfigView() = default;
+    explicit ConfigView(std::vector<IPanel>& panels);
 
     void Draw() const override;
     bool IsVisible() override;

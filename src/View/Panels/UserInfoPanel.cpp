@@ -3,6 +3,7 @@
 //
 
 #include "UserInfoPanel.h"
+#include <iostream>
 
 UserInfoPanel::UserInfoPanel(IChannelController& controller_) : controller(controller_) {}
 

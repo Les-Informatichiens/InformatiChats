@@ -10,7 +10,8 @@
 class UserLogic
 {
 public:
-    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI) : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI){};
+    UserLogic(User& user, IChatAPI& chatAPI, ILocalUsersAPI& localUsersAPI)
+        : user(user), chatAPI(chatAPI), localUsersAPI(localUsersAPI){};
 
     void Reset(const std::string& username);
     [[nodiscard]] bool IsClientConnected() const;

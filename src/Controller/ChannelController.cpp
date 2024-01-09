@@ -27,3 +27,4 @@ void ChannelController::SetSelectedPeerId(const std::string& peerId_)
             this->userLogic.GetSelectedPeerId(),
             peerId_));
 }
+
