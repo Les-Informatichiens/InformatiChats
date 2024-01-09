@@ -17,7 +17,7 @@ public:
     bool IsVisible() override;
 
 private:
-    std::unordered_map<std::string, ChatMessage> lastChatMessages;
+    // std::unordered_map<std::string, ChatMessage> lastChatMessages;
 
     bool consoleOpen{true};
     std::string selectedChat;

@@ -71,6 +71,8 @@ void ChannelPanel::Update()
             switch (state)
             {
                 case ConnectionState::New: {
+                    hasColor = false;
+                    displayText += " [New]";
                     break;
                 }
                 case ConnectionState::Connecting: {
@@ -80,6 +82,12 @@ void ChannelPanel::Update()
                     break;
                 }
                 case ConnectionState::Connected: {
+                    if (peerConnection.second.authenticated)
+                    {
+                        hasColor = true;
+                        color = ImVec4(0.4f, 1.0f, 0.4f, 1.0f);
+                        displayText += " [Authenticated]";
+                    }
                     break;
                 }
                 case ConnectionState::Disconnected: {

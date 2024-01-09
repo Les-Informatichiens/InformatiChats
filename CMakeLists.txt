@@ -52,9 +52,6 @@ add_executable(
         src/Model/ApplicationLogic/UserLogic.cpp
         src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
-        src/Model/DataAccess/IChatAPI.h
-        src/Model/DataAccess/LibDataChannelChatAPI.cpp
-        src/Model/DataAccess/LibDataChannelChatAPI.h
         src/Model/Models/User.h
         src/Model/Models/PeerData.h
         src/View/Backend/IWindow.h
@@ -96,6 +93,37 @@ add_executable(
         src/Model/ApplicationLogic/Command/SaveNewConfigValueCommand.h
         src/Model/Models/ConfigRefPair.h
         src/Model/Models/ConfigFile.hpp
+        src/Model/DataAccess/IConnectionAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelState.h
+        src/Model/DataAccess/ITextChatAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h
+        src/Model/Models/ChatMessageInfo.h
+        src/Model/DataAccess/IPeeringAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelAPIEvents.h
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.cpp
+        src/Model/DataAccess/libdatachannel/LibDatachannelPeer.h
+        src/Model/MessageDispatcher.h
+        src/Model/Models/PeerEventMessages.h
+        src/Model/Models/Exchange.cpp
+        src/Model/Models/Exchange.h
+        src/util/crypto/Hashing.cpp
+        src/util/crypto/Hashing.h
+        src/Model/ApplicationLogic/UserEventManager.cpp
+        src/Model/ApplicationLogic/UserEventManager.h
+        src/Model/ApplicationLogic/PeerManager.cpp
+        src/Model/ApplicationLogic/PeerManager.h
+        src/Model/ApplicationLogic/UserDataManager.cpp
+        src/Model/ApplicationLogic/UserDataManager.h
+        src/Controller/UserController.cpp
+        src/Controller/UserController.h
+        src/Controller/IUserController.h
+        src/Controller/ViewModels/UserViewModel.h
 )
 
 target_include_directories(
@@ -194,6 +222,37 @@ if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
 endif ()
 # =====================================================================================================
+
+## lua =================================================================================================
+#CPMAddPackage(
+#        NAME "lua"
+#        GITHUB_REPOSITORY "9chu/LuaJIT-cmake"
+#        GIT_TAG "master"
+#)
+#target_link_libraries(${PROJECT_NAME} PRIVATE liblua-static)
+## =====================================================================================================
+
+## luaaa ===============================================================================================
+#CPMAddPackage(
+#        NAME "luaaa"
+#        GITHUB_REPOSITORY "jwric/luaaa"
+#        VERSION "1.0.1"
+#)
+#
+#if (luaaa_ADDED)
+#    target_include_directories(${PROJECT_NAME} PRIVATE ${luaaa_SOURCE_DIR})
+#endif ()
+## =====================================================================================================
+
+## lua =================================================================================================
+#CPMAddPackage(
+#        NAME "sol2"
+#        GITHUB_REPOSITORY "ThePhD/sol2"
+#        VERSION "3.3.0"
+#)
+#target_link_libraries(${PROJECT_NAME} PRIVATE sol2::sol2)
+## =====================================================================================================
+
 
 # tr-and-slate-or =====================================================================================
 if (NOT TARGET trandslateor)

@@ -5,7 +5,9 @@
 #include "NlohmannJsonLocalUsersAPI.h"
 #include <Model/Models/UserData.h>
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
+#include <ranges>
 
 
 /**
@@ -29,16 +31,41 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
     std::vector<UserData> users;
     for (auto& [username, user]: data.items())
     {
-        UserData userData;
-        userData.permanentUsername = username;
-        userData.encryptedPassword = user["encryptedPassword"];
-        userData.publicIdentificationKey = user["publicIdentificationKey"];
-        userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
-        userData.profile.displayName = user["profile"]["displayName"];
-        userData.profile.description = user["profile"]["description"];
-        userData.profile.status = user["profile"]["status"];
-        userData.profile.nameColor = user["profile"]["nameColor"];
-        users.push_back(userData);
+        try
+        {
+            UserData userData;
+            userData.permanentUsername = username;
+            userData.encryptedPassword = user["encryptedPassword"];
+            userData.publicIdentificationKey = user["publicIdentificationKey"];
+            userData.encryptedPrivateIdentificationKey = user["encryptedPrivateIdentificationKey"];
+            userData.profile.displayName = user["profile"]["displayName"];
+            userData.profile.description = user["profile"]["description"];
+            userData.profile.status = user["profile"]["status"];
+            userData.profile.nameColor = user["profile"]["nameColor"];
+
+            std::map<std::string, ContactData> contacts;
+
+            for (auto& jsonContact : user["contacts"])
+            {
+                ContactData contact;
+                contact.permanentUsername = jsonContact["permanentUsername"];
+                contact.publicIdentificationKey = jsonContact["publicIdentificationKey"];
+                contact.lastSeen = jsonContact["lastSeen"];
+                contact.profile.displayName = jsonContact["profile"]["displayName"];
+                contact.profile.description = jsonContact["profile"]["description"];
+                contact.profile.status = jsonContact["profile"]["status"];
+                contact.profile.nameColor = jsonContact["profile"]["nameColor"];
+                contacts.emplace(contact.publicIdentificationKey, std::move(contact));
+            }
+            userData.contacts = std::move(contacts);
+
+            users.push_back(userData);
+        }
+        catch (const nlohmann::json::exception& e)
+        {
+            std::cout << "Error parsing user \"" << username << "\": "<< e.what() << std::endl;
+            continue;
+        }
     }
     this->localUserInfos = std::move(users);
 }
@@ -61,6 +88,21 @@ void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const
         userJson["profile"]["description"] = user.profile.description;
         userJson["profile"]["status"] = user.profile.status;
         userJson["profile"]["nameColor"] = user.profile.nameColor;
+
+        userJson["contacts"] = nlohmann::ordered_json::array();
+        for (const auto& [permanentUsername, publicIdentificationKey, lastSeen, profile]: user.contacts | std::views::values)
+        {
+            nlohmann::ordered_json contactJson;
+            contactJson["permanentUsername"] = permanentUsername;
+            contactJson["publicIdentificationKey"] = publicIdentificationKey;
+            contactJson["lastSeen"] = lastSeen;
+            contactJson["profile"]["displayName"] = profile.displayName;
+            contactJson["profile"]["description"] = profile.description;
+            contactJson["profile"]["status"] = profile.status;
+            contactJson["profile"]["nameColor"] = profile.nameColor;
+
+            userJson["contacts"].push_back(contactJson);
+        }
 
         data[user.permanentUsername] = userJson;
     }
@@ -89,4 +131,13 @@ const std::vector<UserData>& NlohmannJsonLocalUsersAPI::GetLocalUserInfos() cons
 void NlohmannJsonLocalUsersAPI::AddNewLocalUser(const UserData& userData)
 {
     this->localUserInfos.push_back(userData);
+}
+
+void NlohmannJsonLocalUsersAPI::UpdateLocalUser(const UserData& updatedUserData)
+{
+    const auto userInfoIt = std::ranges::find_if(this->localUserInfos, [updatedUserData](const UserData& userData) { return userData.publicIdentificationKey == updatedUserData.publicIdentificationKey; });
+    if (userInfoIt == this->localUserInfos.end())
+        return;
+
+    *userInfoIt = updatedUserData;
 }

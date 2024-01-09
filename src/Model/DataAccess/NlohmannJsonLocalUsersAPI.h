@@ -15,11 +15,12 @@
 class NlohmannJsonLocalUsersAPI : public ILocalUsersAPI
 {
 public:
-    NlohmannJsonLocalUsersAPI() : localUserInfos(){};
+    NlohmannJsonLocalUsersAPI(){};
 
     void LoadLocalUserInfos() override;
     void AddNewLocalUser(const UserData& userData) override;
     void SaveLocalUserInfos() const override;
+    void UpdateLocalUser(const UserData& userData) override;
 
     [[nodiscard]] const std::vector<UserData>& GetLocalUserInfos() const override;
 

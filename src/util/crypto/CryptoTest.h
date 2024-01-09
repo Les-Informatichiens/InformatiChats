@@ -4,10 +4,12 @@
 
 #pragma once
 
+#include "Hashing.h"
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
 #include <util/crypto/AESEncryption.h>
 #include <util/crypto/Keygen.h>
 #include <util/crypto/RSAEncryption.h>
-
 
 void TestCryptography()
 {
@@ -60,3 +62,67 @@ void TestCryptography()
     std::string decryptedPrivKeyRSA = DecryptRSA(encryptedPrivKeyRSA, keypair.privateKey);
     std::cout << "decrypted: " << decryptedPrivKeyRSA << "\n\n";
 }
+
+void Test2()
+{
+//    // Peer B generates its own secret key (keep it secret)
+//    const char* secretKeyB = "peer_b_secret_key";
+//    const char* secretKeyA = "jdaosidjajsoaisdaoiasjdsodjoajdoj";
+//
+//    // Peer A generates a random nonce (one-time token)
+//    const char* nonce = "random_nonce_generated_by_peer_a";
+//
+//    unsigned char* outc = nullptr;
+//    // Peer B generates a challenge by hashing the received nonce with its secret key
+//    std::string challenge = Hashing::SHA256(secretKeyB, nonce, outc);
+//    std::string outcStr = (char*)outc;
+//    // Simulate sending the challenge to Peer A (in a real scenario, it would be sent over the network)
+//
+//    unsigned char* respA = nullptr;
+//    // Peer A computes its response (same process as challenge generation)
+//    std::string responseA = Hashing::SHA256(secretKeyA, challenge.c_str(), respA);
+//    std::string respAStr = (char*)respA;
+//
+//
+//    // Peer B receives the response from Peer A and verifies it
+//    bool isValidResponse = (memcmp(outc, respA, SHA256_DIGEST_LENGTH) == 0);//responseA == challenge;
+//
+//    if (isValidResponse)
+//    {
+//        std::cout << "Communication setup allowed." << std::endl;
+//    }
+//    else
+//    {
+//        std::cout << "Communication setup denied." << std::endl;
+//    }
+    // Peer B generates its own secret key (keep it secret)
+    const char* secretKeyB = "peer_b_secret_key";
+    const char* secretKeyA = "jdaosidjajsoaisdaoiasjdsodjoajdoj";
+
+    // Peer A generates a random nonce (one-time token)
+    const char* nonce = "random_nonce_generated_by_peer_a";
+
+    // Peer B generates a challenge by hashing the received nonce with its secret key
+    unsigned char* challenge = nullptr;
+    unsigned int len = -1;
+    challenge = HMAC(EVP_sha256(),(unsigned char*) secretKeyB, strlen(secretKeyB), (unsigned char*) nonce, strlen(nonce), challenge, &len);
+
+    // Simulate sending the challenge to Peer A (in a real scenario, it would be sent over the network)
+
+    // Peer A computes its response (same process as challenge generation)
+    unsigned char* responseA = nullptr;
+    unsigned int len2 = -1;
+    responseA = HMAC(EVP_sha256(),(unsigned char*) secretKeyA, strlen(secretKeyA), (unsigned char*) challenge, len, responseA, &len2);
+
+    // Peer B receives the response from Peer A and verifies it
+    bool isValidResponse = (memcmp(challenge, responseA, SHA256_DIGEST_LENGTH) == 0);
+
+    if (isValidResponse)
+    {
+        std::cout << "Communication setup allowed." << std::endl;
+    }
+    else
+    {
+        std::cout << "Communication setup denied." << std::endl;
+    }
+};

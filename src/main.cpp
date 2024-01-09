@@ -1,11 +1,16 @@
+#include "Model/DataAccess/libdatachannel/LibDatachannelConnectionAPI.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelState.h"
+#include "Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h"
+#include "util/crypto/CryptoTest.h"
 #include <ChatApp.h>
 
 #include <Controller/ChannelController.h>
 #include <Controller/ChatController.h>
 #include <Controller/ConfigController.h>
 #include <Controller/LoginController.h>
+#include <Controller/UserController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
-#include <Model/DataAccess/LibDataChannelChatAPI.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
 #include <Model/Models/ConfigFile.hpp>
 #include <Model/Models/User.h>
@@ -22,6 +27,10 @@
 #include <View/Views/ConfigView.h>
 #include <View/Views/LoginView.h>
 
+
+// #include <sol/sol.hpp>
+// #include <sol/assert.hpp>
+
 // Main code
 int main(int, char**)
 {
@@ -34,9 +43,15 @@ int main(int, char**)
 
     //init model layer
     User user{};
-    auto chatAPI = LibDataChannelChatAPI();
+    auto libdatachannelState = LibDatachannelState();
+    auto libDatachannelEventBus = EventBus();
+    auto connectionAPI = LibDatachannelConnectionAPI(libdatachannelState, libDatachannelEventBus);
+    auto textChatAPI = LibDatachannelTextChatAPI(libdatachannelState, libDatachannelEventBus);
+    auto peeringAPI = LibDatachannelPeeringAPI(libdatachannelState, libDatachannelEventBus);
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
-    UserLogic userLogic{user, chatAPI, localUsersAPI};
+
+    UserDataManager userDataManager(user, localUsersAPI);
+    UserLogic userLogic{userDataManager, connectionAPI, peeringAPI, textChatAPI, localUsersAPI};
 
     //init command manager
     CommandManager commandManager{};
@@ -46,6 +61,7 @@ int main(int, char**)
     auto channelController = ChannelController(userLogic, commandManager);
     auto loginController = LoginController(userLogic, commandManager);
     auto configController = ConfigController(userLogic, commandManager);
+    auto userController = UserController(userLogic);
 
     //init view layer
     auto chatView = ChatView();
@@ -55,7 +71,7 @@ int main(int, char**)
 
     //init panels
     auto channelPanel = ChannelPanel(channelController);
-    auto userInfoPanel = UserInfoPanel(channelController);
+    auto userInfoPanel = UserInfoPanel(userController);
     auto chatPanel = ChatPanel(chatController);
     auto loginPanel = LoginPanel(loginController);
     auto configPanel = ConfigPanel(configController);
@@ -81,6 +97,24 @@ int main(int, char**)
     //Close the config file before running the application
     config.Close();
 
+    app.test = [&libdatachannelState, &textChatAPI, &peeringAPI] {
+        ImGui::Begin("Test");
+        // func();
+        for (const auto& peerConnection: libdatachannelState.peerMap)
+        {
+            ImGui::Separator();
+            ImGui::Text("%s", peerConnection.first.c_str());
+            ImGui::SameLine();
+            ImGui::Text("%d", peerConnection.second->State());
+            auto textchannelid = textChatAPI.textChannelMap.contains(peerConnection.first) ? (textChatAPI.textChannelMap.at(peerConnection.first) ? textChatAPI.textChannelMap.at(peerConnection.first)->isOpen() : -1) : -1;
+            ImGui::Text("TChannel: %d", textchannelid);
+            auto channelid = libdatachannelState.peerMap.contains(peerConnection.first) ? libdatachannelState.peerMap.at(peerConnection.first)->IsConnected() : -1;
+            ImGui::Text("Channel: %d", channelid);
+        }
+
+
+        ImGui::End();
+    };
     app.Run();
 
     return 0;
