@@ -4,20 +4,12 @@
 
 #include "ConfigView.h"
 
-/**
- * @brief Builds a view with no panels
- */
-ConfigView::ConfigView(IConfigController& controller_)
-    : controller(controller_)
-{
-}
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ConfigView::ConfigView(std::vector<IPanel>& panels_, IConfigController& controller_)
-    : controller(controller_)
+ConfigView::ConfigView(std::vector<IPanel>& panels_)
 {
     for (IPanel& panel: panels_)
     {
@@ -27,9 +19,9 @@ ConfigView::ConfigView(std::vector<IPanel>& panels_, IConfigController& controll
 
 void ConfigView::Draw() const
 {
-    for (IPanel& panel: this->panels)
+    for (const std::reference_wrapper<IPanel>& panel: this->panels)
     {
-        panel.Draw();
+        panel.get().Draw();
     }
 }
 
@@ -41,9 +33,4 @@ void ConfigView::AddPanel(IPanel& panel_)
 bool ConfigView::IsVisible()
 {
     return true;
-}
-
-void ConfigView::SetController(IConfigController& controller_)
-{
-    this->controller = controller_;
 }

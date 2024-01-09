@@ -5,19 +5,16 @@
 #pragma once
 
 #include "IView.h"
-#include <Controller/IChatController.h>
 
-#include <memory>
+#include <functional>
 #include <vector>
 
 
-class ChatView : public IView
+class ChatView final : public IView
 {
 public:
-    explicit ChatView(IChatController& controller);
-    ChatView(std::vector<IPanel>& panels, IChatController& controller);
-
-    void SetController(IChatController& controller);
+    ChatView() = default;
+    explicit ChatView(std::vector<IPanel>& panels);
 
     void Draw() const override;
     bool IsVisible() override;
@@ -25,5 +22,4 @@ public:
 
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
-    IChatController& controller;
 };

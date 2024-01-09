@@ -4,19 +4,17 @@
 
 #pragma once
 
-#include "Controller/IConfigController.h"
 #include "IView.h"
 
+#include <functional>
 #include <vector>
 
 
-class ConfigView : public IView
+class ConfigView final : public IView
 {
 public:
-    explicit ConfigView(IConfigController& controller);
-    ConfigView(std::vector<IPanel>& panels, IConfigController& controller);
-
-    void SetController(IConfigController& controller);
+    ConfigView() = default;
+    explicit ConfigView(std::vector<IPanel>& panels);
 
     void Draw() const override;
     bool IsVisible() override;
@@ -24,6 +22,4 @@ public:
 
 private:
     std::vector<std::reference_wrapper<IPanel>> panels;
-
-    IConfigController& controller;
 };

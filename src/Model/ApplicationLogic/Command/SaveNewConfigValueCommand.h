@@ -8,11 +8,11 @@
 
 #include <string>
 
-template <typename T>
+template<typename T>
 class SaveNewConfigValueCommand final : public ICommand
 {
 public:
-    SaveNewConfigValueCommand<T>(std::string key, T value, T oldValue);
+    SaveNewConfigValueCommand(std::string key, T value, T oldValue);
     void Execute() override;
     void Undo() override;
 

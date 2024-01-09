@@ -1,18 +1,10 @@
 #include "ChannelView.h"
-#include <Controller/IChannelController.h>
-
-/**
- * @brief Builds a view with no panels
- */
-ChannelView::ChannelView(IChannelController& controller_) : controller(controller_)
-{
-}
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-ChannelView::ChannelView(std::vector<IPanel>& panels_, IChannelController& controller_) : controller(controller_)
+ChannelView::ChannelView(std::vector<IPanel>& panels_)
 {
     for (IPanel& panel: panels_)
     {
@@ -25,9 +17,9 @@ ChannelView::ChannelView(std::vector<IPanel>& panels_, IChannelController& contr
  */
 void ChannelView::Draw() const
 {
-    for (IPanel& panel: this->panels)
+    for (const std::reference_wrapper<IPanel>& panel: this->panels)
     {
-        panel.Draw();
+        panel.get().Draw();
     }
 }
 
@@ -38,15 +30,6 @@ void ChannelView::Draw() const
 void ChannelView::AddPanel(IPanel& panel_)
 {
     this->panels.emplace_back(panel_);
-}
-
-/**
- * Sets the controller for the view
- * @param controller_
- */
-void ChannelView::SetController(IChannelController& controller_)
-{
-    this->controller = controller_;
 }
 
 bool ChannelView::IsVisible()

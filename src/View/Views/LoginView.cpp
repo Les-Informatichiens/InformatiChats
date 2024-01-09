@@ -3,22 +3,12 @@
 //
 
 #include "LoginView.h"
-#include <Controller/ILoginController.h>
-
-/**
- * @brief Builds a view with no panels
- */
-LoginView::LoginView(ILoginController& controller_)
-    : controller(controller_)
-{
-}
 
 /**
  * @brief Builds a view with the given panels
  * @param panels_ panels to be added to the view
  */
-LoginView::LoginView(std::vector<IPanel>& panels_, ILoginController& controller_)
-    : controller(controller_)
+LoginView::LoginView(std::vector<IPanel>& panels_)
 {
     for (IPanel& panel: panels_)
     {
@@ -28,9 +18,9 @@ LoginView::LoginView(std::vector<IPanel>& panels_, ILoginController& controller_
 
 void LoginView::Draw() const
 {
-    for (IPanel& panel: this->panels)
+    for (const std::reference_wrapper<IPanel>& panel: this->panels)
     {
-        panel.Draw();
+        panel.get().Draw();
     }
 }
 
@@ -42,9 +32,4 @@ void LoginView::AddPanel(IPanel& panel_)
 bool LoginView::IsVisible()
 {
     return true;
-}
-
-void LoginView::SetController(ILoginController& controller_)
-{
-    this->controller = controller_;
 }

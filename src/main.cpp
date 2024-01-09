@@ -23,7 +23,8 @@
 #include <View/Views/LoginView.h>
 
 // Main code
-int main(int, char **) {
+int main(int, char**)
+{
     //Get the config data.
     //All the parts of the application that need data from the config file should
     // get it from the ConfigFile object before the actual application is running.
@@ -47,10 +48,10 @@ int main(int, char **) {
     auto configController = ConfigController(userLogic, commandManager);
 
     //init view layer
-    auto chatView = ChatView(chatController);
-    auto channelView = ChannelView(channelController);
-    auto loginView = LoginView(loginController);
-    auto configView = ConfigView(configController);
+    auto chatView = ChatView();
+    auto channelView = ChannelView();
+    auto loginView = LoginView();
+    auto configView = ConfigView();
 
     //init panels
     auto channelPanel = ChannelPanel(channelController);
