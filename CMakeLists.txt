@@ -124,6 +124,8 @@ add_executable(
         src/Controller/UserController.h
         src/Controller/IUserController.h
         src/Controller/ViewModels/UserViewModel.h
+        src/Model/Models/video/IEncoder.h
+        src/Model/Models/video/H265Encoder.h
 )
 
 target_include_directories(
@@ -220,6 +222,28 @@ CPMAddPackage(
 )
 if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
+endif ()
+# =====================================================================================================
+
+# ffmpeg ==============================================================================================
+CPMAddPackage(
+        NAME "FFmpeg"
+        GITHUB_REPOSITORY "Les-Informatichiens/FFmpeg-lib"
+        GIT_TAG "0.1"
+)
+
+if (FFmpeg_ADDED)
+    if (WIN32)
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+                ${FFmpeg_SOURCE_DIR}/windows/libavcodec/avcodec.lib
+                ${FFmpeg_SOURCE_DIR}/windows/libavutil/avutil.lib)
+        target_include_directories(${PROJECT_NAME} PRIVATE ${FFmpeg_SOURCE_DIR}/windows/)
+
+        # Copy ffmpeg dlls to build directory
+        file(COPY ${FFmpeg_SOURCE_DIR}/windows/libavcodec/avcodec-60.dll DESTINATION ${CMAKE_BINARY_DIR})
+    elseif (UNIX OR APPLE)
+        target_include_directories(${PROJECT_NAME} PRIVATE ${FFmpeg_SOURCE_DIR}/linux/)
+    endif ()
 endif ()
 # =====================================================================================================
 

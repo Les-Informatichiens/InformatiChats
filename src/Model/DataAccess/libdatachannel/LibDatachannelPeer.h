@@ -15,11 +15,11 @@
 #include "rtc/websocket.hpp"
 #include "zpp_bits.h"
 
-#include <utility>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 
 static const std::string eventChannelName = "message";
@@ -68,6 +68,7 @@ private:
     std::string peerId;
     std::shared_ptr<rtc::PeerConnection> pc;
     std::shared_ptr<rtc::DataChannel> dc;
+    std::vector<std::shared_ptr<rtc::Track>> videoTracks;
     EventBus& eventBus;
     MessageDispatcher<MessageType> messageDispatcher{};
 

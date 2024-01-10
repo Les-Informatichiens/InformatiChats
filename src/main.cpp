@@ -2,6 +2,8 @@
 #include "Model/DataAccess/libdatachannel/LibDatachannelPeeringAPI.h"
 #include "Model/DataAccess/libdatachannel/LibDatachannelState.h"
 #include "Model/DataAccess/libdatachannel/LibDatachannelTextChatAPI.h"
+#include "Model/Models/video/H265Encoder.h"
+#include "Model/Models/video/IEncoder.h"
 #include "util/crypto/CryptoTest.h"
 #include <ChatApp.h>
 
@@ -34,6 +36,7 @@
 // Main code
 int main(int, char**)
 {
+    IEncoder* encoder = new H265Encoder();
     //Get the config data.
     //All the parts of the application that need data from the config file should
     // get it from the ConfigFile object before the actual application is running.
