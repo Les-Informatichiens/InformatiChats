@@ -3,11 +3,6 @@ project(InformatiChats VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 23)
 
-if (UNIX)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
-endif ()
-
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
@@ -240,41 +235,40 @@ if (NOT TARGET FFmpeg::FFmpeg)
     elseif (UNIX OR APPLE)
         include_directories(${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/include)
         link_directories(${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavformat.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswscale.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4 ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavfilter.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavdevice.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libpostproc.so)
+
+        find_package(PkgConfig REQUIRED)
+        pkg_check_modules(AVCODEC REQUIRED IMPORTED_TARGET libavcodec)
+        pkg_check_modules(AVFORMAT REQUIRED IMPORTED_TARGET libavformat)
+        pkg_check_modules(AVFILTER REQUIRED IMPORTED_TARGET libavfilter)
+        pkg_check_modules(AVDEVICE REQUIRED IMPORTED_TARGET libavdevice)
+        pkg_check_modules(AVUTIL REQUIRED IMPORTED_TARGET libavutil)
+        pkg_check_modules(SWRESAMPLE REQUIRED IMPORTED_TARGET libswresample)
+        pkg_check_modules(SWSCALE REQUIRED IMPORTED_TARGET libswscale)
+
+        target_link_libraries(${PROJECT_NAME} PRIVATE
+                PkgConfig::AVCODEC
+                PkgConfig::AVFORMAT
+                PkgConfig::AVFILTER
+                PkgConfig::AVDEVICE
+                PkgConfig::AVUTIL
+                PkgConfig::SWRESAMPLE
+                PkgConfig::SWSCALE
+        )
+
+        #        add_library(libavcodec SHARED IMPORTED [GLOBAL])
+        #        set_target_properties(libavcodec PROPERTIES IMPORTED_NO_SONAME TRUE)
+        #        set_target_properties(libavcodec PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so")
+        #        add_library(libavutil SHARED IMPORTED [GLOBAL])
+        #        set_target_properties(libavutil PROPERTIES IMPORTED_NO_SONAME TRUE)
+        #        set_target_properties(libavutil PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so")
+        #        add_library(libswresample SHARED IMPORTED [GLOBAL])
+        #        set_target_properties(libswresample PROPERTIES IMPORTED_NO_SONAME TRUE)
+        #        set_target_properties(libswresample PROPERTIES IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so")
+        #
+        #        target_link_libraries(${PROJECT_NAME} PRIVATE libavcodec libavutil libswresample)
     endif ()
 endif ()
 # =====================================================================================================
-
-## lua =================================================================================================
-#CPMAddPackage(
-#        NAME "lua"
-#        GITHUB_REPOSITORY "9chu/LuaJIT-cmake"
-#        GIT_TAG "master"
-#)
-#target_link_libraries(${PROJECT_NAME} PRIVATE liblua-static)
-## =====================================================================================================
-
-## luaaa ===============================================================================================
-#CPMAddPackage(
-#        NAME "luaaa"
-#        GITHUB_REPOSITORY "jwric/luaaa"
-#        VERSION "1.0.1"
-#)
-#
-#if (luaaa_ADDED)
-#    target_include_directories(${PROJECT_NAME} PRIVATE ${luaaa_SOURCE_DIR})
-#endif ()
-## =====================================================================================================
-
-## lua =================================================================================================
-#CPMAddPackage(
-#        NAME "sol2"
-#        GITHUB_REPOSITORY "ThePhD/sol2"
-#        VERSION "3.3.0"
-#)
-#target_link_libraries(${PROJECT_NAME} PRIVATE sol2::sol2)
-## =====================================================================================================
-
 
 # tr-and-slate-or =====================================================================================
 if (NOT TARGET trandslateor)
@@ -327,13 +321,20 @@ if (WIN32)
             "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/postproc-57.dll"
             $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
-elseif (UNIX OR APPLE)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/bin/ffmpeg"
-            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so.60"
-            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4"
-            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so.58"
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-endif ()
+    #elseif (UNIX OR APPLE)
+    #    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    #            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so.60"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavformat.so.60"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so.58"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswscale.so.7"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4.13.100"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavfilter.so.9"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavdevice.so.60"
+    #            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libpostproc.so.57"
+    #            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    #endif ()
 # =====================================================================================================
+endif ()
