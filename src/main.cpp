@@ -36,7 +36,28 @@
 // Main code
 int main(int, char**)
 {
-    IEncoder* encoder = new H265Encoder();
+    H265Encoder encoder;
+    std::ofstream outputFile("output.h265", std::ios::binary);
+
+    auto end_time = std::chrono::steady_clock::now() + std::chrono::seconds(10);
+
+    while (std::chrono::steady_clock::now() < end_time)
+    {
+        std::vector<std::byte> frame = encoder.getNextFrame();
+
+        if (!frame.empty())
+        {
+            std::vector<std::byte> encodedFrame = encoder.encode(frame);
+            if (!encodedFrame.empty())
+            {
+                outputFile.write(reinterpret_cast<char*>(encodedFrame.data()), encodedFrame.size());
+            }
+        }
+    }
+
+    outputFile.close();
+
+
     //Get the config data.
     //All the parts of the application that need data from the config file should
     // get it from the ConfigFile object before the actual application is running.
