@@ -3,6 +3,11 @@ project(InformatiChats VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 23)
 
+if (UNIX)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
+endif ()
+
 add_executable(
         ${PROJECT_NAME}
         src/main.cpp
@@ -225,24 +230,17 @@ if (zpp_bits_ADDED)
 endif ()
 # =====================================================================================================
 
-# ffmpeg ==============================================================================================
-CPMAddPackage(
-        NAME "FFmpeg"
-        GITHUB_REPOSITORY "Les-Informatichiens/FFmpeg-lib"
-        GIT_TAG "0.1"
-)
-
-if (FFmpeg_ADDED)
+# FFmpeg ==============================================================================================
+if (NOT TARGET FFmpeg::FFmpeg)
     if (WIN32)
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-                ${FFmpeg_SOURCE_DIR}/windows/libavcodec/avcodec.lib
-                ${FFmpeg_SOURCE_DIR}/windows/libavutil/avutil.lib)
-        target_include_directories(${PROJECT_NAME} PRIVATE ${FFmpeg_SOURCE_DIR}/windows/)
+        include_directories(${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/include)
+        link_directories(${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/avcodec.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/avformat.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/avutil.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/swscale.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/swresample.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/avfilter.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/avdevice.lib ${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/lib/postproc.lib)
 
-        # Copy ffmpeg dlls to build directory
-        file(COPY ${FFmpeg_SOURCE_DIR}/windows/libavcodec/avcodec-60.dll DESTINATION ${CMAKE_BINARY_DIR})
     elseif (UNIX OR APPLE)
-        target_include_directories(${PROJECT_NAME} PRIVATE ${FFmpeg_SOURCE_DIR}/linux/)
+        include_directories(${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/include)
+        link_directories(${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavformat.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswscale.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4 ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavfilter.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavdevice.so ${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libpostproc.so)
     endif ()
 endif ()
 # =====================================================================================================
@@ -311,5 +309,31 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif ()
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(${PROJECT_NAME} PRIVATE __RELEASE__ PRIVATE __NDEBUG__)
+endif ()
+# =====================================================================================================
+
+
+# Copying dlls to build directory =====================================================================
+if (WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/avcodec-60.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/avformat-60.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/avutil-58.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/swscale-7.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/swresample-4.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/avfilter-9.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/avdevice-60.dll"
+            "${PROJECT_SOURCE_DIR}/external/windows/FFmpeg/bin/postproc-57.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+
+elseif (UNIX OR APPLE)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/bin/ffmpeg"
+            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavcodec.so.60"
+            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libswresample.so.4"
+            "${PROJECT_SOURCE_DIR}/external/linux/FFmpeg/lib/libavutil.so.58"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif ()
 # =====================================================================================================

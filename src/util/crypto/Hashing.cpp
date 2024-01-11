@@ -3,6 +3,7 @@
 //
 
 #include "Hashing.h"
+#include "string.h"
 #include "util/Base64.h"
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
