@@ -17,7 +17,7 @@ enum class VideoEncoding
 class IEncoder
 {
 public:
-    virtual std::vector<std::byte> encode(const std::vector<std::byte>& frame) = 0;
+    virtual void encode() = 0;
     virtual std::vector<std::byte> decode(const std::vector<std::byte>& encodedFrame) = 0;
 
     virtual ~IEncoder() = default;

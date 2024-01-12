@@ -52,7 +52,7 @@ public:
         }
 
         // Initialize codec and encoder contexts for H.265
-        const AVCodec* codec = avcodec_find_encoder(AV_CODEC_ID_HEVC);
+        const AVCodec* codec = avcodec_find_encoder(AV_CODEC_ID_FFV1);
         if (!codec)
         {
             std::cerr << "Codec not found" << std::endl;
@@ -69,9 +69,10 @@ public:
         AVStream* stream = input_ctx->streams[0];// Assuming the first stream is the desired one
         encoder_ctx->width = stream->codecpar->width;
         encoder_ctx->height = stream->codecpar->height;
-        encoder_ctx->pix_fmt = AV_PIX_FMT_YUV420P;                                  // Adjust as needed
+        encoder_ctx->pix_fmt = AV_PIX_FMT_BGRA;                                     // The decoded image format need to be compatible with BGRA or be reencoded(say for h265 the format is something like
+                                                                                    // AV_PIX_FMT_YUV420P but the screengrab is in BGRA so we need to reencode it to YUV420P
         encoder_ctx->time_base = stream->time_base;                                 // Use the stream's time base
-        encoder_ctx->framerate = av_inv_q(stream->time_base);                       // Inverse of the time base
+        encoder_ctx->framerate = av_inv_q(stream->time_base);                       // Inverse of the time bas
 
         if (avcodec_open2(encoder_ctx, codec, NULL) < 0)
         {
@@ -79,8 +80,10 @@ public:
             return;
         }
 
-        // Initialize decoder context for H.265
-        decoder_ctx = avcodec_alloc_context3(codec);
+        // Initialize decoder context for BMP
+        const AVCodec* deccodec = avcodec_find_decoder(AV_CODEC_ID_BMP);
+
+        decoder_ctx = avcodec_alloc_context3(deccodec);
         if (!decoder_ctx)
         {
             std::cerr << "Could not allocate video codec context" << std::endl;
@@ -88,100 +91,109 @@ public:
         }
         decoder_ctx->width = stream->codecpar->width;
         decoder_ctx->height = stream->codecpar->height;
-        decoder_ctx->pix_fmt = AV_PIX_FMT_YUV420P;           // Adjust as needed
+        decoder_ctx->pix_fmt = AV_PIX_FMT_BGRA;              // Doesnt matter, the decoder does what he wants for the output format, as per the documentation
         decoder_ctx->time_base = stream->time_base;          // Use the stream's time base
         decoder_ctx->framerate = av_inv_q(stream->time_base);// Inverse of the time base
 
-        if (avcodec_open2(decoder_ctx, codec, NULL) < 0)
+        if (avcodec_open2(decoder_ctx, deccodec, NULL) < 0)
         {
             std::cerr << "Could not open decoder" << std::endl;
             return;
         }
-    }
 
-    std::vector<std::byte> getNextFrame()
-    {
-        AVPacket* pkt = av_packet_alloc();
-        if (!pkt)
-        {
-            std::cerr << "Failed to allocate packet" << std::endl;
-            return {};
-        }
 
-        if (av_read_frame(input_ctx, pkt) < 0)
-        {
-            std::cerr << "Failed to read frame" << std::endl;
-            av_packet_free(&pkt);
-            return {};
-        }
-
-        // Convert AVPacket data to std::vector<std::byte>
-        std::vector<std::byte> frameData(pkt->size);
-        memcpy(frameData.data(), pkt->data, pkt->size);
-
-        av_packet_unref(pkt);
-        av_packet_free(&pkt);
-
-        return frameData;
-    }
-
-    std::vector<std::byte> encode(const std::vector<std::byte>& frame) override
-    {
-        AVPacket* pkt = av_packet_alloc();
-        if (!pkt)
-        {
-            std::cerr << "Failed to allocate packet" << std::endl;
-            return {};
-        }
-
-        AVFrame* av_frame = av_frame_alloc();
+        av_frame = av_frame_alloc();
         if (!av_frame)
         {
             std::cerr << "Failed to allocate frame" << std::endl;
-            av_packet_free(&pkt);
-            return {};
+            av_frame_unref(av_frame);
+            return;
         }
+        av_frame->format = decoder_ctx->pix_fmt;
+        av_frame->width = decoder_ctx->width;
+        av_frame->height = decoder_ctx->height;
+    }
 
-        // Setting frame properties - these should match your source and encoder settings
-        av_frame->format = encoder_ctx->pix_fmt;
-        av_frame->width = encoder_ctx->width;
-        av_frame->height = encoder_ctx->height;
+    // Read a frame from input (desktop capture), decode it and return it as a byte vector to be sent to the encode function afterwards.
+    void grab_screen_frame()
+    {
+        AVPacket* pkt = av_packet_alloc();
+
+        if (!pkt)
+        {
+            std::cerr << "Failed to allocate packet" << std::endl;
+            return;
+        }
 
         // Read a frame from input (desktop capture)
         if (av_read_frame(input_ctx, pkt) < 0)
         {
+
             std::cerr << "Error reading frame from input" << std::endl;
-            av_frame_free(&av_frame);
             av_packet_free(&pkt);
-            return {};
+            return;
         }
 
-        // Send the frame to the encoder
+        // Send the packet to the decoder
+        if (avcodec_send_packet(decoder_ctx, pkt) < 0)
+        {
+            std::cerr << "Error sending packet to decoder" << std::endl;
+            av_packet_free(&pkt);
+            return;
+        }
+
+        //tests the resulting bmp, it works!
+        //        FILE *fp = fopen("output.bmp", "wb");
+        //        fwrite(pkt->data, 1, pkt->size, fp);
+        //        fclose(fp);
+
+
+        // Receive the decoded frame
+        if (avcodec_receive_frame(decoder_ctx, av_frame) < 0)
+        {
+            std::cerr << "Error receiving frame from decoder" << std::endl;
+            av_packet_free(&pkt);
+            return;
+        }
+
+        av_packet_free(&pkt);
+    }
+
+    void encode() override
+    {
+
+        // Send the frame for encoding
+
+
         if (avcodec_send_frame(encoder_ctx, av_frame) < 0)
         {
-            std::cerr << "Error sending frame to encoder" << std::endl;
-            av_frame_free(&av_frame);
-            av_packet_free(&pkt);
-            return {};
+            std::cerr << "Error sending a frame for encoding" << std::endl;
+            return;
+        }
+
+        AVPacket* pkt = av_packet_alloc();
+        if (!pkt)
+        {
+            std::cerr << "Failed to allocate packet" << std::endl;
+            return;
         }
 
         // Receive the encoded frame
         if (avcodec_receive_packet(encoder_ctx, pkt) < 0)
         {
             std::cerr << "Error receiving packet from encoder" << std::endl;
-            av_frame_free(&av_frame);
             av_packet_free(&pkt);
-            return {};
+            return;
         }
 
-        // Copy encoded data to vector
-        std::vector<std::byte> encoded_data(pkt->size);
-        memcpy(encoded_data.data(), pkt->data, pkt->size);
+        av_frame_unref(av_frame);
 
-        av_frame_free(&av_frame);
+        av_frame->format = decoder_ctx->pix_fmt;
+        av_frame->width = decoder_ctx->width;
+        av_frame->height = decoder_ctx->height;
+
         av_packet_free(&pkt);
 
-        return encoded_data;
     }
 
 
@@ -206,7 +218,7 @@ public:
             return {};
         }
 
-        AVFrame* decoded_frame = av_frame_alloc();
+        AVFrame* decoded_frame = av_frame;
         if (!decoded_frame)
         {
             std::cerr << "Failed to allocate frame" << std::endl;
@@ -218,17 +230,17 @@ public:
         if (avcodec_receive_frame(decoder_ctx, decoded_frame) < 0)
         {
             std::cerr << "Error receiving frame from decoder" << std::endl;
-            av_frame_free(&decoded_frame);
+            av_frame_unref(decoded_frame);
             av_packet_free(&pkt);
             return {};
         }
 
         // Convert decoded frame to a byte vector (or any suitable format for your application)
         std::vector<std::byte> decoded_data;
+        decoded_data.resize(decoded_frame->linesize[0] * decoded_frame->height);
         memcpy(decoded_data.data(), decoded_frame->data, decoded_frame->linesize[0] * decoded_frame->height);
 
 
-        av_frame_free(&decoded_frame);
         av_packet_free(&pkt);
 
         return decoded_data;
@@ -237,6 +249,10 @@ public:
 
     ~H265Encoder()
     {
+        if (av_frame)
+        {
+            av_frame_free(&av_frame);
+        }
         if (encoder_ctx)
         {
             avcodec_free_context(&encoder_ctx);
@@ -254,6 +270,7 @@ public:
 
 private:
     AVCodecContext *encoder_ctx, *decoder_ctx;
+    AVFrame* av_frame;
 
 public:
     AVFormatContext* input_ctx;

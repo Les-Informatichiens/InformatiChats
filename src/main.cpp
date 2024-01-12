@@ -37,25 +37,21 @@
 int main(int, char**)
 {
     H265Encoder encoder;
-    std::ofstream outputFile("output.h265", std::ios::binary);
+    std::ofstream outputFile("output.ffv1", std::ios::binary);
 
     auto end_time = std::chrono::steady_clock::now() + std::chrono::seconds(10);
 
-    while (std::chrono::steady_clock::now() < end_time)
-    {
-        std::vector<std::byte> frame = encoder.getNextFrame();
-
-        if (!frame.empty())
-        {
-            std::vector<std::byte> encodedFrame = encoder.encode(frame);
-            if (!encodedFrame.empty())
-            {
-                outputFile.write(reinterpret_cast<char*>(encodedFrame.data()), encodedFrame.size());
-            }
-        }
-    }
-
-    outputFile.close();
+    //    while (std::chrono::steady_clock::now() < end_time)
+    //    {
+    //        encoder.grab_screen_frame();
+    //            std::vector<std::byte> encodedFrame = encoder.encode();
+    //            if (!encodedFrame.empty())
+    //            {
+    //                outputFile.write(reinterpret_cast<char*>(encodedFrame.data()), encodedFrame.size());
+    //                outputFile.close();
+    //
+    //            }
+    //    }
 
 
     //Get the config data.
