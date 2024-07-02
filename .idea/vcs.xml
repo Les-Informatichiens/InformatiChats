@@ -2,5 +2,30 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/glew-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/glfw-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/imgui-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/libdatachannel-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/libdatachannel-src/deps/libjuice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/libdatachannel-src/deps/libsrtp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/libdatachannel-src/deps/plog" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/libdatachannel-src/deps/usrsctp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/simpleini-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/trandslateor-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-debug-visual-studio/_deps/zpp_bits-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/datachannel-wasm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/glm-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/imgui-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src/deps/json" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src/deps/libjuice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src/deps/libsrtp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src/deps/plog" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/libdatachannel-src/deps/usrsctp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/nlohmann_json-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/sfml-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/simpleini-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/cmake-build-emscripten/_deps/trandslateor-src" vcs="Git" />
   </component>
 </project>
