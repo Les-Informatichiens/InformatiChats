@@ -1,6 +1,9 @@
 #include "ChatPanel.h"
 
 
+#include "View/Event/SetSelectedChannelEvent.h"
+
+
 #include <imgui_internal.h>
 
 std::pair<std::string, ImVec4> GetColorFromConnectionState(ConnectionState state)
@@ -101,11 +104,17 @@ std::chrono::system_clock::time_point restoreTimePointFromMilliseconds(std::uint
     return std::chrono::system_clock::time_point(std::chrono::milliseconds(millisecondsSinceEpoch));
 }
 
-ChatPanel::ChatPanel(IChatController& controller_) : controller(controller_) {}
+ChatPanel::ChatPanel(IChatController& controller_, EventBus& eventBus) : controller(controller_), eventBus(eventBus)
+{
+    eventBus.Subscribe("SetSelectedChannelEvent", [this](const EventData& e) {
+        auto eventData = static_cast<const SetSelectedChannelEvent&>(e);
+        this->selectedChannelUuid = eventData.channelId;
+    });
+}
 
 void ChatPanel::Update()
 {
-    ChatViewModel vm = this->controller.GetViewModel();
+    ChatViewModel vm = this->controller.GetViewModel(this->selectedChannelUuid);
     ImVec4 peerNameColor = ImVec4(vm.peerData.profile.nameColor[0], vm.peerData.profile.nameColor[1], vm.peerData.profile.nameColor[2], 1.0f);
 
     ImGui::SameLine();
@@ -117,7 +126,7 @@ void ChatPanel::Update()
         if (ImGui::BeginMenuBar())
         {
             ImGui::PushStyleColor(0, peerNameColor);//ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-            ImGui::Text("%s", vm.peerPermanentUsername.c_str());
+            ImGui::Text("%s", vm.peerData.username.c_str());
             ImGui::PopStyleColor();
             ImGui::Separator();
 
@@ -133,7 +142,7 @@ void ChatPanel::Update()
             {
                 if (ImGui::SmallButton("Add"))
                 {
-                    this->controller.AddPeerAsContact(vm.peerPermanentUsername);
+                    this->controller.AddPeerAsContact(vm.peerData.username);
                 }
             }
             else
@@ -146,6 +155,13 @@ void ChatPanel::Update()
 
             ImGui::SmallButton("Voice");
             ImGui::SmallButton("Video");
+
+            ImGui::Separator();
+            if (ImGui::SmallButton("Add"))
+            {
+
+            }
+
 
             if (vm.peerData.connectionState != Connected) ImGui::EndDisabled();
 
@@ -239,7 +255,7 @@ void ChatPanel::Update()
 
                 if (!this->inputBuf.empty())
                 {
-                    this->controller.SendMessage(this->inputBuf);
+                    this->controller.SendMessage(this->selectedChannelUuid, this->inputBuf);
                 }
 
                 this->inputBuf.clear();
@@ -260,43 +276,60 @@ void ChatPanel::Update()
         if (ImGui::BeginChild("##peerInfo", ImVec2(145, 0), true,
             ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoTitleBar))
         {
-            ImGui::PushStyleColor(0, peerNameColor);//ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-            ImGui::Text("%s", vm.peerData.profile.displayName.c_str());
-            ImGui::PopStyleColor();
-            ImGui::SameLine();
-            ImGui::TextWrapped("(%s)", vm.peerPermanentUsername.c_str());
+            // ImGui::PushStyleColor(0, peerNameColor);//ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
+            // ImGui::Text("%s", vm.peerData.profile.displayName.c_str());
+            // ImGui::PopStyleColor();
+            // ImGui::SameLine();
+            // ImGui::TextWrapped("(%s)", vm.peerData.username.c_str());
+            //
+            // ImGui::SeparatorText("Profile");
+            //
+            // ImGui::BeginGroup();
+            //
+            // ImGui::TextDisabled("Description");
+            // ImGui::TextWrapped("%s", vm.peerData.profile.description.empty() ? "-" : vm.peerData.profile.description.c_str());
+            // ImGui::TextDisabled("Status");
+            // ImGui::TextWrapped("%s", vm.peerData.profile.status.empty() ? "-" : vm.peerData.profile.status.c_str());
+            // ImGui::TextDisabled("Client ID");
+            //
+            // std::string buf = vm.peerData.peerId;
+            // ImGui::InputText("##clientidbox", &buf, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr);
+            //
+            // ImGui::TextDisabled("IP");
+            // buf = vm.peerIpAddress;
+            // ImGui::InputText("##ipbox", &buf, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr);
+            // buf = vm.peerPublicKey;
+            // ImGui::TextDisabled("PUBKEY");
+            // ImGui::InputTextMultiline("##pubkeybox", &buf, ImVec2(0,0), ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr);
+            // ImGui::TextDisabled("Last seen");
+            // if (vm.peerData.authenticated || vm.peerData.connectionState != Connected)
+            // {
+            //     ImGui::TextWrapped("%s", vm.peerData.connectionState == Connected ? "Now" : timeAgoString(restoreTimePointFromMilliseconds(vm.peerLastSeen)).c_str());
+            // }
+            // else
+            // {
+            //     ImGui::TextWrapped("%s", "Unknown");
+            // }
+            // ImGui::EndGroup();
+            //
+            // ImGui::SeparatorText("Actions");
+            //
+            // ImGui::BeginGroup();
+            //
+            // ImGui::EndGroup();
 
-            ImGui::SeparatorText("Profile");
-
-            ImGui::BeginGroup();
-
-            ImGui::TextDisabled("Description");
-            ImGui::TextWrapped("%s", vm.peerData.profile.description.empty() ? "-" : vm.peerData.profile.description.c_str());
-            ImGui::TextDisabled("Status");
-            ImGui::TextWrapped("%s", vm.peerData.profile.status.empty() ? "-" : vm.peerData.profile.status.c_str());
-            ImGui::TextDisabled("IP");
-            std::string buf = vm.peerIpAddress;
-            ImGui::InputText("##ipbox", &buf, ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr);
-            buf = vm.peerPublicKey;
-            ImGui::TextDisabled("PUBKEY");
-            ImGui::InputTextMultiline("##pubkeybox", &buf, ImVec2(0,0), ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_AutoSelectAll, nullptr, nullptr);
-            ImGui::TextDisabled("Last seen");
-            if (vm.peerData.authenticated || vm.peerData.connectionState != Connected)
+            ChannelDTO channelData = this->controller.GetChannelDTO(this->selectedChannelUuid);
+            for (auto& member : channelData.members)
             {
-                ImGui::TextWrapped("%s", vm.peerData.connectionState == Connected ? "Now" : timeAgoString(restoreTimePointFromMilliseconds(vm.peerLastSeen)).c_str());
+                if (!member.peer)
+                {
+                    ImGui::Text("%s", member.fingerprint.c_str());
+                }
+                else
+                {
+                    ImGui::Text("%s", member.peer->profile.displayName.c_str());
+                }
             }
-            else
-            {
-                ImGui::TextWrapped("%s", "Unknown");
-            }
-            ImGui::EndGroup();
-
-            ImGui::SeparatorText("Actions");
-
-            ImGui::BeginGroup();
-
-            ImGui::EndGroup();
-
         }
         ImGui::EndChild();
     }

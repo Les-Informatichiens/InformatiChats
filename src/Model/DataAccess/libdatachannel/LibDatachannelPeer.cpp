@@ -5,8 +5,8 @@
 #include "LibDatachannelPeer.h"
 
 
-LibDatachannelPeer::LibDatachannelPeer(const std::string& peerId, EventBus& eventBus, const rtc::Configuration& config)
-    : peerId(peerId), eventBus(eventBus)
+LibDatachannelPeer::LibDatachannelPeer(const std::string& peerId, const std::string& signalingId, EventBus& eventBus, const rtc::Configuration& config)
+    : peerId(peerId), signalingId(signalingId), eventBus(eventBus)
 {
     this->pc = std::make_shared<rtc::PeerConnection>(config);
 
@@ -19,16 +19,17 @@ LibDatachannelPeer::LibDatachannelPeer(const std::string& peerId, EventBus& even
     this->pc->onStateChange([this](rtc::PeerConnection::State state) {
         this->onStateChangeCb(state);
     });
-    this->pc->onLocalDescription([this, peerId](const rtc::Description& description) {
-        this->eventBus.Publish(SendLocalDescriptionEvent(peerId, description.typeString(), description));
+    this->pc->onLocalDescription([this, signalingId](const rtc::Description& description) {
+        this->eventBus.Publish(SendLocalDescriptionEvent(signalingId, description.typeString(), description));
     });
-    this->pc->onLocalCandidate([this, peerId](const rtc::Candidate& candidate) {
-        this->eventBus.Publish(SendLocalCandidateEvent(peerId, std::string(candidate), candidate.mid()));
+    this->pc->onLocalCandidate([this, signalingId](const rtc::Candidate& candidate) {
+        this->eventBus.Publish(SendLocalCandidateEvent(signalingId, std::string(candidate), candidate.mid()));
     });
 }
 
 LibDatachannelPeer::~LibDatachannelPeer()
 {
+    std::cout << "LibDatachannelPeer destroyed (" <<  this->peerId << ")" << std::endl;
     this->Disconnect();
 }
 
@@ -141,6 +142,21 @@ void LibDatachannelPeer::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc_)
             case PublicKeyRequestResponse::opcode:
                 dispatchPayload.template operator()<PublicKeyRequestResponse>();
                 break;
+            case ChannelRequest::opcode:
+                dispatchPayload.template operator()<ChannelRequest>();
+                break;
+            case ChannelRequestResponse::opcode:
+                dispatchPayload.template operator()<ChannelRequestResponse>();
+                break;
+            case ChannelUserJoin::opcode:
+                dispatchPayload.template operator()<ChannelUserJoin>();
+                break;
+            case ChannelUserLeave::opcode:
+                dispatchPayload.template operator()<ChannelUserLeave>();
+                break;
+            case SignedMessage::opcode:
+                dispatchPayload.template operator()<SignedMessage>();
+                break;
         }
     });
 }
@@ -155,9 +171,30 @@ void LibDatachannelPeer::AddRemoteCandidate(rtc::Candidate candidate)
     this->pc->addRemoteCandidate(std::move(candidate));
 }
 
+void LibDatachannelPeer::SetTextChannel(const std::shared_ptr<rtc::DataChannel>& dc)
+{
+    this->textDc = dc;
+    this->textDc->onMessage([this](const rtc::message_variant& data) {
+        if (!this->onTextDcMessageCb)
+            return;
+
+        this->onTextDcMessageCb(data);
+    });
+}
+
+std::shared_ptr<rtc::DataChannel> LibDatachannelPeer::GetTextChannel() const
+{
+    return this->textDc;
+}
+
 const std::string& LibDatachannelPeer::GetId() const
 {
     return this->peerId;
+}
+
+const std::string& LibDatachannelPeer::GetSignalingId() const
+{
+    return this->signalingId;
 }
 
 std::optional<std::string> LibDatachannelPeer::GetIpAddress() const
@@ -191,4 +228,9 @@ void LibDatachannelPeer::OnStateChange(std::function<void(rtc::PeerConnection::S
 void LibDatachannelPeer::OnMessage(std::function<void(BaseMessage<MessageType>&)> callback)
 {
     this->onMessageCb = std::move(callback);
+}
+
+void LibDatachannelPeer::OnTextDcMessage(std::function<void(rtc::message_variant)> callback)
+{
+    this->onTextDcMessageCb = std::move(callback);
 }

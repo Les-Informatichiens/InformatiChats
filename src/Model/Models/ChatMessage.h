@@ -24,6 +24,7 @@ struct ChatMessage
         return chatMessage;
     }
 
+    std::string destinationChannel;
     std::string content;
     uint64_t timestamp{};
 };

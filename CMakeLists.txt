@@ -52,7 +52,7 @@ add_executable(
         src/Model/ApplicationLogic/UserLogic.cpp
         src/Model/ApplicationLogic/UserLogic.h
         src/Controller/ViewModels/LoginViewModel.h
-        src/Model/Models/User.h
+        src/Model/Models/LocalUser.h
         src/Model/Models/PeerData.h
         src/View/Backend/IWindow.h
         src/View/GUI/IGUIManager.h
@@ -70,7 +70,7 @@ add_executable(
         src/util/crypto/RSAEncryption.cpp
         src/util/crypto/RSAEncryption.h
         src/util/crypto/CryptoTest.h
-        src/Model/Models/UserData.h
+        src/Model/Models/LocalUserData.h
         src/util/Base64.h
         src/Model/DataAccess/ILocalUsersAPI.h
         src/Model/Models/LocalUsers.h
@@ -104,14 +104,29 @@ add_executable(
         src/util/crypto/Hashing.h
         src/Model/ApplicationLogic/UserEventManager.cpp
         src/Model/ApplicationLogic/UserEventManager.h
-        src/Model/ApplicationLogic/PeerManager.cpp
-        src/Model/ApplicationLogic/PeerManager.h
         src/Model/ApplicationLogic/UserDataManager.cpp
         src/Model/ApplicationLogic/UserDataManager.h
         src/Controller/UserController.cpp
         src/Controller/UserController.h
         src/Controller/IUserController.h
         src/Controller/ViewModels/UserViewModel.h
+        src/Model/Models/Exchanges/SignalingExchanges.h
+        src/Controller/DTO/RemoteUserDTO.h
+        src/Model/Models/ConnectionState.h
+        src/Model/ApplicationLogic/PeerMap.cpp
+        src/Model/ApplicationLogic/PeerMap.h
+        src/util/crypto/UUID.cpp
+        src/util/crypto/UUID.h
+        src/Model/MessageFilter.h
+        src/Model/Models/Channel.h
+        src/Model/ApplicationLogic/ChannelMap.cpp
+        src/Model/ApplicationLogic/ChannelMap.h
+        src/Controller/DTO/ChannelDTO.h
+        src/View/Event/SetSelectedChannelEvent.h
+        src/Model/Models/User.h
+        src/Model/Models/RemoteUser.h
+        src/Model/ApplicationLogic/RemoteUserMap.cpp
+        src/Model/ApplicationLogic/RemoteUserMap.h
 )
 
 target_include_directories(
@@ -209,6 +224,31 @@ CPMAddPackage(
 if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})
 endif ()
+# =====================================================================================================
+
+# promise-cpp =========================================================================================
+CPMAddPackage(
+        NAME "promise-cpp"
+        GITHUB_REPOSITORY "xhawk18/promise-cpp"
+        GIT_TAG "2.1.5"
+        OPTIONS "PROMISE_BUILD_EXAMPLES OFF"
+)
+
+#target_compile_definitions(promise PRIVATE PROMISE_MULTITHREADED=0)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE promise)
+# =====================================================================================================
+
+# concurrencpp ========================================================================================
+CPMAddPackage(
+        NAME "concurrencpp"
+        GITHUB_REPOSITORY "David-Haim/concurrencpp"
+        GIT_TAG "v.0.1.7"
+)
+
+#target_compile_definitions(promise PRIVATE PROMISE_MULTITHREADED=0)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE concurrencpp::concurrencpp)
 # =====================================================================================================
 
 ## lua =================================================================================================

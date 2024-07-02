@@ -4,19 +4,21 @@
 
 #pragma once
 
-#include "Model/Models/User.h"
+#include "Controller/DTO/ChannelDTO.h"
+#include "Controller/DTO/RemoteUserDTO.h"
+#include "Model/Models/LocalUser.h"
 
-#include <string>
 #include <ctime>
+#include <string>
 
 struct ChatViewModel
 {
     const ChatHistory* chatHistory;
     const size_t chatHistorySize;
-    const std::string peerPermanentUsername;
+    // const std::string peerPermanentUsername;
     const std::string peerPublicKey;
     const std::string peerIpAddress;
     const uint64_t peerLastSeen;
     const bool isPeerContact;
-    const PeerData peerData;
+    const RemoteUserDTO peerData;
 };

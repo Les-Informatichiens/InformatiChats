@@ -18,30 +18,34 @@ public:
 
     void Init(const PeeringConfig& peeringConfig) override;
 
-    void OpenPeerConnection(const std::string& peerId, std::function<void()> onReady) override;
+    std::string OpenPeerConnection(const std::string& signalingId, std::function<void()> onReady) override;
     void ClosePeerConnection(const std::string& peerId) override;
 
     void SendMessage(const std::string& peerId, const BaseMessage<MessageType>& message) override;
 
     [[nodiscard]] std::optional<std::string> GetPeerIpAddress(const std::string& peerId) override;
 
-    void OnPeerConnectionStateChange(std::function<void (PeerConnectionStateChangeEvent)> callback) override;
-    void OnPeerRequest(std::function<bool(const std::string&)> callback) override;
-    void OnNewPeer(std::function<void(const std::string&)> callback) override;
+    void OnPeerConnectionStateChange(const std::string& peerId, std::function<void(ConnectionState)> callback) override;
+    void OnPeerRequest(std::function<bool(const std::string&, const std::string&)> callback) override;
+    void OnNewPeer(std::function<void(const std::string&, const std::string&, const std::string&)> callback) override;
     void OnPeerMessage(const std::string& peerId, std::function<void(BaseMessage<MessageType>&)> callback) override;
     void OnPeerConnected(const std::string& peerId, std::function<void()> callback) override;
 
 private:
     std::shared_ptr<LibDatachannelPeer> CreatePeerConnection(const std::string&
-                                                       connectionState);
+                                                                     connectionState,
+                                                             const std::string& signalingId);
 
 public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
 
+    std::string userFingerprint;
     rtc::Configuration rtcConfig;
 
     std::function<void (PeerConnectionStateChangeEvent)> onPeerConnectionStateChangeCb;
-    std::function<bool(const std::string&)> onPeerRequestCb;
-    std::function<void(const std::string&)> onNewPeerCb;
+    std::function<bool(const std::string&, const std::string&)> onPeerRequestCb;
+
+    using OnNewPeerCallback = std::function<void(const std::string&, const std::string&, const std::string&)>;
+    OnNewPeerCallback onNewPeerCb;
 };

@@ -25,9 +25,10 @@ public:
     void InitiateTextChat(const std::string& peerId) override;
     void CloseTextChat(const std::string& peerId) override;
 
-    void SendMessageToPeer(const std::string& peerId, const std::string& message) override;
+    void SendMessageToPeer(const std::string& peerId, const std::string& destinationChannel, const std::string& message) override;
 
     void OnChatMessage(std::function<void(ChatMessageInfo)> callback) override;
+    void OnChatMessage(const std::string& peerId, std::function<void(ChatMessage)> callback) override;
 
 private:
     void RegisterTextChannel(const std::string& peerId, const std::shared_ptr<rtc::Channel>& tc);

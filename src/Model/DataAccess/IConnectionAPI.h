@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <string>
 #include <functional>
+#include <nlohmann/json.hpp>
+#include <string>
 
 struct ConnectionConfig
 {
@@ -18,10 +19,13 @@ class IConnectionAPI
 public:
     virtual void Init(const ConnectionConfig& config_) = 0;
 
-    virtual void ConnectWithUsername(const std::string& username) = 0;
+    virtual void ConnectWithUsername(const std::string& username, const std::string& publicKey) = 0;
     virtual void Disconnect() = 0;
 
     virtual bool IsConnected() = 0;
 
     virtual void OnConnected(std::function<void(void)> callback) = 0;
+    virtual void QueryClientsByPublicKey(std::string publicKey, std::function<void(nlohmann::json)> callback) = 0;
+    virtual void QueryDiscoverableClients(std::function<void(nlohmann::json)> callback) = 0;
+
 };

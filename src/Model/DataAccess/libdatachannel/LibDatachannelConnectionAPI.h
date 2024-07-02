@@ -7,6 +7,7 @@
 #include "LibDatachannelState.h"
 #include "Model/DataAccess/IConnectionAPI.h"
 #include "Model/EventBus.h"
+#include "Model/Models/Exchange.h"
 
 #include "rtc/peerconnection.hpp"
 #include "rtc/websocket.hpp"
@@ -23,14 +24,15 @@ public:
 
     void Init(const ConnectionConfig& config_) override;
     
-    void ConnectWithUsername(const std::string& username_) override;
+    void ConnectWithUsername(const std::string& username_, const std::string& publicKey) override;
     void Disconnect() override;
 
     bool IsConnected() override;
 
-    void OnConnected(std::function<void ()> callback) override;
+    void OnConnected(std::function<void()> callback) override;
+    void QueryClientsByPublicKey(std::string publicKey, std::function<void(nlohmann::json)> callback) override;
+    void QueryDiscoverableClients(std::function<void(nlohmann::json)> callback) override;
 
-public:
     LibDatachannelState& state;
     EventBus& networkAPIEventBus;
 
@@ -40,6 +42,9 @@ public:
     std::shared_ptr<rtc::WebSocket> webSocket;
     std::promise<void> wsPromise;
     bool connected{};
+    std::string clientId;
+
+    ExchangeManager exchangeManager{};
 
     std::function<void(void)> onConnectedCb;
 };

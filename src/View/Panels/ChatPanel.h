@@ -10,7 +10,7 @@
 class ChatPanel : public IPanel
 {
 public:
-    explicit ChatPanel(IChatController& channelController);
+    explicit ChatPanel(IChatController& channelController, EventBus& eventBus);
 
     void Draw() override;
     void Update() override;
@@ -20,9 +20,10 @@ private:
     // std::unordered_map<std::string, ChatMessage> lastChatMessages;
 
     bool consoleOpen{true};
-    std::string selectedChat;
+    std::string selectedChannelUuid;
 
     IChatController& controller;
+    EventBus& eventBus;
 
     std::string inputBuf;
 };

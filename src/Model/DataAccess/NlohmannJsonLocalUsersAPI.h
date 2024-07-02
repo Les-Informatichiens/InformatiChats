@@ -5,7 +5,7 @@
 #pragma once
 
 #include "ILocalUsersAPI.h"
-#include <Model/Models/UserData.h>
+#include <Model/Models/LocalUserData.h>
 #include <vector>
 
 
@@ -18,12 +18,12 @@ public:
     NlohmannJsonLocalUsersAPI(){};
 
     void LoadLocalUserInfos() override;
-    void AddNewLocalUser(const UserData& userData) override;
+    void AddNewLocalUser(const LocalUserData& userData) override;
     void SaveLocalUserInfos() const override;
-    void UpdateLocalUser(const UserData& userData) override;
+    void UpdateLocalUser(const LocalUserData& userData) override;
 
-    [[nodiscard]] const std::vector<UserData>& GetLocalUserInfos() const override;
+    [[nodiscard]] const std::vector<LocalUserData>& GetLocalUserInfos() const override;
 
 private:
-    std::vector<UserData> localUserInfos;
+    std::vector<LocalUserData> localUserInfos;
 };

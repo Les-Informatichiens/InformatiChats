@@ -11,14 +11,15 @@ void LibDatachannelState::Reset()
     this->peerMap.clear();
 }
 
-LibDatachannelState::~LibDatachannelState()
-{
-    this->Reset();
-}
+// LibDatachannelState::~LibDatachannelState()
+// {
+//     this->Reset();
+// }
 
 void LibDatachannelState::RegisterPeer(const std::shared_ptr<LibDatachannelPeer>& peer)
 {
     this->peerMap.insert_or_assign(peer->GetId(), peer);
+    this->Cleanup();
 }
 
 void LibDatachannelState::DestroyPeer(const std::string& peerId)
@@ -40,4 +41,31 @@ std::shared_ptr<LibDatachannelPeer> LibDatachannelState::GetPeer(const std::stri
         return nullptr;
     }
     return pcIt->second;
+}
+
+std::shared_ptr<LibDatachannelPeer> LibDatachannelState::GetPeerBySignalingId(const std::string& signalingId)
+{
+    const auto pcIt = std::ranges::find_if(this->peerMap, [&signalingId](const auto& pair) {
+        return pair.second->GetSignalingId() == signalingId;
+    });
+    if (pcIt == this->peerMap.end())
+    {
+        return nullptr;
+    }
+    return pcIt->second;
+}
+
+void LibDatachannelState::Cleanup()
+{
+    for (auto it = this->peerMap.begin(); it != this->peerMap.end();)
+    {
+        if (it->second->State() == rtc::PeerConnection::State::Closed || it->second->State() == rtc::PeerConnection::State::Failed || it->second->State() == rtc::PeerConnection::State::Disconnected)
+        {
+            it = this->peerMap.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }

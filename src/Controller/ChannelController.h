@@ -21,6 +21,8 @@ public:
     void AddNewChatPeer(const std::string& peerName) override;
     void SetSelectedPeerId(const std::string& peerId) override;
 
+    void RequestUserFingerprint(const std::string& fingerprint, std::function<void(nlohmann::json)> callback) override;
+
 private:
     UserLogic& userLogic;
     CommandManager& commandManager;

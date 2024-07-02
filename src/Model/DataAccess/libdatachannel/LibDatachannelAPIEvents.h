@@ -12,9 +12,10 @@
 struct PeerRequestEvent : public EventData
 {
     std::string peerId;
+    std::string fingerprint;
 
-    explicit PeerRequestEvent(std::string peerId_)
-        : EventData("PeerRequestEvent"), peerId(std::move(peerId_)) {}
+    explicit PeerRequestEvent(std::string peerId_, std::string fingerprint_)
+        : EventData("PeerRequestEvent"), peerId(std::move(peerId_)), fingerprint(std::move(fingerprint_)) {}
 };
 
 struct ReceiveRemoteDescriptionEvent : public EventData
@@ -81,4 +82,44 @@ struct OnNewPeerEvent : public EventData
 
     explicit OnNewPeerEvent(std::shared_ptr<LibDatachannelPeer> peer)
         : EventData("OnNewPeerEvent"), peer(std::move(peer)) {}
+};
+
+struct ReceiveRemoteDescriptionByPeerEvent : public EventData
+{
+    std::string peerId;
+    rtc::Description description;
+
+    ReceiveRemoteDescriptionByPeerEvent(std::string peerId_, rtc::Description description_)
+        : EventData("ReceiveRemoteDescriptionByPeerEvent"), peerId(std::move(peerId_)), description(std::move(description_)) {}
+};
+
+struct ReceiveRemoteCandidateByPeerEvent : public EventData
+{
+    std::string peerId;
+    rtc::Candidate candidate;
+
+    ReceiveRemoteCandidateByPeerEvent(std::string peerId_, rtc::Candidate candidate)
+        : EventData("ReceiveRemoteCandidateByPeerEvent"), peerId(std::move(peerId_)), candidate(std::move(candidate)) {}
+};
+
+struct SendLocalDescriptionByPeerEvent : public EventData
+{
+    std::string id;
+    std::string intermediatePeerId;
+    std::string type;
+    std::string description;
+
+    SendLocalDescriptionByPeerEvent(std::string id, std::string type, std::string description)
+        : EventData("SendLocalDescriptionByPeerEvent"), id(std::move(id)), type(std::move(type)), description(std::move(description)) {}
+};
+
+struct SendLocalCandidateByPeerEvent : public EventData
+{
+    std::string id;
+    std::string intermediatePeerId;
+    std::string candidate;
+    std::string mid;
+
+    SendLocalCandidateByPeerEvent(std::string id, std::string candidate, std::string mid)
+        : EventData("SendLocalCandidateByPeerEvent"), id(std::move(id)), candidate(std::move(candidate)), mid(std::move(mid)) {}
 };

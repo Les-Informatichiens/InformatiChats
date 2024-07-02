@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <Model/Models/UserData.h>
+#include <Model/Models/LocalUserData.h>
 #include <string>
 #include <vector>
 
@@ -12,5 +12,5 @@
 struct LoginViewModel
 {
     size_t maxNameLength;
-    std::vector<UserData> localUserInfos;
+    std::vector<LocalUserData> localUserInfos;
 };

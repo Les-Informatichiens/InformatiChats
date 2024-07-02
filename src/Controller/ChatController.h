@@ -15,11 +15,13 @@ public:
     explicit ChatController(UserLogic& userLogic, CommandManager& commandManager)
         : userLogic(userLogic), commandManager(commandManager){};
 
-    ChatViewModel GetViewModel() override;
+    ChatViewModel GetViewModel(const std::string& selectedChannel) override;
 
-    void SendMessage(const std::string& message) override;
+    void SendMessage(const std::string& destinationChannel, const std::string& message) override;
     void AddPeerAsContact(const std::string& peerId) override;
     void RemovePeerFromContacts(const std::string& peerId) override;
+    void AddUserToChannel(const std::string& fingerprint, const std::string& channelUuid) override;
+    ChannelDTO GetChannelDTO(const std::string& channelUuid) override;
 
 private:
     UserLogic& userLogic;

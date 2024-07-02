@@ -11,15 +11,17 @@
 class LibDatachannelState
 {
 public:
-    virtual ~LibDatachannelState();
+    LibDatachannelState() = default;
+    ~LibDatachannelState() = default;
 
     void Reset();
 
     void RegisterPeer(const std::shared_ptr<LibDatachannelPeer>& peer);
     void DestroyPeer(const std::string& peerId);
     std::shared_ptr<LibDatachannelPeer> GetPeer(const std::string& peerId);
+    std::shared_ptr<LibDatachannelPeer> GetPeerBySignalingId(const std::string& signalingId);
+    void Cleanup();
 
 public:
-    std::unordered_map<std::string, std::shared_ptr<rtc::PeerConnection>> peerConnectionMap;
     std::unordered_map<std::string, std::shared_ptr<LibDatachannelPeer>> peerMap;
 };

@@ -3,7 +3,7 @@
 //
 
 #include "NlohmannJsonLocalUsersAPI.h"
-#include <Model/Models/UserData.h>
+#include <Model/Models/LocalUserData.h>
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -28,12 +28,12 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
         input.close();
     }
 
-    std::vector<UserData> users;
+    std::vector<LocalUserData> users;
     for (auto& [username, user]: data.items())
     {
         try
         {
-            UserData userData;
+            LocalUserData userData;
             userData.permanentUsername = username;
             userData.encryptedPassword = user["encryptedPassword"];
             userData.publicIdentificationKey = user["publicIdentificationKey"];
@@ -43,7 +43,7 @@ void NlohmannJsonLocalUsersAPI::LoadLocalUserInfos()
             userData.profile.status = user["profile"]["status"];
             userData.profile.nameColor = user["profile"]["nameColor"];
 
-            std::map<std::string, ContactData> contacts;
+            std::unordered_map<std::string, ContactData> contacts;
 
             for (auto& jsonContact : user["contacts"])
             {
@@ -119,7 +119,7 @@ void NlohmannJsonLocalUsersAPI::SaveLocalUserInfos() const
  * Get the local user infos
  * @return The local user infos
  */
-const std::vector<UserData>& NlohmannJsonLocalUsersAPI::GetLocalUserInfos() const
+const std::vector<LocalUserData>& NlohmannJsonLocalUsersAPI::GetLocalUserInfos() const
 {
     return this->localUserInfos;
 }
@@ -128,14 +128,14 @@ const std::vector<UserData>& NlohmannJsonLocalUsersAPI::GetLocalUserInfos() cons
  * Add a new local user to the list
  * @param userData The user data to add
  */
-void NlohmannJsonLocalUsersAPI::AddNewLocalUser(const UserData& userData)
+void NlohmannJsonLocalUsersAPI::AddNewLocalUser(const LocalUserData& userData)
 {
     this->localUserInfos.push_back(userData);
 }
 
-void NlohmannJsonLocalUsersAPI::UpdateLocalUser(const UserData& updatedUserData)
+void NlohmannJsonLocalUsersAPI::UpdateLocalUser(const LocalUserData& updatedUserData)
 {
-    const auto userInfoIt = std::ranges::find_if(this->localUserInfos, [updatedUserData](const UserData& userData) { return userData.publicIdentificationKey == updatedUserData.publicIdentificationKey; });
+    const auto userInfoIt = std::ranges::find_if(this->localUserInfos, [updatedUserData](const LocalUserData& userData) { return userData.publicIdentificationKey == updatedUserData.publicIdentificationKey; });
     if (userInfoIt == this->localUserInfos.end())
         return;
 

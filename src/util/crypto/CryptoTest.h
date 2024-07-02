@@ -126,3 +126,12 @@ void Test2()
         std::cout << "Communication setup denied." << std::endl;
     }
 };
+
+void TestFingerprinting()
+{
+    std::string publicKey = "-----BEGIN PUBLIC KEY-----\nMFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALGJay0TXT5KTC+IV7oC8s2/eAnSWB5A\nlu+FDduO3IPrM3IJQyROsf+xW+lyt/Bj0Jty3myRQRzbKQ4s5bnOOtkCAwEAAQ==\n-----END PUBLIC KEY-----\n";
+
+    std::string fingerprint = Hashing::GeneratePublicKeyFingerprint(publicKey);
+
+    std::cout << "Fingerprint: " << fingerprint << std::endl;
+}

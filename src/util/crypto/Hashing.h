@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace Hashing
-{
+namespace Hashing {
     std::string SHA256(const char* key, const char* data, unsigned char*& out);
+    std::string GeneratePublicKeyFingerprint(const std::string& key);
 }

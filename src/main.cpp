@@ -10,7 +10,7 @@
 #include <Controller/UserController.h>
 #include <Model/ApplicationLogic/UserLogic.h>
 #include <Model/DataAccess/NlohmannJsonLocalUsersAPI.h>
-#include <Model/Models/User.h>
+#include <Model/Models/LocalUser.h>
 #include <View/Backend/GLFWWindowManager.h>
 #include <View/Backend/IWindow.h>
 #include <View/GUI/ImGuiManager.hpp>
@@ -89,7 +89,6 @@ int main(int, char**)
 //    lua_close(L);
 
     //init model layer
-    User user{};
     auto libdatachannelState = LibDatachannelState();
     auto libDatachannelEventBus = EventBus();
     auto connectionAPI = LibDatachannelConnectionAPI(libdatachannelState, libDatachannelEventBus);
@@ -97,6 +96,7 @@ int main(int, char**)
     auto peeringAPI = LibDatachannelPeeringAPI(libdatachannelState, libDatachannelEventBus);
     auto localUsersAPI = NlohmannJsonLocalUsersAPI();
 
+    LocalUser user{};
     UserDataManager userDataManager(user, localUsersAPI);
     UserLogic userLogic{userDataManager, connectionAPI, peeringAPI, textChatAPI, localUsersAPI};
 
@@ -114,10 +114,12 @@ int main(int, char**)
     auto channelView = ChannelView(channelController);
     auto loginView = LoginView(loginController);
 
+    auto viewEventBus = EventBus();
+
     //init panels
-    auto channelPanel = ChannelPanel(channelController);
+    auto channelPanel = ChannelPanel(channelController, viewEventBus);
     auto userInfoPanel = UserInfoPanel(userController);
-    auto chatPanel = ChatPanel(chatController);
+    auto chatPanel = ChatPanel(chatController, viewEventBus);
     auto loginPanel = LoginPanel(loginController);
 
     chatView.AddPanel(chatPanel);

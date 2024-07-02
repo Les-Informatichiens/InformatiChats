@@ -5,7 +5,7 @@
 #pragma once
 
 #include <array>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -32,12 +32,12 @@ struct ContactData
 /**
  * Represents the data of a user, which is the info that will be stored locally.
  */
-struct UserData
+struct LocalUserData
 {
     std::string permanentUsername;
     std::string encryptedPassword;
     std::string publicIdentificationKey;
     std::string encryptedPrivateIdentificationKey;
     UserProfile profile;
-    std::map<std::string, ContactData> contacts;
+    std::unordered_map<std::string, ContactData> contacts;
 };

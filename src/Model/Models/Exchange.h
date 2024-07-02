@@ -5,9 +5,7 @@
 #pragma once
 
 #include <any>
-#include <cstdint>
 #include <functional>
-#include <map>
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
@@ -20,6 +18,9 @@ enum struct ExchangeType
     AuthChallengeExchange,
     ContactRequestExchange,
     PublicKeyRequestExchange,
+    ChannelRequestExchange,
+    QueryClientsByFingerprintExchange,
+    QueryDiscoverableExchange,
 };
 
 class ExchangeState
@@ -312,6 +313,33 @@ public:
     ExchangeType Type() override
     {
         return ExchangeType::PublicKeyRequestExchange;
+    }
+};
+
+class OfferChannelRequest : public Exchange
+{
+public:
+
+    class AwaitingChannelRequestResponseState : public ExchangeState, public ExchangeStateFactory<AwaitingChannelRequestResponseState> {};
+    class CompletedState : public ExchangeState, public ExchangeStateFactory<CompletedState> {};
+
+    OfferChannelRequest()
+        : Exchange(AwaitingChannelRequestResponseState::Make())
+    {
+    }
+
+    bool SetState(std::shared_ptr<ExchangeState> newState_) override
+    {
+        if (this->state->Is<AwaitingChannelRequestResponseState>())
+            return StateResult(newState_, newState_->Is<CompletedState>(), true);
+        else
+            return StateResult(newState_, false);
+    }
+
+    ExchangeType Type() override
+    {
+        return ExchangeType::ChannelRequestExchange;
+;
     }
 };
 
