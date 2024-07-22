@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30.1)
+cmake_minimum_required(VERSION 3.30)
 project(InformatiChats VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 23)
