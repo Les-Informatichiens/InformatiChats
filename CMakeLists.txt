@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.30.1)
 project(InformatiChats VERSION 0.1)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -119,7 +119,7 @@ include(cmake/CPM.cmake)
 if (NOT TARGET LibDataChannel::LibDataChannelStatic)
     CPMFindPackage(
             NAME "LibDataChannel"
-            VERSION "0.19.4"
+            VERSION "0.21.2"
             GITHUB_REPOSITORY "paullouisageneau/libdatachannel"
     )
 endif ()
@@ -151,7 +151,7 @@ endif ()
 CPMAddPackage(
         NAME "glm"
         GITHUB_REPOSITORY "g-truc/glm"
-        GIT_TAG "0.9.9.8"
+        GIT_TAG "1.0.1"
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
@@ -174,7 +174,7 @@ if (NOT TARGET imgui::imgui)
     CPMFindPackage(
             NAME "imgui"
             GITHUB_REPOSITORY "Les-Informatichiens/imgui-cmake"
-            GIT_TAG "docking-cmake-experimental"
+            GIT_TAG "v1.90.9-docking-cmake"
             OPTIONS
             "IMGUI_BUILD_OPENGL3_BINDING ON"
             "IMGUI_BUILD_GLFW_BINDING ON"
@@ -188,7 +188,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
 CPMAddPackage(
         NAME "zpp_bits"
         GITHUB_REPOSITORY "eyalz800/zpp_bits"
-        VERSION "4.4.20"
+        VERSION "4.4.23"
 )
 if (zpp_bits_ADDED)
     target_include_directories(${PROJECT_NAME} PRIVATE ${zpp_bits_SOURCE_DIR})

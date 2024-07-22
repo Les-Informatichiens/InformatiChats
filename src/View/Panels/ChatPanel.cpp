@@ -25,7 +25,7 @@ void ChatPanel::Update()
     ImGui::SameLine();
     //    ImGui::BeginDisabled(vm.chatHistory == nullptr);
 
-    if (ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true, ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::BeginChild("Chat", ImVec2(ImGui::GetContentRegionAvail().x, 0), true))
     {
 
         bool reclaim_focus = false;

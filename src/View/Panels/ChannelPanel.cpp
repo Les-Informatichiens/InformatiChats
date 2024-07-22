@@ -12,7 +12,7 @@ void ChannelPanel::Update()
     ImGui::BeginGroup();
 
     if (ImGui::BeginChild("Npcs", ImVec2(200, -50), true,
-                          ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar))
+                           ImGuiWindowFlags_HorizontalScrollbar))
     {
         if (ImGui::Button("Add new user"))
         {

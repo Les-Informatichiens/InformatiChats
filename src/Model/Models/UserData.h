@@ -6,7 +6,7 @@
 
 #include <array>
 #include <string>
-
+#include <cstdint>
 
 /**
  * Represents the profile of a user, which is the info that will be sent to other users.

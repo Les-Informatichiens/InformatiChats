@@ -12,7 +12,7 @@ void UserInfoPanel::Update()
     ChannelViewModel vm = this->controller.GetViewModel();
 
     if (ImGui::BeginChild("userid", ImVec2(200, ImGui::GetContentRegionAvail().y), true,
-                          ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_HorizontalScrollbar))
+                           ImGuiWindowFlags_HorizontalScrollbar))
     {
         ImGui::Text("%s", vm.userName.c_str());
 
